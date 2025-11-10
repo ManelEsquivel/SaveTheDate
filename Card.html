@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save The Date - Fondo Pareja</title>
+    <title>Save The Date - Manel & Carla</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cormorant Garamond', serif;
-            background-color: #f8f0e3; 
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             overflow: hidden; 
-            position: relative;
+            background-color: #f7f3ed; 
         }
 
         .invitation-frame {
@@ -29,18 +29,18 @@
             padding: 3rem;
             text-align: center;
             
-            /* --- FONDO DE IMAGEN GENERADO POR IA (inspirado en vuestra foto) --- */
-            /* URL de imagen de IA que simula una pareja borrosa y romántica */
-            background-image: url('https://image.pollinations.ai/prompt/blurred%20background%20of%20a%20happy%20couple%20silhouetted%20against%20a%20bright%20blue%20sky%20with%20subtle%20trees%20romantic%20soft%20focus%20dreamy%20light%20minimalist%20warm%20tones%20and%20some%20light%20bokeh');
+            background-image: url('https://image.pollinations.ai/prompt/two%20engagement%20rings,%20bokeh%20background,%20soft%20romantic%20lighting,%20creamy%20gold%20tones,%20dreamy%20atmosphere,%20minimalist,%20no%20text,%20no%20watermark?width=400&height=711'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             
-            /* Capa para hacer la imagen de fondo más sutil y el texto legible */
-            background-color: rgba(255, 255, 255, 0.75); /* Capa blanca semi-transparente */
-            background-blend-mode: overlay; /* Mezcla el color con la imagen */
+            /* --- COLOR DE FONDO DE TARJETA CON MENOS OPACIDAD --- */
+            /* Cambiado de 0.95 a 0.7 para que la imagen de fondo sea más visible */
+            background-color: rgba(245, 245, 245, 0.7); /* Crema suave con 70% de opacidad */
+            background-blend-mode: overlay; 
 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); 
             border: 1px solid #e0d8c7; 
             display: flex;
             flex-direction: column;
@@ -48,19 +48,27 @@
             border-radius: 12px;
         }
         
-        .invitation-border {
+        .leaf-detail {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 2px dashed #d4af94; /* Rosa-dorado suave */
-            pointer-events: none;
-            border-radius: 8px;
+            width: 70px;
+            height: 70px;
+            z-index: 15;
+            color: #d4af94; 
+            opacity: 0;
+            animation: fadeIn 0.8s forwards; 
+            animation-delay: 0.2s; 
+        }
+        .top-left-leaf { top: 5px; left: 5px; transform: rotate(0deg); }
+        .top-right-leaf { top: 5px; right: 5px; transform: rotate(90deg); }
+        .bottom-right-leaf { bottom: 5px; right: 5px; transform: rotate(180deg); }
+        .bottom-left-leaf { bottom: 5px; left: 5px; transform: rotate(-90deg); }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         .accent-color {
-            color: #b18579; /* Tono terroso/rosa suave */
+            color: #b18579; 
         }
 
         .animated-item {
@@ -69,6 +77,7 @@
             animation-fill-mode: forwards;
             animation-name: fadeInSlide;
             font-family: 'Cormorant Garamond', serif; 
+            animation-duration: 0.8s;
         }
 
         @keyframes fadeInSlide {
@@ -78,14 +87,15 @@
             }
         }
 
-        .step-1 { animation-delay: 0.5s; animation-duration: 1.2s; }
-        .step-2 { animation-delay: 1.8s; animation-duration: 1.2s; }
-        .step-2-5 { animation-delay: 2.5s; animation-duration: 1.2s; }
-        .step-3 { animation-delay: 3.2s; animation-duration: 1.2s; }
-        .step-4 { animation-delay: 4.8s; animation-duration: 1.2s; }
-        .step-5 { animation-delay: 6.2s; animation-duration: 1.2s; }
-        .step-6 { animation-delay: 7.6s; animation-duration: 1.2s; }
-        .step-7 { animation-delay: 9.0s; animation-duration: 1.2s; }
+        .step-1 { animation-delay: 0.2s; }
+        .step-2 { animation-delay: 1.0s; }
+        .step-2-5 { animation-delay: 1.6s; }
+        .step-3 { animation-delay: 2.2s; }
+        .step-4 { animation-delay: 3.2s; }
+        .step-5 { animation-delay: 4.0s; }
+        .step-6 { animation-delay: 4.8s; }
+        .step-7 { animation-delay: 5.6s; }
+        .step-8 { animation-delay: 6.6s; }
 
         .btn-details {
             font-family: 'Noto Sans', sans-serif;
@@ -106,11 +116,48 @@
     </style>
 </head>
 <body>
-
+    
     <div class="invitation-frame">
-        <div class="invitation-border"></div>
 
-        <p class="animated-item step-1 text-xl tracking-widest uppercase mb-6 text-gray-500">
+        
+        <div class="leaf-detail top-left-leaf">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 5 95 C 30 75, 75 30, 95 5" />
+                <path d="M 25 75 Q 35 85 45 75 M 45 75 Q 35 65 25 75" stroke-width="1.2"/>
+                <path d="M 50 50 Q 60 60 70 50 M 70 50 Q 60 40 50 50" stroke-width="1.2"/>
+                <circle cx="5" cy="95" r="3" fill="currentColor" stroke="none" />
+            </svg>
+        </div>
+        
+        <div class="leaf-detail top-right-leaf">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 5 95 C 30 75, 75 30, 95 5" />
+                <path d="M 25 75 Q 35 85 45 75 M 45 75 Q 35 65 25 75" stroke-width="1.2"/>
+                <path d="M 50 50 Q 60 60 70 50 M 70 50 Q 60 40 50 50" stroke-width="1.2"/>
+                <circle cx="5" cy="95" r="3" fill="currentColor" stroke="none" />
+            </svg>
+        </div>
+
+        <div class="leaf-detail bottom-right-leaf">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 5 95 C 30 75, 75 30, 95 5" />
+                <path d="M 25 75 Q 35 85 45 75 M 45 75 Q 35 65 25 75" stroke-width="1.2"/>
+                <path d="M 50 50 Q 60 60 70 50 M 70 50 Q 60 40 50 50" stroke-width="1.2"/>
+                <circle cx="5" cy="95" r="3" fill="currentColor" stroke="none" />
+            </svg>
+        </div>
+
+        <div class="leaf-detail bottom-left-leaf">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 5 95 C 30 75, 75 30, 95 5" />
+                <path d="M 25 75 Q 35 85 45 75 M 45 75 Q 35 65 25 75" stroke-width="1.2"/>
+                <path d="M 50 50 Q 60 60 70 50 M 70 50 Q 60 40 50 50" stroke-width="1.2"/>
+                <circle cx="5" cy="95" r="3" fill="currentColor" stroke="none" />
+            </svg>
+        </div>
+        
+        
+        <p class="animated-item step-1 text-xl tracking-widest uppercase mb-6 text-gray-800">
             Save The Date
         </p>
 
@@ -122,7 +169,7 @@
             31 · 10 · 2026
         </p>
 
-        <p class="animated-item step-5 text-xl my-6 text-gray-600">
+        <p class="animated-item step-5 text-xl my-6 text-gray-700">
             Masia Mas Llombart<br>Sant Fost de Campsentelles, Barcelona
         </p>
 
@@ -130,9 +177,9 @@
             ¡Nos encantaría que nos acompañaras en nuestro gran día!
         </p>
 
-         <div class="animated-item step-7">
+        <div class="animated-item step-7">
             <a href="https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3" target="_blank" class="btn-details">
-                Confirmar Asistencia :)
+                Confirmar Asistencia
             </a>
         </div>
         
@@ -143,12 +190,9 @@
 
     </div>
 
-    </div>
-
     <script>
         // No se requiere JS adicional, la animación es puramente CSS.
     </script>
 
 </body>
 </html>
-
