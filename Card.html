@@ -177,7 +177,7 @@
         </p>
 
         <div class="animated-item step-7">
-            <a href="https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3" target="_blank" class="btn-details">
+            <a href="https://www.bodas.net/web/manel-y-carla/bienvenidos-1" target="_blank" class="btn-details">
                 Confirmar Asistencia
             </a>
         </div>
@@ -190,7 +190,11 @@
     </div>
 
     <script>
-        // No se requiere JS adicional, la animación es puramente CSS.
+        // Desplaza la página 75 píxeles hacia abajo al cargarse
+        window.onload = function() {
+            // Un pequeño desplazamiento inicial para que la invitación no empiece justo en el borde
+            window.scrollTo(0, 75); 
+        };
     </script>
 
 </body>
