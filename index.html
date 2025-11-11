@@ -8,32 +8,46 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #f5f5dc; /* beige suave */
             font-family: 'Georgia', serif;
+            background: url('https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+            background-size: cover;
+            animation: fadeIn 2s ease-in;
+            color: #3e2f1c;
+        }
+
+        .overlay {
+            background-color: rgba(245, 235, 220, 0.85);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
         }
-        .container {
-            background-color: #fffaf0;
+
+        .message-box {
+            background-color: #f7f1e8;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             text-align: center;
-            opacity: 0;
-            animation: fadeIn 3s ease-in forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 600px;
         }
+
         h1 {
-            font-size: 1.5em;
-            color: #5a4d3d;
-            line-height: 1.4;
+            font-size: 28px;
+            margin-bottom: 20px;
         }
+
+        p {
+            font-size: 18px;
+        }
+
         @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
     <script>
@@ -43,9 +57,13 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Los novios te han escogido para que guardes una fecha muy especial.<br>Eres parte importante de su historia.</h1>
+    <div class="overlay">
+        <div class="message-box">
+            <h1>¡Bienvenido!</h1>
+            <p>Los novios han pensado en ti para que guardes una fecha muy especial, porque te consideran una parte importante de su historia.</p>
+        </div>
     </div>
 </body>
 </html>
+
 
