@@ -8,7 +8,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ reply: "No se recibió ningún mensaje." });
   }
 
-  // ✅ Información principal de la boda
   const weddingInfo = {
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
@@ -26,12 +25,12 @@ export default async function handler(req, res) {
     `,
   };
 
-  // ✅ Prompt actualizado con enlaces HTML
-  const systemPrompt = `Eres un asistente virtual amable y servicial para la boda de Manel y Carla. 
+  // ✅ Prompt actualizado para usar Markdown
+  const systemPrompt = `Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
 Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa, como si fueras parte de la organización.
 
 📅 La boda será el ${weddingInfo.date}, de ${weddingInfo.time}, en ${weddingInfo.location}.
-Más información sobre el lugar: <a href="${weddingInfo.detailUbisUrl}" target="_blank">Ubicación</a>.
+Más información sobre el lugar: [Ubicación](${weddingInfo.detailUbisUrl}).
 
 🕒 Horario aproximado del evento:
 ${weddingInfo.schedule}
@@ -43,7 +42,7 @@ ${weddingInfo.schedule}
 
 Si alguien pregunta por los horarios, las etapas del evento, la hora de la ceremonia, el lugar, el banquete, la vestimenta, el transporte o el alojamiento, usa estos datos.
 
-🎁 Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: <a href="https://www.bodas.net/web/manel-y-carla/regalosdeboda-11" target="_blank">Regalos de boda</a>.`;
+🎁 Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: [Regalos de boda](https://www.bodas.net/web/manel-y-carla/regalosdeboda-11).`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -63,13 +62,9 @@ Si alguien pregunta por los horarios, las etapas del evento, la hora de la cerem
     });
 
     const data = await response.json();
-    const aiReply =
-      data?.choices?.[0]?.message?.content ||
-      "No tengo una respuesta en este momento.";
+    const aiReply = data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
     res.status(200).json({ reply: aiReply });
   } catch (error) {
-    res
-      .status(500)
-      .json({ reply: "Error interno del servidor. Intenta más tarde." });
+    res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
