@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 
@@ -11,12 +12,17 @@ export default function BotBodaAsistente() {
   const sendMessage = async () => {
     if (!input.trim()) return;
     setButtonBounce(true);
-    setTimeout(() => setButtonBounce(false), 300); // Rebote breve
+    setTimeout(() => setButtonBounce(false), 300);
 
     const userMessage = { role: "user", content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
+
+    // Scroll hacia el último mensaje del usuario
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
 
     const res = await fetch("/api/chat", {
       method: "POST",
@@ -28,6 +34,13 @@ export default function BotBodaAsistente() {
     setIsTyping(false);
     const botMessage = { role: "assistant", content: data.reply };
     setMessages(prev => [...prev, botMessage]);
+
+    // Scroll directo a la respuesta de la IA
+    setTimeout(() => {
+      if (lastMessageRef.current) {
+        lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -182,3 +195,4 @@ const styles = {
     transform: "scale(1.2)",
   },
 };
+
