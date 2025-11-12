@@ -1,17 +1,15 @@
 // pages/api/chat.js
 
 export default async function handler(req, res) {
-  // ✅ Permitir peticiones desde tu dominio del asistente
-  res.setHeader("Access-Control-Allow-Origin", "https://bodamanelcarla.vercel.app");
+  // Permitir peticiones locales y desde Vercel
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Responder correctamente a preflight OPTIONS (CORS)
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // ✅ Solo permitir método POST
   if (req.method !== "POST") {
     return res.status(405).json({ reply: "Método no permitido" });
   }
@@ -23,7 +21,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 🔗 Llamada a la API de OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -51,7 +48,6 @@ export default async function handler(req, res) {
     const aiReply = data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
 
     res.status(200).json({ reply: aiReply });
-
   } catch (error) {
     console.error("💥 Error interno del backend:", error);
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
