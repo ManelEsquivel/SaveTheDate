@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa, como si fueras parte de la organización.
 
 📅 La boda será el ${weddingInfo.date}, de ${weddingInfo.time}, en ${weddingInfo.location}.
-Más información sobre el lugar: ${weddingInfo.detailUbisUrl}Ubicación</a>.
+Más información sobre el lugar: <a href="${weddingInfo.detailUbisUrl}" target="_blank">Ubicación</a>.
 
 🕒 Horario aproximado del evento:
 ${weddingInfo.schedule}
@@ -43,7 +43,7 @@ ${weddingInfo.schedule}
 
 Si alguien pregunta por los horarios, las etapas del evento, la hora de la ceremonia, el lugar, el banquete, la vestimenta, el transporte o el alojamiento, usa estos datos.
 
-🎁 Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: https://www.bodas.net/web/manel-y-carla/regalosdeboda-11Regalos de boda</a>.`;
+🎁 Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: <a href="https://www.bodas.net/web/manel-y-carla/regalosdeboda-11" target="_blank">Regalos de boda</a>.`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -73,4 +73,3 @@ Si alguien pregunta por los horarios, las etapas del evento, la hora de la cerem
       .json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
-
