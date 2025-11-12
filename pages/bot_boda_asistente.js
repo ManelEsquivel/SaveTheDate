@@ -15,11 +15,12 @@ export default function BotBodaAsistente() {
     }
   }, [messages, isTyping]);
 
-  const makeLinksClickable = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, (url) => {
-      return `${url}${url}</a>`;
-    });
+  // ✅ Convierte Markdown y URLs en enlaces HTML
+  const formatMessage = (text) => {
+    // Markdown Texto
+    let formatted = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g, '<a href="$2" target="_blank" rel="noopenerurlRegex = /(https?:\/\/[^\s]+)/g;
+    formatted = formatted.replace(urlRegex, (url) => `${url}${url}</a>`);
+    return formatted;
   };
 
   const sendMessage = async () => {
@@ -46,7 +47,7 @@ export default function BotBodaAsistente() {
     setMessages((prev) => [...prev, botMessage]);
 
     for (let i = 0; i < fullReply.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 25)); // velocidad escritura
+      await new Promise((resolve) => setTimeout(resolve, 25));
       currentText += fullReply[i];
       setMessages((prev) => {
         const updated = [...prev];
@@ -69,9 +70,22 @@ export default function BotBodaAsistente() {
       <Head>
         <title>Asistente de Boda</title>
       </Head>
-      <div>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
         <h1>Asistente de Boda 💍</h1>
-        <div ref={chatBoxRef}>
+        <div
+          ref={chatBoxRef}
+          style={{
+            maxWidth: "400px",
+            height: "300px",
+            overflowY: "auto",
+            border: "1px solid #ccc",
+            borderRadius: "10px",
+            padding: "10px",
+            backgroundColor: "#fff",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+            margin: "20px auto",
+          }}
+        >
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -85,49 +99,65 @@ export default function BotBodaAsistente() {
                   display: "inline-block",
                   padding: "8px 12px",
                   borderRadius: "8px",
-                  backgroundColor: msg.role === "user" ? "#d1e7dd" : "#f8d7da",
+                  border: "1px solid #ccc",
+                  backgroundColor: msg.role === "user" ? "#d1e7dd" : "#cce5ff", // ✅ azul claro para IA
+                  maxWidth: "80%",
+                  wordWrap: "break-word",
                 }}
-                dangerouslySetInnerHTML={{ __html: makeLinksClickable(msg.content) }}
+                dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }}
               />
             </div>
           ))}
           {isTyping && <p>Escribiendo...</p>}
         </div>
 
-        <textarea
-          ref={textAreaRef}
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          placeholder="Escribe tu mensaje..."
-          style={{
-            flex: 1,
-            resize: "none",
-            height: textAreaHeight,
-            maxHeight: "100px",
-            padding: "10px 12px",
-            borderRadius: "10px",
-            border: "none",
-            outline: "none",
-            fontSize: "14px",
-            lineHeight: "1.4",
-            transition: "all 0.2s ease",
-            background: "#fff",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1) inset",
-          }}
-        />
-        <button
-          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-          onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          onClick={sendMessage}
-        >
-          Enviar
-        </button>
+        <div style={{ maxWidth: "400px", margin: "10px auto", display: "flex" }}>
+          <textarea
+            ref={textAreaRef}
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            placeholder="Escribe tu mensaje..."
+            style={{
+              flex: 1,
+              resize: "none",
+              height: textAreaHeight,
+              maxHeight: "100px",
+              padding: "10px 12px",
+              borderRadius: "10px",
+              border: "1px solid #ccc",
+              outline: "none",
+              fontSize: "14px",
+              lineHeight: "1.4",
+              transition: "all 0.2s ease",
+              background: "#fff",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1) inset",
+            }}
+          />
+          <button
+            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            onClick={sendMessage}
+            style={{
+              marginLeft: "10px",
+              padding: "10px 16px",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              fontSize: "14px",
+              cursor: "pointer",
+              transition: "transform 0.2s ease",
+            }}
+          >
+            Enviar
+          </button>
+        </div>
       </div>
     </>
   );
