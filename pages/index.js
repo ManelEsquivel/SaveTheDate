@@ -23,13 +23,26 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Un Mensaje para ti</title>
+        <title>Un Mensaje para Ti</title>
+        <meta name="description" content="Un mensaje especial para ti — Manel & Carla" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta charSet="UTF-8" />
       </Head>
 
-      <style jsx>{`
-        body {
+      <main>
+        <div className="overlay">
+          <div className="message-box">
+            <h1>Tenemos algo muy importante que contarte</h1>
+            <p>
+              Hemos pensado en ti para que guardes una fecha muy especial, porque te
+              consideramos una parte importante de nuestra historia.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <style jsx global>{`
+        html, body {
           margin: 0;
           padding: 0;
           font-family: "Georgia", serif;
@@ -37,6 +50,7 @@ export default function Home() {
             no-repeat center center fixed;
           background-size: cover;
           color: #3e2f1c;
+          height: 100%;
           overflow: hidden;
         }
 
@@ -121,16 +135,6 @@ export default function Home() {
           }
         }
       `}</style>
-
-      <div className="overlay">
-        <div className="message-box">
-          <h1>Tenemos algo muy importante que contarte</h1>
-          <p>
-            Hemos pensado en ti para que guardes una fecha muy especial, porque te
-            consideramos una parte importante de nuestra historia.
-          </p>
-        </div>
-      </div>
     </>
   );
 }
