@@ -6,7 +6,7 @@ export default function BotBodaAsistente() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const chatBoxRef = useRef(null);
+  const chatBoxRef = useRef(null); 
 
   const sendMessage = async () => {
     if (!input.trim()) return;
