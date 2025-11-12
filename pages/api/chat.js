@@ -41,8 +41,10 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errText = await response.text();
       console.error("❌ Error HTTP de OpenAI:", errText);
-      return res.status(response.status).json({ reply: "Error al contactar con la IA." });
+      return res.status(response.status).json({ reply: `Error OpenAI: ${errText}` });
     }
+
+   
 
     const data = await response.json();
     const aiReply = data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
