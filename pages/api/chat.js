@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (!message) {
     return res.status(400).json({ reply: "No se recibió ningún mensaje." });
   }
-
+ 
   const weddingInfo = {
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
