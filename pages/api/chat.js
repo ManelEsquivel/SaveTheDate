@@ -1,5 +1,4 @@
 // pages/api/chat.js
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ reply: "Método no permitido" });
@@ -32,7 +31,7 @@ Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
 Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa.
 
 📅 La boda será el ${weddingInfo.date}, de ${weddingInfo.time}, en ${weddingInfo.location}.
-Más información sobre el lugar: [Ubicación](${weddingInfo.detailUbisUrl}).
+Más información sobre el lugar: Ubicación.
 
 🕒 Horario aproximado del evento:
 ${weddingInfo.schedule}
@@ -42,9 +41,9 @@ ${weddingInfo.schedule}
 🚗 Transporte: ${weddingInfo.transport}.
 🏨 Alojamiento: ${weddingInfo.accommodation}.
 
-Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: [Regalos de boda](https://www.bodas.net/web/manel-y-carla/regalosdeboda-11).
+Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: Regalos de boda.
 
-IMPORTANTE: Usa SIEMPRE el formato Markdown para enlaces: [Texto](URL).
+IMPORTANTE: Usa SIEMPRE el formato Markdown para enlaces: Texto.
 `;
 
   try {
@@ -52,7 +51,7 @@ IMPORTANTE: Usa SIEMPRE el formato Markdown para enlaces: [Texto](URL).
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -65,10 +64,10 @@ IMPORTANTE: Usa SIEMPRE el formato Markdown para enlaces: [Texto](URL).
     });
 
     const data = await response.json();
-    const aiReply = data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
+    const aiReply =
+      data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
     res.status(200).json({ reply: aiReply });
   } catch (error) {
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
-
