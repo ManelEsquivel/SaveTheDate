@@ -1,5 +1,5 @@
 // pages/api/chat.js
-// Ya no necesitamos marked
+// Ya no necesitamos 'marked' ya que la conversión a HTML se hace en el frontend
 // import { marked } from "marked"; 
 
 export default async function handler(req, res) {
@@ -73,19 +73,19 @@ IMPORTANTE:
     let aiReplyRaw =
       data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
 
-    // 🟢 PASO DE LIMPIEZA CLAVE: Eliminar atributos HTML problemáticos
-    // 1. Eliminamos el patrón de atributos target/rel que está causando el error.
-    let aiReplyCleaned = aiReplyRaw.replace(/target="_blank"\s*rel="noopener noreferrer"/gi, "");
+    // 🟢 AJUSTE DE LIMPIEZA FINAL:
     
-    // 2. Eliminamos cualquier comilla o ">" extra que haya quedado justo después de la URL, 
-    // lo que genera el código corrupto.
-    // Esto limpia patrones como '...url-8">' o '...url-8' target...'
-    aiReplyCleaned = aiReplyCleaned.replace(/"\s*>/g, ""); 
+    // 1. Limpieza Agresiva de Atributos/Comillas: Elimina el patrón de atributos target/rel.
+    let aiReplyCleaned = aiReplyRaw.replace(/["']\s*target="_blank"\s*rel="noopener noreferrer">\s*/gi, " ");
     
-    // 3. Eliminamos cualquier etiqueta <a> de apertura o cierre que el modelo pueda haber generado.
+    // 2. Eliminar etiquetas <a> parciales o completas: Evita cualquier <a href="..."> o </a>.
     aiReplyCleaned = aiReplyCleaned.replace(/<\/?a\b[^>]*>/gi, "");
+    
+    // 3. Eliminar cualquier comilla o ángulo suelto que quede después de una URL (el patrón de error).
+    // Busca URLs seguidas de comillas y ángulos angulares (por ejemplo, ...ubicacion-8">).
+    aiReplyCleaned = aiReplyCleaned.replace(/\w+:\/\/[^\s\)]+["']\s*>/g, (match) => match.replace(/["']\s*>/, ""));
 
-
+    
     // Devolvemos el texto limpio en formato Markdown puro
     res.status(200).json({ reply: aiReplyCleaned }); 
   } catch (error) {
@@ -93,4 +93,3 @@ IMPORTANTE:
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
-
