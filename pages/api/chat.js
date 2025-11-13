@@ -118,6 +118,12 @@ Mujer,Didac,PENDIENTE
     .split(/\s+/)
     .filter(Boolean);
 
+  // Stop words para filtrar frases conversacionales (soy, me llamo, etc.)
+  const stopWords = new Set(['soy', 'me', 'llamo', 'mi', 'nombre', 'es', 'yo', 'la', 'el', 'los', 'las', 'un', 'una', 'de', 'del', 'al', 'o', 'y', 'si', 'no', 'que', 'en', 'para', 'invitado', 'lista', 'asistencia', 'confirmacion', 'a', 'e', 'mis']);
+  
+  // Palabras relevantes para la búsqueda (excluyendo stop words)
+  const nameLikeWords = messageWords.filter(word => !stopWords.has(word));
+
   const guestEntries = guestList
     .trim()
     .split("\n")
@@ -140,26 +146,29 @@ Mujer,Didac,PENDIENTE
     });
 
   // 1. Encuentra coincidencias exactas (Nombre Completo)
+  // Siempre se hace con el mensaje COMPLETO, incluyendo espacios, sin stop words
   const exactFullNameMatches = guestEntries.filter(g => 
-      g.fullName_norm === normalizedMessage
+      g.fullName_norm === nameLikeWords.join(' ')
   );
 
   // 2. Encuentra coincidencias por palabra (para ambigüedad, solo si no hay coincidencia exacta)
   let wordMatches = [];
   if (exactFullNameMatches.length === 0) {
       wordMatches = guestEntries.filter(g => 
-          // FIX CLAVE: Solo se considera un match parcial si el mensaje completo (normalizado)
-          // es un substring del nombre completo del invitado (normalizado).
-          // "Alex" está en "alex espada" (match). "Alex manzana" NO está en "alex espada" (no-match).
-          g.fullName_norm.includes(normalizedMessage)
+          // FIX CLAVE: Debe haber al menos 1 palabra relevante. Y TODAS las palabras relevantes 
+          // del input deben estar en el fullName_norm del invitado.
+          // Ej: "Alex" (nameLikeWords) está en "Alex Espada" (match).
+          // Ej: "Alex Manzana" (nameLikeWords) NO está en "Alex Espada" (no-match, porque falta "manzana").
+          nameLikeWords.length > 0 && nameLikeWords.every(word => g.fullName_norm.includes(word))
       );
   }
 
   let forcedGuest = null;
+  // Solo si hay palabras relevantes o es una pregunta genérica de lista/invitado (para Regla 1)
   const isLikelyNameQuery = messageWords.length > 0 && (
       exactFullNameMatches.length > 0 ||
       wordMatches.length > 0 || 
-      messageWords.length <= 3 || 
+      nameLikeWords.length <= 2 || // Si solo quedan 1 o 2 palabras relevantes (como 'Alex' o 'Alex Espada')
       /\b(soy|me llamo|mi nombre es|yo soy|invitado|lista)\b/i.test(normalizedMessage)
   );
 
@@ -169,7 +178,7 @@ Mujer,Didac,PENDIENTE
       
       // PRIORITY A: Coincidencia Única (Exacta o Parcial y Única) -> PASA A LA IA Y FUERZA REGLA
       if (exactFullNameMatches.length >= 1) {
-          // Si el usuario puso el nombre completo, tomamos el primero.
+          // El nombre completo SIEMPRE debe ser un match único, tomamos el primero.
           forcedGuest = exactFullNameMatches[0];
       } else if (wordMatches.length === 1) {
           // Coincidencia parcial, pero única (ej. "Marta" -> Marta Oliver)
@@ -188,11 +197,14 @@ Mujer,Didac,PENDIENTE
       } 
       
       // PRIORITY C: No hay coincidencias
-      else { // exactFullNameMatches.length === 0 AND wordMatches.length === 0
+      else if (nameLikeWords.length > 0) { 
+          // Solo si hay palabras relevantes, pero no encontramos match (Alex Manzana)
           const replyText =
             "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla.";
           return res.status(200).json({ reply: marked.parse(replyText) });
       }
+      
+      // Si no hay palabras relevantes (solo stop words) o no es una query de nombre, dejar que la IA siga el flujo.
   }
   
   // --- FIN DE PROCESAMIENTO DE NOMBRES EN JAVASCRIPT ---
@@ -223,7 +235,7 @@ Mujer,Didac,PENDIENTE
   // --- FIN DE INYECCIÓN ---
 
 
-  // --- DATA CLAVE PARA APERITIVO (Se mantiene el resto del prompt sin cambios) ---
+  // --- DATA CLAVE PARA APERITIVO ---
   const aperitivoPrincipalesFormatoLista = `
 * Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
 * Crostini de escalivada asada con ventresca de atún
@@ -249,6 +261,7 @@ Además, tendremos Showcooking y Corte:
 * Zamburiñas, almejas y navajas
 `;
   
+  // RESPUESTA COMPLETA Y PRE-FORMATEADA para la pregunta general del aperitivo
   const aperitivoResponseCompleta = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
 ${aperitivoPrincipalesFormatoLista}
 
@@ -257,6 +270,7 @@ ${aperitivoAdicionales}
 ¡Una variedad exquisita para disfrutar!
 `;
 
+  // RESPUESTA PARA VEGETARIANOS/INTOLERANCIAS
   const aperitivoVegetarianoResponse = `
   ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
   
@@ -268,7 +282,9 @@ ${aperitivoAdicionales}
   
   Si tienes alguna intolerancia alimentaria o alergia específica (gluten, lactosa, etc.), por favor, ponte en contacto con Manel o Carla directamente antes del día de la boda para que puedan asegurar un menú adaptado y seguro para ti. ¡Gracias!
   `;
-  
+  // --- FIN DATA APERITIVO ---
+
+  // --- INFO GENERAL BODA (Replicated from user's file to ensure consistency) ---
   const weddingInfoFromUserFile = {
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
