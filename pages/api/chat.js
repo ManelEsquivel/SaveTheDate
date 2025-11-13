@@ -148,10 +148,10 @@ Mujer,Didac,PENDIENTE
   let wordMatches = [];
   if (exactFullNameMatches.length === 0) {
       wordMatches = guestEntries.filter(g => 
-          messageWords.some(word => 
-              g.nombre_norm.split(' ').includes(word) || 
-              g.apellido_norm.includes(word)
-          )
+          // FIX CLAVE: Solo se considera un match parcial si el mensaje completo (normalizado)
+          // es un substring del nombre completo del invitado (normalizado).
+          // "Alex" está en "alex espada" (match). "Alex manzana" NO está en "alex espada" (no-match).
+          g.fullName_norm.includes(normalizedMessage)
       );
   }
 
@@ -169,7 +169,7 @@ Mujer,Didac,PENDIENTE
       
       // PRIORITY A: Coincidencia Única (Exacta o Parcial y Única) -> PASA A LA IA Y FUERZA REGLA
       if (exactFullNameMatches.length >= 1) {
-          // El nombre completo SIEMPRE debe ser un match único, tomamos el primero.
+          // Si el usuario puso el nombre completo, tomamos el primero.
           forcedGuest = exactFullNameMatches[0];
       } else if (wordMatches.length === 1) {
           // Coincidencia parcial, pero única (ej. "Marta" -> Marta Oliver)
@@ -223,7 +223,7 @@ Mujer,Didac,PENDIENTE
   // --- FIN DE INYECCIÓN ---
 
 
-  // --- DATA CLAVE PARA APERITIVO ---
+  // --- DATA CLAVE PARA APERITIVO (Se mantiene el resto del prompt sin cambios) ---
   const aperitivoPrincipalesFormatoLista = `
 * Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
 * Crostini de escalivada asada con ventresca de atún
@@ -249,7 +249,6 @@ Además, tendremos Showcooking y Corte:
 * Zamburiñas, almejas y navajas
 `;
   
-  // RESPUESTA COMPLETA Y PRE-FORMATEADA para la pregunta general del aperitivo
   const aperitivoResponseCompleta = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
 ${aperitivoPrincipalesFormatoLista}
 
@@ -258,7 +257,6 @@ ${aperitivoAdicionales}
 ¡Una variedad exquisita para disfrutar!
 `;
 
-  // RESPUESTA PARA VEGETARIANOS/INTOLERANCIAS
   const aperitivoVegetarianoResponse = `
   ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
   
@@ -270,9 +268,7 @@ ${aperitivoAdicionales}
   
   Si tienes alguna intolerancia alimentaria o alergia específica (gluten, lactosa, etc.), por favor, ponte en contacto con Manel o Carla directamente antes del día de la boda para que puedan asegurar un menú adaptado y seguro para ti. ¡Gracias!
   `;
-  // --- FIN DATA APERITIVO ---
-
-  // --- INFO GENERAL BODA (Replicated from user's file to ensure consistency) ---
+  
   const weddingInfoFromUserFile = {
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
@@ -314,7 +310,6 @@ ${aiForcedInstruction}
 ${guestList}
 
 - **INSTRUCCIONES CLAVE (FINAL - Lógica secuencial con 11 Reglas Especiales de Prioridad):**
-// Las Reglas 2.K (Ambigüedad) y 4 (No Encontrado) se resuelven casi siempre en JavaScript.
 // El bloque de INSTRUCCIÓN DE PRIORIDAD ABSOLUTA de arriba SIEMPRE tiene preferencia sobre estas reglas.
 
 1.  **Si NO se menciona ningún nombre (Inicio):** Si el usuario pregunta "¿Estoy invitado?" o similar, **DEBES** responder ÚNICAMENTE: "¡Qué buena pregunta! Para poder confirmarlo, ¿podrías indicarme tu nombre completo (Nombre y Apellido) por favor?".
