@@ -11,6 +11,27 @@ export default async function handler(req, res) {
     return res.status(400).json({ reply: "No se recibió ningún mensaje." });
   }
 
+  // --- DATA CLAVE PARA APERITIVO ---
+  const aperitivoPrincipales = `Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente; Crostini de escalivada asada con ventresca de atún; Mini tacos de vegetales a la parrilla; Trufa de foie con crocante de almendra tostada; Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca; Rol de requesón y nueces envuelto en calabacín asado; Mini ensalada de algas con perlas de yuzu y semillas de amapola; Chupito de mazamorra cordobesa con tropicales y mousse de ventresca; Croquetas de pulpo gallego; Simulacro de calamar con patata paja; Patatas bravas con alioli y su toque de valentina; Trilogía de hamburguesas de pollo, ternera y quinoa; Tiras de calamar crujiente en tempura; Bocado de jamón de guijuelo en croqueta cremosa, y Vasito de romesco.`;
+  const aperitivoAdicionales = "Además, habrá jamón al corte, Showcooking de carnes a la brasa, zamburiñas, almejas y navajas.";
+  
+  // RESPUESTA COMPLETA Y PRE-FORMATEADA para la pregunta general del aperitivo
+  const aperitivoResponseCompleta = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos que incluye: ${aperitivoPrincipales} ${aperitivoAdicionales} ¡Una variedad exquisita para disfrutar durante el aperitivo! 🍽️🥂`;
+
+  // RESPUESTA PARA VEGETARIANOS/INTOLERANCIAS
+  const aperitivoVegetarianoResponse = `
+  ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
+  
+  * **Mini tacos de vegetales a la parrilla**
+  * **Rol de requesón y nueces envuelto en calabacín asado**
+  * **Mini ensalada de algas con perlas de yuzu y semillas de amapola**
+  * **Patatas bravas con alioli y su toque de valentina**
+  * **Vasito de romesco**
+  
+  Si tienes alguna intolerancia alimentaria o alergia específica (gluten, lactosa, etc.), por favor, ponte en contacto con Manel o Carla directamente antes del día de la boda para que puedan asegurar un menú adaptado y seguro para ti. ¡Gracias!
+  `;
+  // --- FIN DATA APERITIVO ---
+
   const weddingInfo = {
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
@@ -26,25 +47,13 @@ export default async function handler(req, res) {
       - Banquete: de 15:30 a 19:00
       - Fiesta y barra libre: de 19:00 a 21:00
     `,
-    aperitivoPrincipales: `
-* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
-* Crostini de escalivada asada con ventresca de atún
-* Mini tacos de vegetales a la parrilla
-* Trufa de foie con crocante de almendra tostada
-* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
-* Rol de requesón y nueces envuelto en calabacín asado
-* Mini ensalada de algas con perlas de yuzu y semillas de amapola
-* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
-* Croquetas de pulpo gallego
-* Simulacro de calamar con patata paja
-* Patatas bravas con alioli y su toque de valentina
-* Trilogía de hamburguesas de pollo, ternera y quinoa
-* Tiras de calamar crujiente en tempura
-* Bocado de jamón de guijuelo en croqueta cremosa
-* Vasito de romesco
-    `,
-    aperitivoAdicionales: "Además, habrá jamón al corte, Showcooking de carnes a la brasa, zamburiñas, almejas y navajas.",
     fiestaActividades: "Para la fiesta (después del banquete) tendremos un **Videomatón 360º** y un **Fotomatón** para que todos se lleven un gran recuerdo.",
+    
+    // 🟢 NUEVAS VARIABLES
+    padresManel: "Manuel y Maria Dolors",
+    padresCarla: "Jordi y Eva",
+    regaloCuentaUrl: "https://www.bodas.net/web/manel-y-carla/regalosdeboda-11", // URL específica para el número de cuenta
+    regaloGeneralUrl: "https://www.bodas.net/web/manel-y-carla/regalos-8", // URL general
   };
 
   const systemPrompt = `
@@ -53,19 +62,25 @@ Responde en español si te escriben en español y si te escriben en catalán, re
 
 ---
 
+## 👨‍👩‍👧‍👦 Familias
+- Si preguntan por los padres de Manel, son **${weddingInfo.padresManel}**.
+- Si preguntan por los padres de Carla, son **${weddingInfo.padresCarla}**.
+
+## 🍽️ Aperitivo y Opciones Especiales
+- El banquete será **${weddingInfo.banquet}**.
+
+- **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO):** Si preguntan por el **Aperitivo** (la lista de platos, el menú del aperitivo, etc.), DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
+${aperitivoResponseCompleta}
+
+- **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
+${aperitivoVegetarianoResponse}
+
 ## 📅 Detalles Generales
 - La boda será el **${weddingInfo.date}**, de **${weddingInfo.time}**, en **${weddingInfo.location}**.
 - Más información sobre el lugar: [Ubicación](${weddingInfo.detailUbisUrl}).
 
 ## 🕒 Horario
 ${weddingInfo.schedule}
-
-## 🍽️ Aperitivo y Banquete
-- El banquete será **${weddingInfo.banquet}**.
-- Si preguntan por el **Aperitivo**, DEBEN enumerar TODOS y cada uno de los siguientes principales, seguidos por los añadidos. NO deben resumir ni omitir platos.
-- **Platos principales del Aperitivo:**
-${weddingInfo.aperitivoPrincipales}
-- **Añadidos (Showcooking y Corte):** **${weddingInfo.aperitivoAdicionales}**
 
 ## 🥳 Fiesta
 - Si preguntan por la fiesta o actividades después del banquete:
@@ -79,7 +94,12 @@ ${weddingInfo.aperitivoPrincipales}
 ---
 
 ## 🎁 Regalos
-Si alguien pregunta por regalos, responde que no es necesario, pero si desean más información pueden visitar: [Regalos de boda](https://www.bodas.net/web/manel-y-carla/regalos-8).
+- Si alguien pregunta por el **número de cuenta** o la **transferencia** para el regalo:
+Responde de manera amable que pueden ver toda la información en este enlace: [Número de Cuenta](https://www.bodas.net/web/manel-y-carla/regalosdeboda-11).
+
+- Si alguien pregunta por **regalos** en general, o por la lista de boda:
+Responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: [Regalos de boda](https://www.bodas.net/web/manel-y-carla/regalos-8).
+
 
 ---
 
@@ -110,7 +130,7 @@ Si alguien pregunta por regalos, responde que no es necesario, pero si desean m�
     let aiReplyRaw =
       data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
       
-    // 🟢 CONFIGURACIÓN CLAVE: Asegurar que los enlaces se abran en nueva pestaña (si usas 'marked')
+    // CONFIGURACIÓN CLAVE: Asegurar que los enlaces se abran en nueva pestaña
     marked.use({
       renderer: {
         link(href, title, text) {
@@ -123,7 +143,7 @@ Si alguien pregunta por regalos, responde que no es necesario, pero si desean m�
     // Convertir Markdown a HTML limpio y saneado para el frontend
     const aiReplyHTML = marked.parse(aiReplyRaw);
 
-    // 3. Devolvemos el HTML completo.
+    // Devolvemos el HTML completo.
     res.status(200).json({ reply: aiReplyHTML });
   } catch (error) {
     console.error(error); 
