@@ -11,68 +11,78 @@ export default async function handler(req, res) {
     return res.status(400).json({ reply: "No se recibió ningún mensaje." });
   }
 
-  // --- LISTA DE INVITADOS (NOMBRE, APELLIDO) ---
+  // --- LISTA DE INVITADOS (NOMBRE, APELLIDO, CONFIRMADO) ---
   const guestList = `
-NOMBRE,APELLIDO
-Manel,Esquivel
-Carla,Bartual
-Beatriz,Esquivel
-Manuel,Esquivel
-Eva,Lopez
-Marc,Genes
-Maria Dolors,Dolors
-Jordi,Bartual
-Anna,Bernal
-Alex,Espada
-Victor,Lopez
-Carlos,Barceló
-Sonia,Cadevall
-Antonio,Escartín
-Sandra,Gano
-Ivan,Alamo
-Alba,Martinez
-Alex,Ferré
-Alexia,Galobardes
-Marta,Oliver
-Helena,Briones
-Joan,
-Josua,Bayona
-Amandine,Liam
-Sara,Ytarte
-Eva,Areny
-Jesus,
-Carla,Sardà
-Cristian,Fernández
-Clara,Torres
-Pablo,
-Anna,Gonzalez
-Carlos,Oros
-Mujer Oros,
-Carlos,Rodriguez
-Dunia,Mascaro
-Gonzalo,
-Marta,Bartual
-Iker,Zarate
-Alfonso,Zarate
-Jaime,Lopez
-Rosario,
-Natalia,Balcells
-Pau,
-Susana,Lopez
-Ramon,
-Natalia,Belinguer
-Natalia,Pellicer
-Silvia,
-Gemma,Urpina
-Alexis,Postigo
-Mª Angeles,
-Carles,Castañe
-Teodoro,Lopez
-Meritxell,
-Montse,
-Marido Montse,Asociación
-Didac,
-Mujer Didac,
+NOMBRE,APELLIDOS,CONFIRMADO
+Manel ,Esquivel,CONFIRMADO
+Carla,Bartual,CONFIRMADO
+Beatriz Esquivel,Esquivel,PENDIENTE
+Manuel Esquivel,Esquivel,PENDIENTE
+Eva Lopez,Lopez,PENDIENTE
+Marc Genes,Genes,PENDIENTE
+Maria Dolors,Dolors,PENDIENTE
+Jordi Bartual,,PENDIENTE
+Anna Bernal ,Bernal ,PENDIENTE
+Alex Espada,Espada,PENDIENTE
+Victor Lopez,Lopez,PENDIENTE
+Carlos Barceló,Barceló,PENDIENTE
+Sonia Cadevall,Cadevall,PENDIENTE
+Antonio Escartín,Escartin,PENDIENTE
+Sandra Gano,Gano,PENDIENTE
+Ivan Alamo,Alamo,PENDIENTE
+Alba Martinez,,PENDIENTE
+Alex Ferré,Ferré,PENDIENTE
+Alexia Galobardes,Galobardes,PENDIENTE
+Marta Oliver,Oliver,PENDIENTE
+Helena Briones,Briones,PENDIENTE
+Joan,,PENDIENTE
+Josua Bayona,Bayona,PENDIENTE
+Amandine Liam,Liam,PENDIENTE
+Sara ytarte,ytarte,PENDIENTE
+Eva Areny,Areny,PENDIENTE
+Jesus,,PENDIENTE
+Carla Sardà,Sardà,PENDIENTE
+Cristian Fernández,Fernández,PENDIENTE
+Clara Torres,Torres,PENDIENTE
+Pablo,,PENDIENTE
+Anna Gonzalez,Gonzalez,PENDIENTE
+Carlos Oros,,PENDIENTE
+Mujer Oros,,PENDIENTE
+Carlos Rodriguez,Rodriguez,PENDIENTE
+Dunia Mascaro,Mascaro,PENDIENTE
+Gonzalo,,PENDIENTE
+Marta Bartual,Bartual,PENDIENTE
+Iker Zarate,Zarate,PENDIENTE
+Alfonso Zarate,Zarate,PENDIENTE
+Jaime Lopez,Lopez,PENDIENTE
+Rosario,,PENDIENTE
+Natalia Balcells,Balcells,PENDIENTE
+Pau,,PENDIENTE
+Susana,Lopez,PENDIENTE
+Ramon,,PENDIENTE
+Natalia Belinguer,Belinguer,PENDIENTE
+Natalia Pellicer,Pellicer,PENDIENTE
+Silvia,,PENDIENTE
+Gemma Urpina,Urpina,PENDIENTE
+Alexis Postigo,Postigo,PENDIENTE
+Mª Angeles,,PENDIENTE
+Carles Castañe,Castañe,PENDIENTE
+Teodoro Lopez,Lopez,PENDIENTE
+Meritxell,,PENDIENTE
+Montse,,PENDIENTE
+Marido Montse,,PENDIENTE
+Elena Escura,Escura,PENDIENTE
+Jaime Monzon,Monzon,PENDIENTE
+Carmen Izquierdo,Izquierdo,PENDIENTE
+Laura Cester,Cester,PENDIENTE
+Monica Falguera,Falguera,PENDIENTE
+Noa,,PENDIENTE
+Mujer Carlos Rodrigu,,PENDIENTE
+Narcis Vidal ,Vidal ,PENDIENTE
+Montse Asociación,,PENDIENTE
+Marido Montse,Asociación,PENDIENTE
+Didac,,PENDIENTE
+Mujer,Didac,PENDIENTE
 `;
 
   // --- DATA CLAVE PARA APERITIVO ---
@@ -154,20 +164,22 @@ Responde en español si te escriben en español y si te escriben en catalán, re
 ---
 
 ## 🤵👰 VERIFICACIÓN DE INVITADOS
-- **LISTA DE INVITADOS (NOMBRE, APELLIDO):**
+- **LISTA DE INVITADOS (NOMBRE, APELLIDOS, CONFIRMADO):**
 ${guestList}
 
-- **INSTRUCCIONES CLAVE (REVISADAS para evitar la ambigüedad inicial):**
+- **INSTRUCCIONES CLAVE (REVISADAS para incluir el estado de CONFIRMACIÓN):**
 
 1.  **RESPUESTA OBLIGATORIA al preguntar por la invitación:** Si el usuario pregunta "¿Estoy invitado?", "¿Están invitados [Yo/Nosotros]?" o similar **sin dar su nombre**, DEBES responder únicamente: "¡Qué buena pregunta! Para poder confirmarlo, ¿podrías indicarme tu nombre completo (Nombre y Apellido) por favor?".
 
-2.  **Verificación:** Una vez que el usuario te da un nombre:
-    * Si el nombre **coincide exactamente con UNA única persona** en la lista (NOMBRE y/o APELLIDO), responde: "Sí, estás en la lista de invitados. ¡Te esperamos con mucha ilusión!".
+2.  **Verificación y Estado de Confirmación:** Una vez que el usuario te da un nombre:
     * Si el nombre **coincide con MÁS de una persona** (ej: "Alex" aparece con Espada y Ferré), debes preguntar: "¿Me podrías indicar tu apellido, por favor? Tenemos varias personas con ese nombre en la lista."
-    * Si el usuario proporciona el Nombre y Apellido y **está en la lista**, responde: "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! ¡Te esperamos con mucha ilusión!".
-    * **Si el usuario NO está en la lista** (no coincide ningún par Nombre/Apellido después de una o dos interacciones), debes responder: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+    * Si el nombre y/o apellido **coincide exactamente con UNA única persona**, verifica el estado de CONFIRMACIÓN y responde:
+        * **Si el estado es CONFIRMADO:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión!".
+        * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, asegúrate de contactar con Manel o Carla para confirmar tu asistencia. ¡Te esperamos con mucha ilusión!".
     
-    *Nota: Si el usuario dice solo un nombre ambiguo que no está en la lista, debes aplicar la respuesta de 'NO está en la lista' (punto 5), sin pedir el apellido de nuevo.*
+3.  **No Encontrado:** Si el usuario te da un nombre (o nombre y apellido) y **NO hay ninguna coincidencia con la lista de invitados** (después de una o dos interacciones), debes responder: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+    
+    *Nota: Si el usuario dice solo un nombre ambiguo que no está en la lista, debes aplicar la respuesta de 'NO está en la lista' (punto 3), sin pedir el apellido de nuevo.*
 
 ## 👨‍👩‍👧‍👦 Familias
 - Si preguntan por los padres de Manel, son **${weddingInfo.padresManel}**.
