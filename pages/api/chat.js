@@ -134,11 +134,13 @@ Mujer,Didac,PENDIENTE
   
   const matches = findMatches(messageWords);
   
-  // Heurística de detección: Un intento de verificación si hay coincidencia, o si es una respuesta corta
-  // (para atrapar el apellido sin palabras clave), o si incluye las palabras clave.
+  // Heurística de detección: Marcar como intento de nombre si:
+  // 1. Hay alguna coincidencia (matches.length > 0)
+  // 2. Es una respuesta corta (1 o 2 palabras) - ¡ESTO ARREGLA EL PROBLEMA DEL APELLIDO SOLO!
+  // 3. Incluye palabras clave de inicio.
   const isLikelyNameQuery = messageWords.length > 0 && (
       matches.length > 0 ||
-      messageWords.length <= 2 || // <-- CLAVE: Esto atrapa respuestas cortas como "García"
+      messageWords.length <= 2 || 
       /\b(soy|me llamo|mi nombre es|yo soy|invitado|lista)\b/i.test(normalizedMessage)
   );
   
@@ -154,20 +156,17 @@ Mujer,Didac,PENDIENTE
       return res.status(200).json({ reply: marked.parse(replyText) });
     }
 
-    // Escenario C: No hay coincidencias (FIN DEL BUCLE asegurado)
-    if (matches.length === 0) { // Si ya fue marcado como LikelyNameQuery y no hay matches
+    // Escenario C: No hay coincidencias (FIN DEL BUUCLE asegurado)
+    // Esto se activa si el usuario dice "García" (corto) o "Pedro Pérez" (no coincidente).
+    if (matches.length === 0) { 
       const replyText =
         "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla.";
       // Retorno JSON directo, saltando OpenAI
       return res.status(200).json({ reply: marked.parse(replyText) });
     }
     
-    // Escenario D: Solicitud inicial para verificación - redirigir a la IA para obtener la Regla 1
-    if (matches.length === 0 && (normalizedMessage.includes("invitado") || normalizedMessage.includes("lista") || normalizedMessage.includes("soy"))) {
-        // Permitir que pase a la IA para obtener la Regla 1 (pedir nombre)
-    }
-    
-    // Escenario A: Coincidencia Única -> Proceed to OpenAI to apply special rules/confirmation text
+    // Si llegamos aquí con matches.length === 1, se deja que la IA lo resuelva (Escenario A)
+
   }
   
   // --- FIN DE PROCESAMIENTO DE NOMBRES EN JAVASCRIPT ---
@@ -270,8 +269,6 @@ ${guestList}
         * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${weddingInfo.urlConfirmacion}). ¡Te esperamos con mucha ilusión!".
     
 
-// ... (Resto de las Reglas sin cambios) ...
-
 ## 📊 STATUS
 - **INSTRUCCIÓN CLAVE (CONFIRMADOS/PRIVACIDAD):** Si preguntan cuánta gente o cuántos invitados han confirmado, DEBES responder ÚNICAMENTE: "Hasta el momento, un total de **${confirmedGuestsCount} invitados** han confirmado su asistencia."
   Si el usuario pregunta por los **nombres** o **detalles específicos** de los confirmados, DEBES añadir al final de tu respuesta (después del número): "Para más detalles sobre los invitados, lo mejor es que contactes directamente con Manel o Carla."
@@ -325,7 +322,7 @@ Además, tendremos Showcooking y Corte:
 
 ## 📅 Detalles Generales
 - La boda será el **31 de octubre de 2026**, de **12:00 a 21:00 aproximadamente**, en **Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona**.
-- Más información sobre el lugar: [Ubicación](${weddingInfo.detailUbisUrl}).
+- Más información sobre el lugar: [Ubicación](https://www.bodas.net/web/manel-y-carla/ubicacion-8).
 
 ## 🕒 Horario
 - Ceremonia: de 12:30 a 13:30
