@@ -11,6 +11,70 @@ export default async function handler(req, res) {
     return res.status(400).json({ reply: "No se recibió ningún mensaje." });
   }
 
+  // --- LISTA DE INVITADOS (NOMBRE, APELLIDO) ---
+  const guestList = `
+NOMBRE,APELLIDO
+Manel,Esquivel
+Carla,Bartual
+Beatriz,Esquivel
+Manuel,Esquivel
+Eva,Lopez
+Marc,Genes
+Maria Dolors,Dolors
+Jordi,Bartual
+Anna,Bernal
+Alex,Espada
+Victor,Lopez
+Carlos,Barceló
+Sonia,Cadevall
+Antonio,Escartín
+Sandra,Gano
+Ivan,Alamo
+Alba,Martinez
+Alex,Ferré
+Alexia,Galobardes
+Marta,Oliver
+Helena,Briones
+Joan,
+Josua,Bayona
+Amandine,Liam
+Sara,Ytarte
+Eva,Areny
+Jesus,
+Carla,Sardà
+Cristian,Fernández
+Clara,Torres
+Pablo,
+Anna,Gonzalez
+Carlos,Oros
+Mujer Oros,
+Carlos,Rodriguez
+Dunia,Mascaro
+Gonzalo,
+Marta,Bartual
+Iker,Zarate
+Alfonso,Zarate
+Jaime,Lopez
+Rosario,
+Natalia,Balcells
+Pau,
+Susana,Lopez
+Ramon,
+Natalia,Belinguer
+Natalia,Pellicer
+Silvia,
+Gemma,Urpina
+Alexis,Postigo
+Mª Angeles,
+Carles,Castañe
+Teodoro,Lopez
+Meritxell,
+Montse,
+Marido Montse,Asociación
+Didac,
+Mujer Didac,
+`;
+
   // --- DATA CLAVE PARA APERITIVO ---
   const aperitivoPrincipales = `Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente; Crostini de escalivada asada con ventresca de atún; Mini tacos de vegetales a la parrilla; Trufa de foie con crocante de almendra tostada; Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca; Rol de requesón y nueces envuelto en calabacín asado; Mini ensalada de algas con perlas de yuzu y semillas de amapola; Chupito de mazamorra cordobesa con tropicales y mousse de ventresca; Croquetas de pulpo gallego; Simulacro de calamar con patata paja; Patatas bravas con alioli y su toque de valentina; Trilogía de hamburguesas de pollo, ternera y quinoa; Tiras de calamar crujiente en tempura; Bocado de jamón de guijuelo en croqueta cremosa, y Vasito de romesco.`;
   const aperitivoAdicionales = "Además, habrá jamón al corte, Showcooking de carnes a la brasa, zamburiñas, almejas y navajas.";
@@ -48,12 +112,8 @@ export default async function handler(req, res) {
       - Fiesta y barra libre: de 19:00 a 21:00
     `,
     fiestaActividades: "Para la fiesta (después del banquete) tendremos un **Videomatón 360º** y un **Fotomatón** para que todos se lleven un gran recuerdo.",
-    
-    // 🟢 NUEVAS VARIABLES
     padresManel: "Manuel y Maria Dolors",
     padresCarla: "Jordi y Eva",
-    regaloCuentaUrl: "https://www.bodas.net/web/manel-y-carla/regalosdeboda-11", // URL específica para el número de cuenta
-    regaloGeneralUrl: "https://www.bodas.net/web/manel-y-carla/regalos-8", // URL general
   };
 
   const systemPrompt = `
@@ -61,6 +121,18 @@ Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
 Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa.
 
 ---
+
+## 🤵👰 VERIFICACIÓN DE INVITADOS
+- **LISTA DE INVITADOS (NOMBRE, APELLIDO):**
+${guestList}
+
+- **INSTRUCCIONES CLAVE:**
+1.  Si el usuario pregunta: "¿Estoy invitado?" o similar, debes pedir amablemente su **Nombre y Apellido** para verificar la lista.
+2.  Si el usuario da un nombre que **coincide exactamente con UNA única persona** en la lista (NOMBRE y/o APELLIDO), responde: "Sí, estás en la lista de invitados. ¡Te esperamos con mucha ilusión!".
+3.  Si el usuario da un nombre que **coincide con MÁS de una persona** (ej: "Alex" aparece con Espada y Ferré), debes preguntar: "¿Me podrías indicar tu apellido, por favor? Tenemos varias personas con ese nombre en la lista."
+4.  Si el usuario proporciona el Nombre y Apellido y **está en la lista**, responde: "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! ¡Te esperamos con mucha ilusión!".
+5.  Si el usuario **NO** está en la lista (no coincide ningún par Nombre/Apellido), responde: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+6.  Si solo dice un nombre ambiguo, **NUNCA** respondas con "No estás invitado", siempre pide el apellido o la información completa.
 
 ## 👨‍👩‍👧‍👦 Familias
 - Si preguntan por los padres de Manel, son **${weddingInfo.padresManel}**.
