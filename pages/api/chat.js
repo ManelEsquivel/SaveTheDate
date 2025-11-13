@@ -76,13 +76,42 @@ Mujer Didac,
 `;
 
   // --- DATA CLAVE PARA APERITIVO ---
-  const aperitivoPrincipales = `Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente; Crostini de escalivada asada con ventresca de atún; Mini tacos de vegetales a la parrilla; Trufa de foie con crocante de almendra tostada; Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca; Rol de requesón y nueces envuelto en calabacín asado; Mini ensalada de algas con perlas de yuzu y semillas de amapora; Chupito de mazamorra cordobesa con tropicales y mousse de ventresca; Croquetas de pulpo gallego; Simulacro de calamar con patata paja; Patatas bravas con alioli y su toque de valentina; Trilogía de hamburguesas de pollo, ternera y quinoa; Tiras de calamar crujiente en tempura; Bocado de jamón de guijuelo en croqueta cremosa, y Vasito de romesco.`;
-  const aperitivoAdicionales = "Además, habrá jamón al corte, Showcooking de carnes a la brasa, zamburiñas, almejas y navajas.";
-  
-  // RESPUESTA COMPLETA Y PRE-FORMATEADA para la pregunta general del aperitivo
-  const aperitivoResponseCompleta = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos que incluye: ${aperitivoPrincipales} ${aperitivoAdicionales} ¡Una variedad exquisita para disfrutar durante el aperitivo! 🍽️🥂`;
+  // 🟢 AJUSTE CLAVE: USAMOS FORMATO DE LISTA MARKDOWN (* o -) DENTRO DE LA VARIABLE
+  const aperitivoPrincipalesFormatoLista = `
+* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
+* Crostini de escalivada asada con ventresca de atún
+* Mini tacos de vegetales a la parrilla
+* Trufa de foie con crocante de almendra tostada
+* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
+* Rol de requesón y nueces envuelto en calabacín asado
+* Mini ensalada de algas con perlas de yuzu y semillas de amapora
+* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
+* Croquetas de pulpo gallego
+* Simulacro de calamar con patata paja
+* Patatas bravas con alioli y su toque de valentina
+* Trilogía de hamburguesas de pollo, ternera y quinoa
+* Tiras de calamar crujiente en tempura
+* Bocado de jamón de guijuelo en croqueta cremosa
+* Vasito de romesco
+`;
 
-  // RESPUESTA PARA VEGETARIANOS/INTOLERANCIAS
+  const aperitivoAdicionales = `
+Además, tendremos Showcooking y Corte:
+* Jamón al corte
+* Showcooking de carnes a la brasa
+* Zamburiñas, almejas y navajas
+`;
+  
+  // 🟢 RESPUESTA COMPLETA Y PRE-FORMATEADA para la pregunta general del aperitivo
+  const aperitivoResponseCompleta = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
+${aperitivoPrincipalesFormatoLista}
+
+${aperitivoAdicionales}
+
+¡Una variedad exquisita para disfrutar!
+`;
+
+  // RESPUESTA PARA VEGETARIANOS/INTOLERANCIAS (SIN CAMBIOS)
   const aperitivoVegetarianoResponse = `
   ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
   
@@ -131,7 +160,7 @@ ${guestList}
 2.  Si el usuario da un nombre que **coincide exactamente con UNA única persona** en la lista (NOMBRE y/o APELLIDO), responde: "Sí, estás en la lista de invitados. ¡Te esperamos con mucha ilusión!".
 3.  Si el usuario da un nombre que **coincide con MÁS de una persona** (ej: "Alex" aparece con Espada y Ferré), debes preguntar: "¿Me podrías indicar tu apellido, por favor? Tenemos varias personas con ese nombre en la lista."
 4.  Si el usuario proporciona el Nombre y Apellido y **está en la lista**, responde: "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! ¡Te esperamos con mucha ilusión!".
-5.  **AJUSTE CLAVE:** Si el usuario te da un nombre (o nombre y apellido) y **NO hay ninguna coincidencia con la lista de invitados**, debes responder con el mensaje de error inmediatamente. El mensaje de error es: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+5.  Si el usuario te da un nombre (o nombre y apellido) y **NO hay ninguna coincidencia con la lista de invitados**, debes responder con el mensaje de error inmediatamente. El mensaje de error es: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
 6.  Si solo dice un nombre ambiguo que no está en la lista, **NUNCA** respondas con "No estás invitado", siempre intenta verificar o aplica la respuesta del punto 5.
 
 ## 👨‍👩‍👧‍👦 Familias
