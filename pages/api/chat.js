@@ -26,23 +26,8 @@ export default async function handler(req, res) {
       - Banquete: de 15:30 a 19:00
       - Fiesta y barra libre: de 19:00 a 21:00
     `,
-    aperitivoPrincipales: `
-* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
-* Crostini de escalivada asada con ventresca de atún
-* Mini tacos de vegetales a la parrilla
-* Trufa de foie con crocante de almendra tostada
-* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
-* Rol de requesón y nueces envuelto en calabacín asado
-* Mini ensalada de algas con perlas de yuzu y semillas de amapola
-* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
-* Croquetas de pulpo gallego
-* Simulacro de calamar con patata paja
-* Patatas bravas con alioli y su toque de valentina
-* Trilogía de hamburguesas de pollo, ternera y quinoa
-* Tiras de calamar crujiente en tempura
-* Bocado de jamón de guijuelo en croqueta cremosa
-* Vasito de romesco
-    `,
+    // 🟢 LISTADO DE APERITIVO EN FORMATO PÁRRAFO
+    aperitivoPrincipales: `Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente; Crostini de escalivada asada con ventresca de atún; Mini tacos de vegetales a la parrilla; Trufa de foie con crocante de almendra tostada; Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca; Rol de requesón y nueces envuelto en calabacín asado; Mini ensalada de algas con perlas de yuzu y semillas de amapola; Chupito de mazamorra cordobesa con tropicales y mousse de ventresca; Croquetas de pulpo gallego; Simulacro de calamar con patata paja; Patatas bravas con alioli y su toque de valentina; Trilogía de hamburguesas de pollo, ternera y quinoa; Tiras de calamar crujiente en tempura; Bocado de jamón de guijuelo en croqueta cremosa, y Vasito de romesco.`,
     aperitivoAdicionales: "Además, habrá jamón al corte, Showcooking de carnes a la brasa, zamburiñas, almejas y navajas.",
     fiestaActividades: "Para la fiesta (después del banquete) tendremos un **Videomatón 360º** y un **Fotomatón** para que todos se lleven un gran recuerdo.",
   };
@@ -62,9 +47,8 @@ ${weddingInfo.schedule}
 
 ## 🍽️ Aperitivo y Banquete
 - El banquete será **${weddingInfo.banquet}**.
-- Si preguntan por el **Aperitivo**, DEBEN enumerar TODOS y cada uno de los siguientes principales, seguidos por los añadidos. NO deben resumir ni omitir platos.
-- **Platos principales del Aperitivo:**
-${weddingInfo.aperitivoPrincipales}
+- Si preguntan por el **Aperitivo**, DEBEN enumerar TODOS los platos en formato de PÁRRAFO continuo (separados por comas o puntos y comas), seguidos por los añadidos. NO deben usar listas de Markdown (* o -).
+- **Platos principales del Aperitivo:** ${weddingInfo.aperitivoPrincipales}
 - **Añadidos (Showcooking y Corte):** **${weddingInfo.aperitivoAdicionales}**
 
 ## 🥳 Fiesta
@@ -110,7 +94,7 @@ Si alguien pregunta por regalos, responde que no es necesario, pero si desean m�
     let aiReplyRaw =
       data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
       
-    // 🟢 CONFIGURACIÓN CLAVE: Asegurar que los enlaces se abran en nueva pestaña (si usas 'marked')
+    // CONFIGURACIÓN CLAVE: Asegurar que los enlaces se abran en nueva pestaña
     marked.use({
       renderer: {
         link(href, title, text) {
@@ -123,7 +107,7 @@ Si alguien pregunta por regalos, responde que no es necesario, pero si desean m�
     // Convertir Markdown a HTML limpio y saneado para el frontend
     const aiReplyHTML = marked.parse(aiReplyRaw);
 
-    // 3. Devolvemos el HTML completo.
+    // Devolvemos el HTML completo.
     res.status(200).json({ reply: aiReplyHTML });
   } catch (error) {
     console.error(error); 
