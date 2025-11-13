@@ -71,7 +71,7 @@ Teodoro Lopez,Lopez,PENDIENTE
 Meritxell,,PENDIENTE
 Montse,,PENDIENTE
 Marido Montse,,PENDIENTE
-Elena Escura,Escura,PENDIENTE
+Elena Escura,Escura,Escura
 Jaime Monzon,Monzon,PENDIENTE
 Carmen Izquierdo,Izquierdo,PENDIENTE
 Laura Cester,Cester,PENDIENTE
@@ -167,6 +167,9 @@ Responde en español si te escriben en español y si te escriben en catalán, re
 
 ---
 
+## 🔒 DECLARACIÓN DE PRIVACIDAD
+- **INSTRUCCIÓN CLAVE (PRIVACIDAD):** Si se pregunta por los datos almacenados o la privacidad, DEBES responder ÚNICAMENTE: "El sistema solo almacena el nombre y apellido de los invitados de la lista provista por los novios. No se recoge, divulga ni almacena ningún otro dato personal o sensible, respetando totalmente la privacidad y el RGPD."
+
 ## 🤵👰 VERIFICACIÓN DE INVITADOS
 - **LISTA DE INVITADOS (NOMBRE, APELLIDOS, CONFIRMADO):**
 ${guestList}
@@ -209,7 +212,9 @@ ${guestList}
     
 
 ## 📊 STATUS
-- **INSTRUCCIÓN CLAVE (CONFIRMADOS):** Si preguntan cuánta gente o cuántos invitados han confirmado, DEBES responder ÚNICAMENTE: "Hasta el momento, un total de **${confirmedGuestsCount} invitados** han confirmado su asistencia."
+- **INSTRUCCIÓN CLAVE (CONFIRMADOS/PRIVACIDAD):** Si preguntan cuánta gente o cuántos invitados han confirmado, DEBES responder ÚNICAMENTE: "Hasta el momento, un total de **${confirmedGuestsCount} invitados** han confirmado su asistencia."
+  Si el usuario pregunta por los **nombres** o **detalles específicos** de los confirmados, DEBES añadir al final de tu respuesta (después del número): "Para más detalles sobre los invitados, lo mejor es que contactes directamente con Manel o Carla."
+
 
 ## 👨‍👩‍👧‍👦 Familias
 - Si preguntan por los padres de Manel, son **${weddingInfo.padresManel}**.
