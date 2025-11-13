@@ -12,7 +12,6 @@ export default async function handler(req, res) {
   }
 
   // --- LISTA DE INVITADOS (NOMBRE, APELLIDO, CONFIRMADO) ---
-  // 🟢 AJUSTE: Se han limpiado los espacios extra en los nombres para mejorar la coincidencia.
   const guestList = `
 NOMBRE,APELLIDOS,CONFIRMADO
 Manel,Esquivel,CONFIRMADO
@@ -156,6 +155,8 @@ ${aperitivoAdicionales}
     
     padresManel: "Manuel y Maria Dolors",
     padresCarla: "Jordi y Eva",
+    // 🟢 NUEVA URL DE CONFIRMACIÓN
+    urlConfirmacion: "https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3"
   };
 
   const systemPrompt = `
@@ -168,7 +169,7 @@ Responde en español si te escriben en español y si te escriben en catalán, re
 - **LISTA DE INVITADOS (NOMBRE, APELLIDOS, CONFIRMADO):**
 ${guestList}
 
-- **INSTRUCCIONES CLAVE (AJUSTADAS para priorizar la verificación de Nombre + Apellido):**
+- **INSTRUCCIONES CLAVE (AJUSTADAS para incluir el enlace de Confirmación):**
 
 1.  **RESPUESTA OBLIGATORIA al preguntar por la invitación:** Si el usuario pregunta "¿Estoy invitado?", "¿Están invitados [Yo/Nosotros]?" o similar **sin dar su nombre**, DEBES responder únicamente: "¡Qué buena pregunta! Para poder confirmarlo, ¿podrías indicarme tu nombre completo (Nombre y Apellido) por favor?".
 
@@ -178,7 +179,7 @@ ${guestList}
     
 3.  **Respuesta Final de Confirmación (Si el invitado está en la lista):** Si el invitado se encuentra en la lista (ya sea por nombre o nombre y apellido):
         * **Si el estado es CONFIRMADO:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión!".
-        * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, asegúrate de contactar con Manel o Carla para confirmar tu asistencia. ¡Te esperamos con mucha ilusión!".
+        * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${weddingInfo.urlConfirmacion}). ¡Te esperamos con mucha ilusión!".
     
 4.  **No Encontrado:** Si el usuario te da un nombre (o nombre y apellido) y **NO hay ninguna coincidencia con la lista de invitados** (después de una o dos interacciones), debes responder: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
     
