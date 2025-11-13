@@ -1,8 +1,6 @@
 // pages/api/chat.js
 import { marked } from "marked";
 
-// Importante: Asegúrate de que este archivo incluye la configuración de marked.use para los enlaces si la tenías antes
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ reply: "Método no permitido" }); 
@@ -26,9 +24,8 @@ export default async function handler(req, res) {
       - Ceremonia: de 12:30 a 13:30
       - Aperitivo: de 13:30 a 15:30
       - Banquete: de 15:30 a 19:00
-      - Fiesta con barra libre: de 19:00 a 21:00
+      - Fiesta y barra libre: de 19:00 a 21:00
     `,
-    // 🟢 LISTADO DE APERITIVO CON FORMATO LIMPIO
     aperitivoPrincipales: `
 * Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
 * Crostini de escalivada asada con ventresca de atún
@@ -65,9 +62,10 @@ ${weddingInfo.schedule}
 
 ## 🍽️ Aperitivo y Banquete
 - El banquete será **${weddingInfo.banquet}**.
-- Si preguntan por el **Aperitivo**, estos son los principales:
+- Si preguntan por el **Aperitivo**, DEBEN enumerar TODOS y cada uno de los siguientes principales, seguidos por los añadidos. NO deben resumir ni omitir platos.
+- **Platos principales del Aperitivo:**
 ${weddingInfo.aperitivoPrincipales}
-- Como añadidos del aperitivo: **${weddingInfo.aperitivoAdicionales}**
+- **Añadidos (Showcooking y Corte):** **${weddingInfo.aperitivoAdicionales}**
 
 ## 🥳 Fiesta
 - Si preguntan por la fiesta o actividades después del banquete:
