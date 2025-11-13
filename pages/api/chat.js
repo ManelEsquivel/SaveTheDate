@@ -107,7 +107,9 @@ Mujer,Didac,PENDIENTE
     dressCode: "Formal",
     transport: "Habrá parking gratuito y servicio de taxi disponible",
     accommodation: "Hoteles cercanos: Celler Suites y Villas Coliving",
-    urlConfirmacion: "https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3"
+    urlConfirmacion: "https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3",
+    urlRegalosdeboda: "https://www.bodas.net/web/manel-y-carla/regalosdeboda-11",
+    urlRegalos: "https://www.bodas.net/web/manel-y-carla/regalos-8"
   };
 
   // --- PROCESAMIENTO DE NOMBRES EN JAVASCRIPT (Solo para INYECCIÓN de Prioridad Absoluta) ---
@@ -147,8 +149,9 @@ Mujer,Didac,PENDIENTE
     });
 
   let forcedGuest = null;
+  const isLikelyNameQuery = nameLikeWords.length > 0;
 
-  if (relevantQuery.length > 0) {
+  if (isLikelyNameQuery) {
       
       // 1. Coincidencia EXACTA (Ej: "alex espada")
       const exactFullNameMatches = guestEntries.filter(g => 
@@ -167,8 +170,8 @@ Mujer,Didac,PENDIENTE
           if (wordMatches.length === 1) {
               forcedGuest = wordMatches[0];
           }
-          // Si wordMatches.length > 1 (ambigüedad) o wordMatches.length === 0 (no encontrado),
-          // NO forzamos la respuesta. Dejamos que la IA aplique las reglas 2.K o 4 (ESTA ES LA CLAVE)
+          // CLAVE DEL FIX: Si wordMatches.length > 1 (ambigüedad) o wordMatches.length === 0 (no encontrado),
+          // NO forzamos la respuesta. El flujo continúa y la IA aplica las reglas 2.K o 4.
       }
   }
 
@@ -197,40 +200,52 @@ Mujer,Didac,PENDIENTE
   }
   // --- FIN DE INYECCIÓN ---
 
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS ---
+  const confirmedGuestsCountInPrompt = confirmedGuestsCount;
+  const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
+  const detailUbisUrlInPrompt = weddingInfo.detailUbisUrl;
+  const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
+  const urlRegalosInPrompt = weddingInfo.urlRegalos;
+  
+  // Lista del Aperitivo para inyección
+  const aperitivoCompletoResponse = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
+* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
+* Crostini de escalivada asada con ventresca de atún
+* Mini tacos de vegetales a la parrilla
+* Trufa de foie con crocante de almendra tostada
+* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
+* Rol de requesón y nueces envuelto en calabacín asado
+* Mini ensalada de algas con perlas de yuzu y semillas de amapora
+* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
+* Croquetas de pulpo gallego
+* Simulacro de calamar con patata paja
+* Patatas bravas con alioli y su toque de valentina
+* Trilogía de hamburguesas de pollo, ternera y quinoa
+* Tiras de calamar crujiente en tempura
+* Bocado de jamón de guijuelo en croqueta cremosa
+* Vasito de romesco
 
-  // --- DATA CLAVE PARA APERITIVO (Se mantiene para consistencia) ---
-  const confirmedGuestsCountInPrompt = 2; // Manel y Carla (por defecto)
-  const urlConfirmacionInPrompt = "https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3";
-  const detailUbisUrlInPrompt = "https://www.bodas.net/web/manel-y-carla/ubicacion-8";
-  const urlRegalosdebodaInPrompt = "https://www.bodas.net/web/manel-y-carla/regalosdeboda-11";
-  const urlRegalosInPrompt = "https://www.bodas.net/web/manel-y-carla/regalos-8";
+Además, tendremos Showcooking y Corte:
+* Jamón al corte
+* Showcooking de carnes a la brasa
+* Zamburiñas, almejas y navajas
 
-  // --- INFO GENERAL BODA (Replicated from user's file to ensure consistency) ---
-  const weddingInfoFromUserFile = {
-    date: "31 de octubre de 2026",
-    time: "de 12:00 a 21:00 aproximadamente",
-    location: "Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona",
-    detailUbisUrl: detailUbisUrlInPrompt,
-    banquet: "en el mismo recinto, justo después del aperitivo",
-    dressCode: "Formal",
-    transport: "Habrá parking gratuito y servicio de taxi disponible",
-    accommodation: "Hoteles cercanos: Celler Suites y Villas Coliving",
-    schedule: `
-      - Ceremonia: de 12:30 a 13:30
-      - Aperitivo: de 13:30 a 15:30
-      - Banquete: de 15:30 a 19:00
-      - Fiesta y barra libre: de 19:00 a 21:00
-    `,
-    fiestaActividades: `Para la fiesta (de 19:00 a 21:00) tendremos un **Videomatón 360º** y un **Fotomatón** para que todos se lleven un gran recuerdo. 
-    
-    Además, habrá barra libre durante **2 horas**.`,
-    
-    padresManel: "Manuel y Maria Dolors",
-    padresCarla: "Jordi y Eva",
-    urlConfirmacion: urlConfirmacionInPrompt
-  };
+¡Una variedad exquisita para disfrutar!`;
 
-
+  // Respuesta Vegetariana para inyección
+  const aperitivoVegetarianoResponse = `
+  ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
+  
+  * **Mini tacos de vegetales a la parrilla**
+  * **Rol de requesón y nueces envuelto en calabacín asado**
+  * **Mini ensalada de algas con perlas de yuzu y semillas de amapola**
+  * **Patatas bravas con alioli y su toque de valentina**
+  * **Vasito de romesco**
+  
+  Si tienes alguna intolerancia alimentaria o alergia específica (gluten, lactosa, etc.), por favor, ponte en contacto con Manel o Carla directamente antes del día de la boda para que puedan asegurar un menú adaptado y seguro para ti. ¡Gracias!
+  `;
+  
+  // --- SYSTEM PROMPT ---
   const systemPrompt = `
 Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
 Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa.
@@ -258,7 +273,7 @@ ${guestList}
     * **2.B. 🟢 PRIORIDAD ESPECIAL (Referencia a Beatriz Esquivel - Hermana):** Si el nombre o nombre y apellido proporcionado es "Beatriz" o "Beatriz Esquivel" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Beatriz! ¡Claro que estás invitada! No podría ser de otra forma, la hermana del novio tiene pase VIP. 😉 Tu asistencia está **PENDIENTE** de confirmación aquí: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te queremos!"
     
     * **2.C. 🟢 PRIORIDAD ESPECIAL (Felicidades Alex Espada y Anna Bernal - Futura boda):** Si el nombre o nombre y apellido proporcionado es "Alex Espada" **O** "Anna Bernal" (o similar a cualquiera de los dos, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Alex y Anna! Estáis invitados, por supuesto. Y felicidades a los dos, ¡escuchamos rumores de que vuestra boda es la próxima! 😉 Vuestra asistencia está **PENDIENTE** de confirmación aquí: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Os esperamos!"
-    
+
     * **2.D. 🟢 PRIORIDAD ESPECIAL (Jordi Bartual - Padre de la Novia):** Si el nombre o nombre y apellido proporcionado es "Jordi Bartual" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Jordi! Está claro que estás invitado, no podría ser de otra forma, ¡el padre de la novia tiene que estar en primera fila! Tu asistencia se encuentra **PENDIENTE** de confirmación aquí: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos!"
 
     * **2.E. 🟢 PRIORIDAD ESPECIAL (Eva Lopez - Madre de la Novia):** Si el nombre o nombre y apellido proporcionado es "Eva Lopez" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Eva! Por supuesto que estás invitada. ¡La madre de la novia es fundamental en este día! Tu asistencia se encuentra **PENDIENTE** de confirmación aquí: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos!"
@@ -295,40 +310,10 @@ ${guestList}
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
 - **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO):** Si preguntan por el **Aperitivo** (la lista de platos, el menú del aperitivo, etc.), DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
-¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
-* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
-* Crostini de escalivada asada con ventresca de atún
-* Mini tacos de vegetales a la parrilla
-* Trufa de foie con crocante de almendra tostada
-* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
-* Rol de requesón y nueces envuelto en calabacín asado
-* Mini ensalada de algas con perlas de yuzu y semillas de amapora
-* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
-* Croquetas de pulpo gallego
-* Simulacro de calamar con patata paja
-* Patatas bravas con alioli y su toque de valentina
-* Trilogía de hamburguesas de pollo, ternera y quinoa
-* Tiras de calamar crujiente en tempura
-* Bocado de jamón de guijuelo en croqueta cremosa
-* Vasito de romesco
-
-Además, tendremos Showcooking y Corte:
-* Jamón al corte
-* Showcooking de carnes a la brasa
-* Zamburiñas, almejas y navajas
-
-¡Una variedad exquisita para disfrutar!
+${aperitivoCompletoResponse}
 
 - **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
-  ¡Por supuesto! Para los invitados vegetarianos, los platos principales disponibles en el aperitivo (excluyendo carne, pescado y marisco) son:
-  
-  * **Mini tacos de vegetales a la parrilla**
-  * **Rol de requesón y nueces envuelto en calabacín asado**
-  * **Mini ensalada de algas con perlas de yuzu y semillas de amapola**
-  * **Patatas bravas con alioli y su toque de valentina**
-  * **Vasito de romesco**
-  
-  Si tienes alguna intolerancia alimentaria o alergia específica (gluten, lactosa, etc.), por favor, ponte en contacto con Manel o Carla directamente antes del día de la boda para que puedan asegurar un menú adaptado y seguro para ti. ¡Gracias!
+${aperitivoVegetarianoResponse}
 
 - **INSTRUCCIÓN CLAVE (CATERING):** Si preguntan por la empresa de catering, DEBES responder ÚNICAMENTE: "La empresa de catering es la misma Masía Mas Llombart, ellos se encargan de todo."
 
