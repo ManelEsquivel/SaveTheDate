@@ -90,6 +90,10 @@ Mujer,Didac,PENDIENTE
 
   // --- VERIFICACIÓN REAL DE NOMBRES ANTES DE LLAMAR A OPENAI ---
   const normalizedMessage = message.toLowerCase();
+  const messageWords = normalizedMessage
+    .replace(/[.,;:!?¡¿'"()]/g, "")
+    .split(/\s+/)
+    .filter(Boolean);
 
   // Convertimos la lista en un array de nombres y apellidos
   const guestEntries = guestList
@@ -105,11 +109,10 @@ Mujer,Didac,PENDIENTE
   const isIdentifying = /\b(soy|me llamo|mi nombre es|yo soy)\b/i.test(message);
 
   if (isIdentifying) {
-    // Filtrar coincidencias por nombre o apellido
+    // Buscar coincidencias exactas por palabra (nombre o apellido)
     const matches = guestEntries.filter(g =>
-      normalizedMessage.includes(g.nombre) ||
-      (g.apellido && normalizedMessage.includes(g.apellido)) ||
-      normalizedMessage.includes(g.completo)
+      messageWords.includes(g.nombre) ||
+      messageWords.includes(g.apellido)
     );
 
     // Caso 1: no hay ninguna coincidencia
@@ -148,8 +151,9 @@ Mujer,Didac,PENDIENTE
   // --- PROMPT PRINCIPAL COMPLETO ---
   const systemPrompt = `
 Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
-Responde en español si te escriben en español y si te escriben en catalán, responde en catalán.
-[... el resto del prompt original que ya tienes intacto ...]
+Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa.
+
+[... Mantén aquí todo el texto de tu prompt original ...]
 `;
 
   try {
@@ -187,9 +191,9 @@ Responde en español si te escriben en español y si te escriben en catalán, re
     res.status(200).json({ reply: aiReplyHTML });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ reply: "Error interno del servidor. Intenta más tarde." });
+    res.status(500).json({
+      reply: "Error interno del servidor. Intenta más tarde.",
+    });
   }
 }
 
