@@ -1,5 +1,5 @@
 // pages/api/chat.js
-// 🚨 marked YA NO ES NECESARIO si solo devuelves Markdown
+// Ya no necesitamos marked
 // import { marked } from "marked"; 
 
 export default async function handler(req, res) {
@@ -70,14 +70,26 @@ IMPORTANTE:
     });
 
     const data = await response.json();
-    const aiReplyRaw =
+    let aiReplyRaw =
       data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
 
-    // 🔴 CAMBIO CLAVE: Devolvemos el Markdown directo.
-    // Se elimina la conversión a HTML con marked.parse().
-    res.status(200).json({ reply: aiReplyRaw }); 
+    // 🟢 PASO DE LIMPIEZA CLAVE: Eliminar atributos HTML problemáticos
+    // 1. Eliminamos el patrón de atributos target/rel que está causando el error.
+    let aiReplyCleaned = aiReplyRaw.replace(/target="_blank"\s*rel="noopener noreferrer"/gi, "");
+    
+    // 2. Eliminamos cualquier comilla o ">" extra que haya quedado justo después de la URL, 
+    // lo que genera el código corrupto.
+    // Esto limpia patrones como '...url-8">' o '...url-8' target...'
+    aiReplyCleaned = aiReplyCleaned.replace(/"\s*>/g, ""); 
+    
+    // 3. Eliminamos cualquier etiqueta <a> de apertura o cierre que el modelo pueda haber generado.
+    aiReplyCleaned = aiReplyCleaned.replace(/<\/?a\b[^>]*>/gi, "");
+
+
+    // Devolvemos el texto limpio en formato Markdown puro
+    res.status(200).json({ reply: aiReplyCleaned }); 
   } catch (error) {
-    console.error(error); // Es útil para depurar
+    console.error(error);
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
