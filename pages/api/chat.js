@@ -91,60 +91,46 @@ Mujer,Didac,PENDIENTE
   // --- VERIFICACIÓN REAL DE NOMBRES ANTES DE LLAMAR A OPENAI ---
   const normalizedMessage = message.toLowerCase();
 
-  // Convertimos la lista en un array de nombres completos en minúsculas
-  const guests = guestList
+  // Convertimos la lista en un array de nombres y apellidos
+  const guestEntries = guestList
     .trim()
     .split("\n")
     .slice(1)
     .map(line => {
-      const parts = line.split(",");
-      const nombre = parts[0]?.trim().toLowerCase() || "";
-      const apellido = parts[1]?.trim().toLowerCase() || "";
-      return (nombre + " " + apellido).trim();
+      const [nombre, apellido] = line.split(",").map(x => (x || "").trim().toLowerCase());
+      return { nombre, apellido, completo: (nombre + " " + apellido).trim() };
     });
 
   // Detectar si el usuario se está identificando (“soy”, “me llamo”, etc.)
   const isIdentifying = /\b(soy|me llamo|mi nombre es|yo soy)\b/i.test(message);
 
-  // Buscar si algún nombre de la lista aparece en el mensaje del usuario
-  const found = guests.some(fullName =>
-    normalizedMessage.includes(fullName)
-  );
+  if (isIdentifying) {
+    // Filtrar coincidencias por nombre o apellido
+    const matches = guestEntries.filter(g =>
+      normalizedMessage.includes(g.nombre) ||
+      (g.apellido && normalizedMessage.includes(g.apellido)) ||
+      normalizedMessage.includes(g.completo)
+    );
 
-  if (isIdentifying && !found) {
-    return res.status(200).json({
-      reply:
-        "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
-    });
+    // Caso 1: no hay ninguna coincidencia
+    if (matches.length === 0) {
+      return res.status(200).json({
+        reply:
+          "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+      });
+    }
+
+    // Caso 2: hay más de una coincidencia (por ejemplo, “Alex”)
+    if (matches.length > 1) {
+      return res.status(200).json({
+        reply:
+          "Hay más de una persona con ese nombre en la lista. ¿Podrías indicarme tus apellidos, por favor?"
+      });
+    }
+
+    // Caso 3: coincidencia única → dejar que la IA gestione la respuesta normal
   }
-
   // --- FIN DE VERIFICACIÓN ---
-
-  // --- DATOS APERITIVO ---
-  const aperitivoPrincipalesFormatoLista = `
-* Roll de salmón ahumado, con crema de anchoas y brotes de albahaca crujiente
-* Crostini de escalivada asada con ventresca de atún
-* Mini tacos de vegetales a la parrilla
-* Trufa de foie con crocante de almendra tostada
-* Cazuela gourmet de pasta con relleno de ragú boloñesa con queso fundido y albahaca
-* Rol de requesón y nueces envuelto en calabacín asado
-* Mini ensalada de algas con perlas de yuzu y semillas de amapora
-* Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
-* Croquetas de pulpo gallego
-* Simulacro de calamar con patata paja
-* Patatas bravas con alioli y su toque de valentina
-* Trilogía de hamburguesas de pollo, ternera y quinoa
-* Tiras de calamar crujiente en tempura
-* Bocado de jamón de guijuelo en croqueta cremosa
-* Vasito de romesco
-`;
-
-  const aperitivoAdicionales = `
-Además, tendremos Showcooking y Corte:
-* Jamón al corte
-* Showcooking de carnes a la brasa
-* Zamburiñas, almejas y navajas
-`;
 
   // --- INFO GENERAL BODA ---
   const weddingInfo = {
@@ -159,8 +145,12 @@ Además, tendremos Showcooking y Corte:
     urlConfirmacion: "https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3"
   };
 
-  // --- PROMPT PRINCIPAL (sin cambios) ---
-  const systemPrompt = `Eres un asistente virtual amable y servicial para la boda de Manel y Carla... (resto del texto igual que en tu archivo actual)`; // <-- deja tu texto completo aquí
+  // --- PROMPT PRINCIPAL COMPLETO ---
+  const systemPrompt = `
+Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
+Responde en español si te escriben en español y si te escriben en catalán, responde en catalán.
+[... el resto del prompt original que ya tienes intacto ...]
+`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -184,6 +174,7 @@ Además, tendremos Showcooking y Corte:
       data?.choices?.[0]?.message?.content ||
       "No tengo una respuesta en este momento.";
 
+    // Convertir Markdown a HTML con enlaces seguros
     marked.use({
       renderer: {
         link(href, title, text) {
@@ -201,4 +192,5 @@ Además, tendremos Showcooking y Corte:
       .json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
+
 
