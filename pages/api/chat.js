@@ -1,6 +1,5 @@
 // pages/api/chat.js
-// Ya no necesitamos 'marked' ya que la conversión a HTML se hace en el frontend
-// import { marked } from "marked"; 
+import { marked } from "marked";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -72,24 +71,30 @@ IMPORTANTE:
     const data = await response.json();
     let aiReplyRaw =
       data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
+      
+    // 🔴 1. PASO DE LIMPIEZA ADICIONAL (Pre-marked)
+    // Limpieza de atributos persistentes que el modelo añade.
+    aiReplyRaw = aiReplyRaw.replace(/["']\s*target="_blank"\s*rel="noopener noreferrer">\s*/gi, " ");
+    
+    
+    // 🟢 2. CONFIGURACIÓN CLAVE: Forzar la conversión a HTML con sanitización
+    // Sobrescribimos el renderer de marked.js para ASEGURAR que solo genera enlaces limpios.
+    marked.use({
+      renderer: {
+        link(href, title, text) {
+          // Si el href existe (no es vacío), crea un enlace simple SIN atributos target/rel
+          return `<a href="${href}">${text}</a>`;
+        }
+      }
+    });
 
-    // 🟢 AJUSTE DE LIMPIEZA FINAL:
-    
-    // 1. Limpieza Agresiva de Atributos/Comillas: Elimina el patrón de atributos target/rel.
-    let aiReplyCleaned = aiReplyRaw.replace(/["']\s*target="_blank"\s*rel="noopener noreferrer">\s*/gi, " ");
-    
-    // 2. Eliminar etiquetas <a> parciales o completas: Evita cualquier <a href="..."> o </a>.
-    aiReplyCleaned = aiReplyCleaned.replace(/<\/?a\b[^>]*>/gi, "");
-    
-    // 3. Eliminar cualquier comilla o ángulo suelto que quede después de una URL (el patrón de error).
-    // Busca URLs seguidas de comillas y ángulos angulares (por ejemplo, ...ubicacion-8">).
-    aiReplyCleaned = aiReplyCleaned.replace(/\w+:\/\/[^\s\)]+["']\s*>/g, (match) => match.replace(/["']\s*>/, ""));
+    // Convertir Markdown a HTML limpio y saneado
+    const aiReplyHTML = marked.parse(aiReplyRaw);
 
-    
-    // Devolvemos el texto limpio en formato Markdown puro
-    res.status(200).json({ reply: aiReplyCleaned }); 
+    // 3. Devolvemos el HTML completo.
+    res.status(200).json({ reply: aiReplyHTML });
   } catch (error) {
-    console.error(error);
+    console.error(error); 
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
