@@ -1,158 +1,97 @@
-import { useState, useRef, useEffect } from "react";
-import Head from "next/head";
+// pages/api/chat.js
+import { marked } from "marked";
 
-export default function BotBodaAsistente() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [textAreaHeight, setTextAreaHeight] = useState("40px");
-  const [isTyping, setIsTyping] = useState(false);
-  const chatBoxRef = useRef(null);
-  const textAreaRef = useRef(null);
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ reply: "Método no permitido" }); 
+  }
 
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  }, [messages, isTyping]);
+  const { message } = req.body;
+  if (!message) {
+    return res.status(400).json({ reply: "No se recibió ningún mensaje." });
+  }
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setTextAreaHeight("40px");
-    
-    // 🟢 1. INICIAMOS EL INDICADOR DE ESCRITURA
-    setIsTyping(true);
+  const weddingInfo = {
+    date: "31 de octubre de 2026",
+    time: "de 12:00 a 21:00 aproximadamente",
+    location: "Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona",
+    detailUbisUrl: "https://www.bodas.net/web/manel-y-carla/ubicacion-8",
+    banquet: "en el mismo recinto, justo después del aperitivo",
+    dressCode: "Formal",
+    transport: "Habrá parking gratuito y servicio de taxi disponible",
+    accommodation: "Hoteles cercanos: Celler Suites y Villas Coliving",
+    schedule: `
+      - Ceremonia: de 12:30 a 13:30
+      - Aperitivo: de 13:30 a 15:30
+      - Banquete: de 15:30 a 19:00
+      - Fiesta y barra libre: de 19:00 a 21:00
+    `,
+  };
 
-    const history = messages.map(msg => ({ role: msg.role, content: msg.content }));
+  const systemPrompt = `
+Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
+Responde en español si te escriben en español y si te escriben en catalán, responde en catalán, de forma clara, cálida y concisa.
 
-    const res = await fetch("/api/chat", {
+📅 La boda será el ${weddingInfo.date}, de ${weddingInfo.time}, en ${weddingInfo.location}.
+Más información sobre el lugar: [Ubicación](${weddingInfo.detailUbisUrl}).
+
+🕒 Horario aproximado del evento:
+${weddingInfo.schedule}
+
+🍽️ El banquete será ${weddingInfo.banquet}.
+👗 Código de vestimenta: ${weddingInfo.dressCode}.
+🚗 Transporte: ${weddingInfo.transport}.
+🏨 Alojamiento: ${weddingInfo.accommodation}.
+
+Si alguien pregunta por regalos (por ejemplo: "¿hay lista de boda?", "¿qué puedo regalar?", "¿cómo hacemos con los regalos?"), responde de manera amable y discreta que no es necesario, pero si desean más información pueden visitar: [Regalos de boda](https://www.bodas.net/web/manel-y-carla/regalos-8).
+
+IMPORTANTE:
+- Usa SIEMPRE el formato Markdown correcto para enlaces: [Texto](URL)
+- NO uses etiquetas HTML (<a>, target, rel, etc.)
+- No devuelvas ningún otro formato que no sea texto o Markdown.
+`;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input, history: history }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message },
+        ],
+        temperature: 0.7,
+      }),
     });
 
-    const data = await res.json();
-    const fullReply = data.reply;
+    const data = await response.json();
+    let aiReplyRaw =
+      data?.choices?.[0]?.message?.content || "No tengo una respuesta en este momento.";
+      
+    // 1. Limpieza de atributos persistentes que el modelo añade.
+    aiReplyRaw = aiReplyRaw.replace(/["']\s*target="_blank"\s*rel="noopener noreferrer">\s*/gi, " ");
     
-    // 🟢 2. INTRODUCIMOS UN RETARDO CONTROLADO (1500ms = 1.5 segundos)
-    // Esto mantiene el indicador "Escribiendo..." visible durante un tiempo.
-    await new Promise((resolve) => setTimeout(resolve, 1500)); 
+    // 2. CONFIGURACIÓN CLAVE: Forzar la conversión a HTML con target="_blank"
+    marked.use({
+      renderer: {
+        link(href, title, text) {
+          // 🟢 CAMBIO AQUÍ: Incluimos target="_blank" para abrir en una nueva pestaña.
+          return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        }
+      }
+    });
 
-    // 🟢 3. DETENEMOS EL INDICADOR
-    setIsTyping(false);
+    // Convertir Markdown a HTML limpio y saneado
+    const aiReplyHTML = marked.parse(aiReplyRaw);
 
-    // 4. MOSTRAMOS EL MENSAJE COMPLETO DE GOLPE
-    const botMessage = { role: "assistant", content: fullReply };
-    setMessages((prev) => [...prev, botMessage]);
-
-    // Eliminamos el bucle de escritura lenta anterior
-  };
-
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-    const el = textAreaRef.current;
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 100) + "px";
-    setTextAreaHeight(el.style.height);
-  };
-
-  return (
-    <>
-      <Head>
-        <title>Asistente de Boda</title>
-      </Head>
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <h1>Asistente de Boda 💍</h1>
-        <div
-          ref={chatBoxRef}
-          style={{
-            maxWidth: "400px",
-            height: "300px",
-            overflowY: "auto",
-            border: "1px solid #ccc",
-            borderRadius: "10px",
-            padding: "10px",
-            backgroundColor: "#fff",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            margin: "20px auto",
-          }}
-        >
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                textAlign: msg.role === "user" ? "right" : "left",
-                margin: "10px 0",
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  backgroundColor: msg.role === "user" ? "#d1e7dd" : "#cce5ff",
-                  maxWidth: "80%",
-                  wordWrap: "break-word",
-                }}
-                dangerouslySetInnerHTML={{ __html: msg.content }} 
-              />
-            </div>
-          ))}
-          {isTyping && <p>Escribiendo...</p>} 
-        </div>
-
-        <div style={{ maxWidth: "400px", margin: "10px auto", display: "flex", flexDirection: "column" }}>
-          <textarea
-            ref={textAreaRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            placeholder="Escribe tu mensaje..."
-            style={{
-              resize: "none",
-              height: textAreaHeight,
-              maxHeight: "100px",
-              padding: "10px 12px",
-              borderRadius: "10px",
-              border: "1px solid #ccc",
-              outline: "none",
-              fontSize: "14px",
-              lineHeight: "1.4",
-              transition: "all 0.2s ease",
-              background: "#fff",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1) inset",
-              marginBottom: "10px",
-            }}
-          />
-          <button
-            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            onClick={sendMessage}
-            style={{
-              padding: "12px 20px",
-              borderRadius: "12px",
-              border: "1px solid #007bff",
-              backgroundColor: "#007bff",
-              color: "#fff",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-              transition: "transform 0.2s ease, background-color 0.3s ease",
-            }}
-          >
-            Enviar
-          </button>
-        </div>
-      </div>
-    </>
-  );
+    // 3. Devolvemos el HTML completo.
+    res.status(200).json({ reply: aiReplyHTML });
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
+  }
 }
