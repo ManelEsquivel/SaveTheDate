@@ -15,8 +15,7 @@ export default function BotBodaAsistente() {
     }
   }, [messages, isTyping]);
 
-  // 🔴 ELIMINAMOS LA FUNCIÓN formatMessage. 
-  // Ahora el backend se encarga de generar el HTML limpio.
+  // Se eliminó la función formatMessage (el backend ya envía HTML)
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -24,6 +23,8 @@ export default function BotBodaAsistente() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setTextAreaHeight("40px");
+    
+    // 🟢 1. INICIAMOS EL INDICADOR DE ESCRITURA
     setIsTyping(true);
 
     // Nota: Es mejor pasar un historial simple, no el estado completo de React
@@ -37,34 +38,16 @@ export default function BotBodaAsistente() {
 
     const data = await res.json();
     const fullReply = data.reply;
-    setIsTyping(false);
+    
+    // 🟢 2. INTRODUCIMOS EL RETARDO CONTROLADO (1.5 segundos)
+    await new Promise((resolve) => setTimeout(resolve, 1500)); 
 
-    let currentText = "";
-    const botMessage = { role: "assistant", content: "" };
+    // 🟢 3. MOSTRAMOS EL MENSAJE COMPLETO
+    const botMessage = { role: "assistant", content: fullReply };
     setMessages((prev) => [...prev, botMessage]);
 
-    // 🔴 NOTA: La animación de "escritura" lenta carácter por carácter NO funciona bien con HTML.
-    // Para resolver el problema de los enlaces rápidamente, cargaremos el mensaje completo de golpe.
-    // Si quieres la animación, debes investigar cómo animar mensajes que contienen HTML.
-    
-    // Mostramos el mensaje completo (HTML) de golpe:
-    setMessages((prev) => {
-      const updated = [...prev];
-      updated[updated.length - 1] = { role: "assistant", content: fullReply };
-      return updated;
-    });
-    
-    // Eliminamos el bucle de escritura lenta
-    /* for (let i = 0; i < fullReply.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 25));
-      currentText += fullReply[i];
-      setMessages((prev) => {
-        const updated = [...prev];
-        updated[updated.length - 1] = { role: "assistant", content: currentText };
-        return updated;
-      });
-    } 
-    */
+    // 🟢 4. DETENEMOS EL INDICADOR (¡Esto era lo que faltaba!)
+    setIsTyping(false); 
   };
 
   const handleInputChange = (e) => {
@@ -86,7 +69,8 @@ export default function BotBodaAsistente() {
           ref={chatBoxRef}
           style={{
             maxWidth: "400px",
-            height: "300px",
+            // Altura ligeramente reducida a 280px (ajuste anterior)
+            height: "280px", 
             overflowY: "auto",
             border: "1px solid #ccc",
             borderRadius: "10px",
@@ -114,12 +98,11 @@ export default function BotBodaAsistente() {
                   maxWidth: "80%",
                   wordWrap: "break-word",
                 }}
-                // 🟢 CAMBIO CLAVE: Usamos el contenido HTML directo sin el formateador.
                 dangerouslySetInnerHTML={{ __html: msg.content }} 
               />
             </div>
           ))}
-          {isTyping && <p>Escribiendo...</p>}
+          {isTyping && <p>Escribiendo...</p>} 
         </div>
 
         <div style={{ maxWidth: "400px", margin: "10px auto", display: "flex", flexDirection: "column" }}>
@@ -142,7 +125,8 @@ export default function BotBodaAsistente() {
               borderRadius: "10px",
               border: "1px solid #ccc",
               outline: "none",
-              fontSize: "14px",
+              // 🟢 Font-size 16px para evitar el zoom en móviles (ajuste anterior)
+              fontSize: "16px", 
               lineHeight: "1.4",
               transition: "all 0.2s ease",
               background: "#fff",
@@ -174,7 +158,6 @@ export default function BotBodaAsistente() {
     </>
   );
 }
-
 
 
 
