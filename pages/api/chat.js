@@ -472,8 +472,7 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 // 🟡 REGLA DE BAJA PRIORIDAD (DETALLE: ¿Recibiré un regalo? )
 // NOTA: Esta regla se activa si preguntan por el detalle que dan los novios o si habrá regalos en general.
 - **INSTRUCCIÓN CLAVE (Regalos/Detalle):** Si alguien pregunta explícitamente si los novios tendrán un **detalle** para los invitados, o si **habrá regalos** (en el sentido de recibir), DEBES responder ÚNICAMENTE:
-"¡Sí! Los novios tendrán un detalle para todos los invitados. Puedes visitar la web general de regalos aquí: [Regalos de boda](${urlRegalosInPrompt})."
-
+"¡Sí! Los novios tendrán un detalle para todos los invitados."
 
 ---
 
