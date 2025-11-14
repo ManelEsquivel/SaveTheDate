@@ -217,13 +217,18 @@ Mujer,Didac,PENDIENTE
 * Rol de requesón y nueces envuelto en calabacín asado
 * Mini ensalada de algas con perlas de yuzu y semillas de amapora
 * Chupito de mazamorra cordobesa con tropicales y mousse de ventresca
-* Croquetas de pulpo gallego
+* Croquetas de pulpo gallego y pimpenton de la vera
+* Crocanti de pollo caramelizado y sésamo negro 
 * Simulacro de calamar con patata paja
 * Patatas bravas con alioli y su toque de valentina
 * Trilogía de hamburguesas de pollo, ternera y quinoa
 * Tiras de calamar crujiente en tempura
 * Bocado de jamón de guijuelo en croqueta cremosa
 * Vasito de romesco
+* Bicolor de Hummus clásico y de remolacha con AOVE
+* Cremosos de risotto de setas ceps y parmesano regianno
+* Bocado de gamba crujiente envuelta en jamón ibérico
+* Perla de bacalao con all i oli de arbequina
 
 Además, tendremos Showcooking y Corte:
 * Jamón al corte
