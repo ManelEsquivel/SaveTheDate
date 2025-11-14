@@ -92,6 +92,7 @@ Montse Asociación,,PENDIENTE
 Marido Montse,Asociación,PENDIENTE
 Didac,,PENDIENTE
 Mujer,Didac,PENDIENTE
+Kike Masgrau,Masgrau,PENDIENTE
 `;
 
   // --- CÁLCULO DE CONFIRMADOS (Actualizar si la lista cambia) ---
@@ -343,11 +344,11 @@ ${guestList}
 
 2.  **Si se proporciona un nombre (en cualquier turno):**
     
-    * **2.A. 🟢 PRIORIDAD ESPECIAL (Broma para Antonio Escartín):** Si el nombre o nombre y apellido proporcionado es "Antonio Escartín" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Antonio! Estás en la lista, pero... ¡tu invitación es condicional! Solo te dejamos entrar si vienes vestido de calamardo y nos cantas. Si cumples, estas invitado 😉. Tu asistencia está **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Sabes que te queremos! 😉"
+    * **2.A. 🟢 PRIORIDAD ESPECIAL (Broma para Antonio Escartín):** Si el nombre o nombre y apellido proporcionado es "Antonio Escartín" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Antonio! Estás en la lista, pero... ¡tu invitación es condicional! Solo te dejamos entrar si vienes vestido de calamardo. Si cumples, estas invitado 😉. Tu asistencia está **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Sabes que te queremos! 😉"
     
     * **2.B. 🟢 PRIORIDAD ESPECIAL (Referencia a Beatriz Esquivel - Hermana):** Si el nombre o nombre y apellido proporcionado es "Beatriz Esquivel" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Beatriz! ¡Claro que estás invitada! No podría ser de otra forma, la hermana del novio tiene pase VIP. 😉 Tu asistencia está **PENDIENTE** de confirmación aquí. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Te queremos!"
     
-    * **2.C. 🟢 PRIORIDAD ESPECIAL ( Alex Espada y Anna Bernal - Futura boda):** Si el nombre o nombre y apellido proporcionado es **"Alex Espada"** **O** **"Anna Bernal"** (o similar a cualquiera de los dos, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Alex y Anna! Estáis invitados, por supuesto. **¡Enhorabuena por vuestro compromiso!** Escuchamos rumores de que vuestra boda es la próxima. 😉 Vuestra asistencia está **PENDIENTE** de confirmación aquí. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Os esperamos!"
+    * **2.C. 🟢 PRIORIDAD ESPECIAL ( Kike Masgrau - Colega de Trabajo):** Si el nombre o nombre y apellido proporcionado es **"Kike Masgrau"** (o similar a cualquiera de los dos, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Kike! Estás invitados, por supuesto. **Pero no te duermas!** Escuchamos rumores de las siestas del zulo. 😉 tu asistencia está **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Os esperamos!"
     
     * **2.D. 🟢 PRIORIDAD ESPECIAL (Jordi Bartual - Padre de la Novia):** Si el nombre o nombre y apellido proporcionado es "Jordi Bartual" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Jordi! Está claro que estás invitado, no podría ser de otra forma, ¡el padre de la novia tiene que estar en primera fila! Tu asistencia se encuentra **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Te esperamos!"
 
@@ -361,7 +362,7 @@ ${guestList}
 
     * **2.I. 🟢 PRIORIDAD ESPECIAL (Carlos Barceló - Juegos de Mesa):** Si el nombre o nombre y apellido proporcionado es "Carlos Barceló" (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Carlos! Por supuesto que estás invitado. ¡El novio me comento que después de la boda queria quedar contigo echar una partida al Descent! Tu asistencia se encuentra **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Nos vemos!"
 
-    * **2.J. 🟢 PRIORIDAD ESPECIAL (Victor Lopez - Broma "Prima Marta Oliver"):** Si el nombre o nombre y apellido proporcionado es **"Victor Lopez"** (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Victor! ¡Estás invitado! Y, ¿hay novedades con la prima de Marta Oliver? 😉 Tu asistencia se encuentra **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Te esperamos!"
+    * **2.J. 🟢 PRIORIDAD ESPECIAL (Victor Lopez - Broma "Prima Marta"):** Si el nombre o nombre y apellido proporcionado es **"Victor Lopez"** (o similar, ignorando mayúsculas/tildes), **DEBES** responder ÚNICAMENTE: "¡Victor! ¡Estás invitado! Y, ¿hay novedades con la prima de Marta Oliver? 😉 Tu asistencia se encuentra **PENDIENTE** de confirmación. Para confirmar asistencia ves aquí: [Confirmar Asistencia](${urlConfirmacionInPrompt}). ¡Te esperamos!"
     
     * **2.K. Ambigüedad:** Si el nombre/apellido proporcionado coincide con **MÁS de una persona** y falta información clara para una coincidencia única (e.g. "Alex" con "Alex Ferré" y "Alex Espada"), debes preguntar: "¿Me podrías indicar tu apellido, por favor? Tenemos varias personas con ese nombre en la lista."
     
