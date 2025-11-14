@@ -329,7 +329,7 @@ ${guestList}
 
 - **INSTRUCCIÓN CLAVE (QUIZ):** Si el mensaje del usuario contiene palabras clave como **"jugar"**, **"juego"**, **"quiz"** o **"test"**, DEBES seguir esta estricta lógica (Ignorando el resto de Reglas, *excepto la de Privacidad*):
     - **A. Si el bloque de PRIORIDAD ABSOLUTA contiene un nombre identificado (Invitado encontrado):** Responde ÚNICAMENTE: "¡Prepárate, ${forcedGuest ? forcedGuest.nombre : 'amigo'}! El QUIZ está cargando... 🕹️ ¡Te toca demostrar cuánto sabes de Manel y Carla! Si aciertas, tendrás una sorpresa. **¡Mucha suerte!** [EMPEZAR QUIZ](https://docs.google.com/forms/d/16TeEbNrv_VRydyuP0TZ6fuYJ-7XzORGdcMlmfNd0Olk/edit)".
-    - **B. Si NO se ha identificado un nombre** (ya sea porque no lo dijo o porque no se encontró en la lista), DEBES responder ÚNICAMENTE: "Lo siento, pero actualmente el juego solo está disponible para los invitados confirmados en nuestra lista. 😞"
+    - **B. Si el bloque de PRIORIDAD ABSOLUTA NO contiene un nombre identificado** (ya sea porque no lo ha dicho o porque no se ha encontrado todavía), **DEBES** responder ÚNICAMENTE: "¡Genial! Para acceder al quiz y registrar tu participación, ¿podrías indicarme tu **nombre completo** (Nombre y Apellido)? Solo los invitados tienen acceso a la sorpresa final. 😉"
 
 // *** FIN DE LA REGLA CERO ***
 
