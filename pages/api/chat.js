@@ -346,16 +346,13 @@ ${guestList}
 ## 🍽️ Aperitivo y Opciones Especiales
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
-- **INSTRUCCIÓN CLAVE (MENU GENERAL - Inicio):** Si preguntan en general por la **comida**, el **menú** o **que hay para comer/cenar** o palabras clave similares, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿El listado del **aperitivo** o el menú de la **comida banquete**? ¿O quizás quieres ver **todo**?"
+- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"ambos"**, DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
 
-- **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle):** Si preguntan por el **Aperitivo** o la lista del aperitivo o usan la palabra **"aperitivo"** tras la pregunta general, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
-${aperitivoCompletoResponse}
+- **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
 
-- **INSTRUCCIÓN CLAVE (MENU BANQUETE - Detalle):** Si preguntan por la **Comida Banquete**, **platos principales** o usan las palabras **"comida banquete"** tras la pregunta general, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
-${menuPrincipalResponse}
+- **INSTRUCCIÓN CLAVE (MENU BANQUETE - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"comida banquete"** O **"banquete"** O **"platos principales"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${menuPrincipalResponse}.
 
-- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle):** Si preguntan por **Todo** o usan la palabra **"todo"** tras la pregunta general, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
-${menuCompletoResponse}
+- **INSTRUCCIÓN CLAVE (MENU GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por la **comida**, el **menú** o **que hay para comer/cenar** o **similares** y NINGUNA de las instrucciones de ALTA PRIORIDAD (aperitivo, banquete, todo) se ha activado, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿El listado del **aperitivo** o el menú de la **comida banquete**? ¿O quizás quieres ver **todo**?"
 
 - **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
 ${aperitivoVegetarianoResponse}
