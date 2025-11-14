@@ -200,7 +200,7 @@ Mujer,Didac,PENDIENTE
   }
   // --- FIN DE INYECCIÓN ---
 
-  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS ---
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA) ---
   const confirmedGuestsCountInPrompt = confirmedGuestsCount;
   const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
   const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
@@ -274,6 +274,18 @@ Además, tendremos Showcooking y Corte:
 
   // Respuesta Menú Completo para inyección
   const menuCompletoResponse = `${aperitivoCompletoResponse}\n\n---\n\n${menuPrincipalResponse}`;
+
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (BEBIDAS) ---
+  const ceremonyDrinksResponse = "En la ceremonia se va a servir: agua, limonada, naranjada y cocktails de cava.";
+  const aperitifDrinksResponse = "Durante el aperitivo habrá: aguas, refrescos y cervezas.";
+  const partyDrinksResponse = "Durante la fiesta (de 19:00 a 21:00) habrá barra libre durante 2 horas.";
+
+  const winesResponse = "En el banquete los vinos (aún pendientes de decisión) son: Los tintos: Legaris roble o Viña Pomal Crianza. Los blancos: Viña Pomal Verdejo o Raimat Albariño.";
+  const cavasResponse = "En el banquete los cavas (aún pendientes de decisión) son: Gran Bach Brut o Roger de Flor Brut Nature.";
+  const banquetDrinksResponse = `En el banquete, los novios están pendientes de decisión para las bebidas. Las opciones son:
+* **Vinos tintos:** Legaris roble o Viña Pomal Crianza
+* **Vinos blancos:** Viña Pomal Verdejo o Raimat Albariño
+* **Cavas:** Gran Bach Brut o Roger de Flor Brut Nature`;
   
   // --- SYSTEM PROMPT ---
   const systemPrompt = `
@@ -360,9 +372,26 @@ ${aperitivoVegetarianoResponse}
 - **INSTRUCCIÓN CLAVE (CATERING):** Si preguntan por la empresa de catering, DEBES responder ÚNICAMENTE: "La empresa de catering es la misma Masía Mas Llombart, ellos se encargan de todo."
 
 
+## 🥂 Bebidas
+
+- **INSTRUCCIÓN CLAVE (VINOS - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"vinos"**, DEBES responder ÚNICAMENTE con el contenido de ${winesResponse}.
+
+- **INSTRUCCIÓN CLAVE (CAVAS - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"cavas"**, DEBES responder ÚNICAMENTE con el contenido de ${cavasResponse}.
+
+- **INSTRUCCIÓN CLAVE (CEREMONIA BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"ceremonia"** (o "en la ceremonia"), DEBES responder ÚNICAMENTE con el contenido de ${ceremonyDrinksResponse}.
+
+- **INSTRUCCIÓN CLAVE (APERITIVO BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"aperitivo"** (o "en el aperitivo") **y no se refiere a comida**, DEBES responder ÚNICAMENTE con el contenido de ${aperitifDrinksResponse}.
+
+- **INSTRUCCIÓN CLAVE (BANQUETE BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"banquete"** O **"comida banquete"** (o "en el banquete") **y no se refiere a comida**, DEBES responder ÚNICAMENTE con el contenido de ${banquetDrinksResponse}.
+
+- **INSTRUCCIÓN CLAVE (FIESTA BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"fiesta"** (o "en la fiesta"), DEBES responder ÚNICAMENTE con el contenido de ${partyDrinksResponse}.
+
+- **INSTRUCCIÓN CLAVE (BEBIDAS GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por las **bebidas** o **que hay de beber** y NINGUNA de las instrucciones de ALTA PRIORIDAD se ha activado, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿Las bebidas de la **ceremonia**? ¿Del **aperitivo**? ¿Del **banquete**? ¿O de la **fiesta**?"
+
+
 ## 📅 Detalles Generales
 - La boda será el **31 de octubre de 2026**, de **12:00 a 21:00 aproximadamente**, en **Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona**.
-- **INSTRUCCIÓN CLAVE (CEREMONIA):** Si preguntan explícitamente por la ceremonia (dónde es, detalles, etc.), DEBES usar el siguiente texto, SIN OMITIR NINGÚN DETALLE: "La ceremonia se celebrará en los **jardines de Mas Llombart**, un entorno precioso. Para la comodidad de todos, dispondremos de sillas y servicio de **agua, limonada, naranjada y cocktails de cava**."
+- **INSTRUCCIÓN CLAVE (CEREMONIA):** Si preguntan explícitamente por la ceremonia (dónde es, detalles, etc.), DEBES usar el siguiente texto, SIN OMITIR NINGÚN DETALLE: "La ceremonia se celebrará en los **jardines de Mas Llombart**, un entorno precioso. Para la comodidad de todos, dispondremos de sillas y servicio de bebidas."
 - Más información sobre el lugar: [Ubicación](${detailUbisUrlInPrompt}).
 
 ## 🕒 Horario
