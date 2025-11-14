@@ -176,7 +176,11 @@ Mujer,Didac,PENDIENTE
   }
 
   // --- CONDICIONAL PROMPT INJECTION (FORZAR LA REGLA) ---
-  let aiForcedInstruction = "";
+  let aiForcedInstruction = `
+## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
+El backend ha determinado que NO se ha identificado un nombre de invitado único.
+`; // <-- MENSAJE CLARO PARA CUANDO NO SE ENCUENTRA INVITADO.
+
   if (forcedGuest) {
       const guestName = forcedGuest.nombre;
       const guestSurname = forcedGuest.apellido;
@@ -328,8 +332,8 @@ ${guestList}
 ## 🎮 REGLA CERO: QUIZ Y JUEGO (PRIORIDAD MÁXIMA)
 
 - **INSTRUCCIÓN CLAVE (QUIZ):** Si el mensaje del usuario contiene palabras clave como **"jugar"**, **"juego"**, **"quiz"** o **"test"**, DEBES seguir esta estricta lógica (Ignorando el resto de Reglas, *excepto la de Privacidad*):
-    - **A. Si el bloque de PRIORIDAD ABSOLUTA contiene un nombre identificado (Invitado encontrado):** Responde ÚNICAMENTE: "¡Prepárate, ${forcedGuest ? forcedGuest.nombre : 'amigo'}! El QUIZ está cargando... 🕹️ ¡Te toca demostrar cuánto sabes de Manel y Carla! Si aciertas, tendrás una sorpresa. **¡Mucha suerte!** [EMPEZAR QUIZ](https://docs.google.com/forms/d/16TeEbNrv_VRydyuP0TZ6fuYJ-7XzORGdcMlmfNd0Olk/edit)".
-    - **B. Si el bloque de PRIORIDAD ABSOLUTA NO contiene un nombre identificado** (ya sea porque no lo ha dicho o porque no se ha encontrado todavía), **DEBES** responder ÚNICAMENTE: "¡Genial! Para acceder al quiz y registrar tu participación, ¿podrías indicarme tu **nombre completo** (Nombre y Apellido)? Solo los invitados tienen acceso a la sorpresa final. 😉"
+    - **A. Si la INSTRUCCIÓN DE PRIORIDAD ABSOLUTA contiene la frase "se ha identificado a un ÚNICO invitado":** Responde ÚNICAMENTE: "¡Prepárate, ${forcedGuest ? forcedGuest.nombre : 'amigo'}! El QUIZ está cargando... 🕹️ ¡Te toca demostrar cuánto sabes de Manel y Carla! Si aciertas, tendrás una sorpresa. **¡Mucha suerte!** [EMPEZAR QUIZ](https://bodamanelcarla.vercel.app/quizboda)".
+    - **B. Si la INSTRUCCIÓN DE PRIORIDAD ABSOLUTA contiene la frase "NO se ha identificado un nombre de invitado":** Responde ÚNICAMENTE: "¡Genial! Para acceder al quiz y registrar tu participación, ¿podrías indicarme tu **nombre completo** (Nombre y Apellido)? Solo los invitados tienen acceso a la sorpresa final. 😉"
 
 // *** FIN DE LA REGLA CERO ***
 
