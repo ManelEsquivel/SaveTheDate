@@ -3,13 +3,13 @@ import Head from "next/head";
 
 // 1. Mensaje de Bienvenida en HTML
 const WELCOME_MESSAGE_HTML = `
-  <strong>¡Hola! 👋 Soy tu asistente personal</strong><br/><br/>
-  Estoy aquí para ayudarte con todas las dudas sobre la boda de <strong>Manel y Carla</strong>.<br/><br/>
+  <strong>¡Hola! 👋 Soy tu asistente para la boda de Manel y Carla</strong><br/><br/>
+  Estoy aquí para ayudarte con todas las dudas.<br/><br/>
   Puedes preguntarme, por ejemplo:<br/>
   <ul>
-    <li>&iquest;Estoy en la lista de invitados?</li>
     <li>&iquest;Qu&eacute; comida se va a servir?</li>
     <li>&iquest;Cu&aacute;l es el plan del d&iacute;a?</li>
+    <li>&iquest;D&oacute;nde de la ceremonia?</li>
   </ul>
   &iexcl;Escribe tu pregunta abajo!
 `;
