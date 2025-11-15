@@ -19,6 +19,8 @@ export default function BotBodaAsistente() {
     if (!input.trim()) return;
     const userMessage = { role: "user", content: input };
     
+    // ... (El resto de la lógica de sendMessage es la misma)
+
     // 1. Añadimos el mensaje del usuario y el placeholder del bot (VACÍO)
     setMessages((prev) => [...prev, userMessage, { role: "assistant", content: "" }]);
     
@@ -94,43 +96,78 @@ export default function BotBodaAsistente() {
       </Head>
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <h1>Asistente de Boda 💍</h1>
+
+        {/* --- INICIO: Mensaje de Bienvenida Agregado --- */}
+        <div style={{ 
+            maxWidth: "400px",
+            margin: "20px auto 0",
+            padding: "15px",
+            textAlign: "left",
+            backgroundColor: "#fff0f0", // Fondo más cálido para la bienvenida
+            borderRadius: "10px",
+            border: "1px solid #ffcccb",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
+        }}>
+            <h3 style={{ margin: "0 0 5px 0", color: "#cc0000" }}>¡Hola! 👋</h3>
+            <p style={{ margin: "0 0 10px 0", fontSize: "1.1em", fontWeight: "bold" }}>
+                Soy tu asistente para la boda de **Manel y Carla**.
+            </p>
+            <p style={{ margin: 0, fontSize: "0.95em" }}>
+                Puedes hacerme **preguntas** como:
+                <ul style={{ paddingLeft: "20px", marginTop: "5px", marginBottom: "0" }}>
+                    <li>¿Estoy en la lista de invitados?</li>
+                    <li>¿Qué comida se va a servir?</li>
+                    <li>¿Cuál es el plan del día?</li>
+                </ul>
+            </p>
+        </div>
+        {/* --- FIN: Mensaje de Bienvenida Agregado --- */}
+
         <div
           ref={chatBoxRef}
           style={{
             maxWidth: "400px",
             // Altura ligeramente reducida
-            height: "280px", 
+            height: messages.length === 0 ? "240px" : "280px", // Ajusta la altura si no hay mensajes
             overflowY: "auto",
             border: "1px solid #ccc",
             borderRadius: "10px",
             padding: "10px",
             backgroundColor: "#fff",
             boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            margin: "20px auto",
+            margin: "10px auto 20px", // Espacio reducido arriba para acercarlo al mensaje de bienvenida
           }}
         >
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                textAlign: msg.role === "user" ? "right" : "left",
-                margin: "10px 0",
-              }}
-            >
+          {/* Si no hay mensajes, se podría mostrar un mensaje dentro de la caja de chat */}
+          {messages.length === 0 ? (
+             <div style={{ textAlign: 'center', color: '#666', marginTop: '50px' }}>
+                ¡Escribe tu primera pregunta abajo!
+             </div>
+          ) : (
+            messages.map((msg, i) => (
               <div
+                key={i}
                 style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  backgroundColor: msg.role === "user" ? "#d1e7dd" : "#cce5ff",
-                  maxWidth: "80%",
-                  wordWrap: "break-word",
+                  textAlign: msg.role === "user" ? "right" : "left",
+                  margin: "10px 0",
                 }}
-                dangerouslySetInnerHTML={{ __html: msg.content }} 
-              />
-            </div>
-          ))}
+              >
+                <div
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    backgroundColor: msg.role === "user" ? "#d1e7dd" : "#cce5ff",
+                    maxWidth: "80%",
+                    wordWrap: "break-word",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: msg.content }} 
+                />
+              </div>
+            ))
+          )}
+          
           {/* El indicador "Escribiendo..." se reemplaza por el efecto visual de tipeo */}
           {isTyping && <p style={{ textAlign: 'left' }}>...</p>} 
         </div>
@@ -148,6 +185,7 @@ export default function BotBodaAsistente() {
             }}
             placeholder="Escribe tu mensaje..."
             style={{
+              // ... (Estilos de textarea)
               resize: "none",
               height: textAreaHeight,
               maxHeight: "100px",
@@ -155,7 +193,6 @@ export default function BotBodaAsistente() {
               borderRadius: "10px",
               border: "1px solid #ccc",
               outline: "none",
-              // Font-size 16px para evitar el zoom en móviles
               fontSize: "16px", 
               lineHeight: "1.4",
               transition: "all 0.2s ease",
@@ -169,6 +206,7 @@ export default function BotBodaAsistente() {
             onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
             onClick={sendMessage}
             style={{
+              // ... (Estilos de botón)
               padding: "12px 20px",
               borderRadius: "12px",
               border: "1px solid #007bff",
