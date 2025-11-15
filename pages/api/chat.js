@@ -401,7 +401,7 @@ ${guestList}
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo-0125", // <-- CAMBIO 1: Modelo optimizado para velocidad y coste.
+        model: "gpt-3.5-turbo", // <-- CAMBIO 1: Modelo optimizado para velocidad y coste.
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: message },
