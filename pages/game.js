@@ -7,7 +7,7 @@ import Head from 'next/head';
 const BASE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfd6X0a5VGjQW_y7e3IYqTh64HLrh1yA6CWJEGJZu4HxENr3Q/formResponse";
 
 // IDs (Nombre + 5 Preguntas)
-const ENTRY_NAME = "entry.1745994476"; // <-- RESTAURADO
+const ENTRY_NAME = "entry.1745994476"; 
 const ENTRY_Q1 = "entry.1000057";      
 const ENTRY_Q2 = "entry.1509074265";   
 const ENTRY_Q3 = "entry.551001831";    
@@ -223,7 +223,6 @@ const QuizBodaPage = () => {
 
             <div className="container">
                 <div className="card">
-                    {/* Botón de envío final, oculto hasta el último paso (ahora en el handler de la última pregunta) */}
                     {renderStep()}
                     
                     {/* Indicador de progreso (Steps 1-6) */}
@@ -239,41 +238,199 @@ const QuizBodaPage = () => {
                 </div>
             </div>
 
-            {/* --- ESTILOS ESTILO MILLONARIO --- */}
+            {/* --- ESTILOS ESTILO MILLONARIO/VIDEOJUEGO --- */}
             <style jsx global>{`
-                 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap'); 
+                 /* 🎯 NUEVA FUENTE DE VIDEOJUEGO */
+                 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@700&display=swap'); 
             `}</style>
             <style jsx>{`
-                /* ... (Estilos Millonarios idénticos al código anterior) ... */
                 .container {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     min-height: 100vh;
                     background: #111827; 
-                    font-family: 'Roboto Mono', monospace, sans-serif;
+                    /* 🎯 NUEVA FUENTE BASE (PIXEL) */
+                    font-family: 'Press Start 2P', monospace, sans-serif;
                     padding: 20px;
                 }
-                .card { background: #1f2937; color: #fff; padding: 3rem; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 0, 0, 0.5); text-align: center; max-width: 700px; width: 100%; min-height: 500px; display: flex; flex-direction: column; justify-content: space-between; }
-                h1 { color: #ffcc00; margin-bottom: 1rem; font-size: 2.5rem; text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
-                h2 { color: #fff; font-size: 1.5rem; margin-bottom: 2rem; border-bottom: 2px solid #374151; padding-bottom: 1rem; }
-                p { color: #e5e7eb; font-size: 1.1rem; margin-bottom: 2rem; }
-                .button { display: inline-block; padding: 1rem 2rem; background-color: #ffcc00; color: #1f2937; border: none; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 0 #cc9900; text-transform: uppercase; }
-                .button:hover { background-color: #ffdd44; transform: translateY(-2px); box-shadow: 0 6px 0 #cc9900; }
-                .name-screen label { display: block; margin-bottom: 10px; color: #ffcc00; font-weight: bold; }
-                .name-screen input { width: 100%; padding: 12px; border: 2px solid #ffcc00; border-radius: 8px; background: #2d3748; color: #fff; font-size: 1.1rem; margin-bottom: 20px; }
-                .next-button { width: auto; min-width: 250px; margin-top: 10px; }
-                .options-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
-                .option-button { display: flex; align-items: center; width: calc(50% - 7.5px); min-height: 70px; padding: 15px 20px; background-color: #374151; color: #fff; border: 2px solid #5a6475; border-radius: 35px; font-size: 1rem; text-align: left; transition: background-color 0.2s, transform 0.1s; box-shadow: 0 4px 0 #2d3748; }
-                .option-button:hover { background-color: #4b5563; border-color: #ffcc00; transform: translateY(-2px); box-shadow: 0 6px 0 #2d3748; }
-                .option-letter { background: #ffcc00; color: #1f2937; font-weight: bold; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; flex-shrink: 0; }
-                .option-text { flex-grow: 1; }
+                .card { 
+                    background: #1f2937; 
+                    color: #fff; 
+                    padding: 3rem; 
+                    border-radius: 16px; 
+                    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5); 
+                    text-align: center; 
+                    max-width: 700px; 
+                    width: 100%; 
+                    min-height: 500px; 
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: space-between; 
+                }
+                
+                /* 🎯 TEXTOS DE RESPUESTAS (MÁS LEGIBLES) */
+                p, .option-text, .success-screen p {
+                    font-family: 'Roboto Mono', monospace;
+                    font-size: 1.1rem;
+                    line-height: 1.6;
+                    color: #e5e7eb;
+                }
+                .progress-text {
+                     font-family: 'Roboto Mono', monospace;
+                }
+                
+                h1 { 
+                    color: #ffcc00; 
+                    margin-bottom: 1rem; 
+                    font-size: 2.2rem; /* Ajuste ligero para la fuente pixel */
+                    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); 
+                    line-height: 1.4;
+                }
+                h2 { 
+                    color: #fff; 
+                    font-size: 1.3rem; /* Ajuste ligero para la fuente pixel */
+                    margin-bottom: 2rem; 
+                    border-bottom: 2px solid #374151; 
+                    padding-bottom: 1rem; 
+                    line-height: 1.5;
+                }
+                
+                .button { 
+                    display: inline-block; 
+                    padding: 1rem 2rem; 
+                    background-color: #ffcc00; 
+                    color: #1f2937; 
+                    border: none; 
+                    border-radius: 8px; 
+                    text-decoration: none; 
+                    font-weight: bold; 
+                    font-size: 1.1rem; 
+                    cursor: pointer; 
+                    transition: all 0.2s ease; 
+                    box-shadow: 0 4px 0 #cc9900; 
+                    text-transform: uppercase;
+                    /* 🎯 NUEVA FUENTE DE VIDEOJUEGO */
+                    font-family: 'Press Start 2P', monospace;
+                    /* 🎯 NUEVA ANIMACIÓN DE PULSO */
+                    animation: pulse 1.5s infinite;
+                }
+                
+                /* 🎯 ANIMACIÓN DE PULSO */
+                @keyframes pulse {
+                    0% { transform: scale(1); box-shadow: 0 4px 0 #cc9900; }
+                    50% { transform: scale(1.05); box-shadow: 0 6px 0 #cc9900; }
+                    100% { transform: scale(1); box-shadow: 0 4px 0 #cc9900; }
+                }
+
+                .button:hover { 
+                    background-color: #ffdd44; 
+                    transform: translateY(-2px) scale(1.05); /* Escala en hover */
+                    box-shadow: 0 6px 0 #cc9900; 
+                    animation: none; /* Detener pulso en hover */
+                }
+                
+                .name-screen label { 
+                    display: block; 
+                    margin-bottom: 10px; 
+                    color: #ffcc00; 
+                    font-weight: bold; 
+                    font-size: 1rem;
+                }
+                .name-screen input { 
+                    width: 100%; 
+                    padding: 12px; 
+                    border: 2px solid #ffcc00; 
+                    border-radius: 8px; 
+                    background: #2d3748; 
+                    color: #fff; 
+                    font-size: 1.1rem; 
+                    margin-bottom: 20px;
+                    /* 🎯 FUENTE LEGIBLE PARA EL INPUT */
+                    font-family: 'Roboto Mono', monospace;
+                }
+                
+                .next-button { 
+                    width: auto; 
+                    min-width: 250px; 
+                    margin-top: 10px;
+                    animation: none; /* El botón de siguiente no necesita pulsar */
+                }
+
+                /* --- 🎯 NUEVO DISEÑO DE OPCIONES (MÁS GRANDE) --- */
+
+                .options-grid {
+                    display: flex;
+                    flex-direction: column; /* Apilado vertical */
+                    flex-wrap: wrap;
+                    gap: 15px;
+                    justify-content: center;
+                    margin-top: 20px;
+                }
+
+                .option-button {
+                    display: flex;
+                    align-items: center;
+                    width: 100%; /* 🎯 BOTONES 100% ANCHO */
+                    min-height: 70px;
+                    padding: 15px 20px;
+                    background-color: #374151; 
+                    color: #fff;
+                    border: 2px solid #5a6475; 
+                    border-radius: 35px; 
+                    text-align: left;
+                    transition: all 0.2s ease;
+                    box-shadow: 0 4px 0 #2d3748;
+                    cursor: pointer;
+                }
+
+                /* 🎯 NUEVO HOVER ESTILO MILLONARIO (INVERTIDO) */
+                .option-button:hover {
+                    background-color: #ffcc00; /* Fondo dorado */
+                    border-color: #ffcc00;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 0 #2d3748;
+                }
+                
+                .option-letter { 
+                    background: #ffcc00; 
+                    color: #1f2937; 
+                    font-weight: bold; 
+                    width: 30px; 
+                    height: 30px; 
+                    border-radius: 50%; 
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    margin-right: 15px; 
+                    flex-shrink: 0;
+                    font-family: 'Press Start 2P', monospace; /* Letra A, B C pixelada */
+                    transition: all 0.2s ease;
+                }
+                
+                /* 🎯 NUEVO HOVER (INVERTIDO) */
+                .option-button:hover .option-letter {
+                    background: #1f2937;
+                    color: #ffcc00;
+                }
+                .option-button:hover .option-text {
+                    color: #1f2937; /* Texto oscuro en hover */
+                }
+                
+                .option-text { 
+                    flex-grow: 1; 
+                    font-family: 'Roboto Mono', monospace;
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    transition: color 0.2s ease;
+                }
+                
                 .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                 .progress-bar-container { width: 90%; height: 15px; background: #374151; border-radius: 10px; overflow: hidden; margin: 20px auto 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3) inset; }
                 .progress-bar { height: 100%; background: linear-gradient(90deg, #ffcc00, #ff8c00); transition: width 0.5s ease-in-out; border-radius: 10px; }
-                .progress-text { margin-top: 5px; font-size: 0.9rem; color: #ffcc00; }
-                .success-screen h2 { color: #70e000; text-shadow: 0 0 5px #70e000; }
+                .progress-text { margin-top: 5px; font-size: 0.9rem; color: #ffcc00; font-family: 'Roboto Mono', monospace; }
+                .success-screen h2 { color: #70e000; text-shadow: 0 0 5px #70e000; font-size: 1.8rem; }
             `}</style>
         </>
     );
