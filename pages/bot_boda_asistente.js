@@ -9,7 +9,7 @@ const WELCOME_MESSAGE_HTML = `
   <ul>
     <li>&iquest;Qu&eacute; comida se va a servir?</li>
     <li>&iquest;Cu&aacute;l es el plan del d&iacute;a?</li>
-    <li>&iquest;D&oacute;nde de la ceremonia?</li>
+    <li>&iquest;D&oacute;nde es la ceremonia?</li>
   </ul>
   &iexcl;Escribe tu pregunta abajo!
 `;
