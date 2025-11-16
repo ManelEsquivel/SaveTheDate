@@ -238,26 +238,7 @@ const QuizBodaPage = () => {
             <style jsx global>{`
                  /* Importamos fuentes épicas y legibles */
                  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap'); 
-            
-.container::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text y="15" font-size="20" fill="#ff69b4">❤</text></svg>');
-  background-repeat: repeat;
-  opacity: 0.1;
-  animation: moveHearts 20s linear infinite;
-  z-index: 0;
-}
-@keyframes moveHearts {
-  0% { background-position: 0 0; }
-  100% { background-position: 1000px 1000px; }
-}
-.card { position: relative; z-index: 1; }
-`}</style>
+            `}</style>
             <style jsx global>{`
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap');
 
@@ -266,7 +247,7 @@ const QuizBodaPage = () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #ffffff;
+  background: linear-gradient(135deg, #23074d, #440a5b);
   font-family: 'Lato', sans-serif;
   padding: 20px;
 }
@@ -288,7 +269,7 @@ h1, h2 { font-family: 'Cinzel', serif; color: #f0e1c9; text-shadow: 0 0 10px rgb
 .button {
   display: inline-block;
   padding: 1.5rem 3.5rem;
-  background: #ffffff;
+  background: linear-gradient(145deg, #d4af37, #b8860b);
   color: #1f2937;
   border: none;
   border-radius: 50px;
@@ -306,34 +287,29 @@ h1, h2 { font-family: 'Cinzel', serif; color: #f0e1c9; text-shadow: 0 0 10px rgb
 .button:active { animation: clickBounce 0.3s; }
 @keyframes clickBounce { 0%{transform:scale(1);}50%{transform:scale(0.9);}100%{transform:scale(1);} }
 
-.next-button { width: 100%; font-size: 1.3rem; padding: 1rem; margin-top: 10px; background: #ffffff; position:relative; overflow:hidden; }
-.next-button::before { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background:linear-gradient(100deg,transparent,rgba(255,255,255,0.3),transparent); transform:skewX(-30deg); animation:shine 3s infinite linear; }
-@keyframes shine { 0%{left:-100%;}100%{left:150%;} }
+.next-button {
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-top: 10px;
+  background: #e5e7eb; /* Gris claro */
+  color: #1f2937; /* Texto oscuro */
+  border: 1px solid #d1d5db; /* Borde suave */
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.next-button:hover {
+  background: #d1d5db; /* Un poco más oscuro al hover */
+}
+100%{left:150%;} }
 
-.option-button { min-height:90px; padding:1.8rem; background:#374151; color:#f0e1c9; border-radius:12px; font-size:1.3rem; font-weight:700; transition:all 0.3s ease; position:relative; overflow:hidden; }
-.option-button:hover { background:#d4af37; color:#1f2937; transform:scale(1.05); box-shadow:0 6px 15px rgba(212,175,55,0.5); }
+.option-button { min-height:90px; padding:1.8rem; background:#374151; color:#f0e1c9; border-radius:12px; font-size:1.3rem; font-weight:700; transition:all 0.3s ease; position:relative; overflow:hidden;  margin-bottom: 10px;}
+.option-button:hover { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
 .option-button::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:radial-gradient(circle,rgba(255,255,255,0.4),transparent); animation:shine 2s infinite linear; }
 .spinner { border:4px solid #f3f3f3; border-top:4px solid #ffcc00; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:20px auto; }
 @keyframes spin { 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
-
-.container::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text y="15" font-size="20" fill="#ff69b4">❤</text></svg>');
-  background-repeat: repeat;
-  opacity: 0.1;
-  animation: moveHearts 20s linear infinite;
-  z-index: 0;
-}
-@keyframes moveHearts {
-  0% { background-position: 0 0; }
-  100% { background-position: 1000px 1000px; }
-}
-.card { position: relative; z-index: 1; }
 `}</style>
         </>
     );
