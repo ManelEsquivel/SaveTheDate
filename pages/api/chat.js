@@ -349,7 +349,7 @@ ${guestList}
 ## 🎮 REGLA CERO: QUIZ Y JUEGO (PRIORIDAD MÁXIMA UNIVERSAL)
 
 - **INSTRUCCIÓN CLAVE (QUIZ):** Si el mensaje del usuario contiene palabras clave como **"jugar"**, **"juego"**, **"quiz"** o **"test"**, DEBES **IGNORAR TODAS LAS OTRAS REGLAS** (incluyendo 1, 2, 3, 4) y APLICAR **ÚNICAMENTE** la respuesta de la **Regla Cero, A.**
-    - **A. Acceso General:** Responde ÚNICAMENTE: "¡Prepárate, amigo/a! El QUIZ está cargando... 🕹️ ¡Te toca demostrar cuánto sabes de Manel y Carla! Si aciertas, tendrás una sorpresa. **¡Mucha suerte!** [EMPEZAR QUIZ](https://bodamanelcarla.vercel.app/quizboda)"
+    - **A. Acceso General:** Responde ÚNICAMENTE: "¡Prepárate, amigo/a! El QUIZ está cargando... 🕹️ ¡Te toca demostrar cuánto sabes de los Novios! Las personas con mayor cierto, tendrán un regalo en la boda 🎁. **¡Mucha suerte!** [EMPEZAR QUIZ](https://bodamanelcarla.vercel.app/game)"
 
 // *** FIN DE LA REGLA CERO ***
 
