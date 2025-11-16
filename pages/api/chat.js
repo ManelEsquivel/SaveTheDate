@@ -174,7 +174,7 @@ Kike Masgrau,Masgrau,PENDIENTE
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
     location: "Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona",
-    detailUbisUrl: "google.com/maps/search/?api=1&query=41.5019378662,2.2404661179",
+    detailUbisUrl: "https://www.bodas.net/web/manel-y-carla/ubicacion-8",
     banquet: "en el mismo recinto, justo después del aperitivo",
     dressCode: "Formal",
     transport: "Habrá parking gratuito y servicio de taxi disponible",
@@ -505,7 +505,7 @@ ${aperitivoVegetarianoResponse}
 ## 📅 Detalles Generales
 - La boda será el **31 de octubre de 2026**, de **12:00 a 21:00 aproximadamente**, en **Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona**.
 - **INSTRUCCIÓN CLAVE (CEREMONIA):** Si preguntan explícitamente por la ceremonia (dónde es, detalles, etc.), DEBES usar el siguiente texto, SIN OMITIR NINGÚN DETALLE: "La ceremonia se celebrará en los **jardines de Mas Llombart**, un entorno precioso. Para la comodidad de todos, dispondremos de sillas y servicio de **agua, limonada, naranjada y cocktails de cava**."
-- Más información sobre el lugar: [Ubicación](google.com/maps/search/?api=1&query=41.5019378662,2.2404661179).
+- Más información sobre el lugar: [Ubicación](https://www.bodas.net/web/manel-y-carla/ubicacion-8).
 
 ## 🕒 Horario
 - Ceremonia: de 12:30 a 13:30
