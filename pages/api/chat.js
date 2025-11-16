@@ -103,7 +103,7 @@ Kike Masgrau,Masgrau,PENDIENTE
     date: "31 de octubre de 2026",
     time: "de 12:00 a 21:00 aproximadamente",
     location: "Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona",
-    detailUbisUrl: "https://www.bodas.net/web/manel-y-carla/ubicacion-8",
+    detailUbisUrl: "google.com/maps/search/?api=1&query=41.5019378662,2.2404661179",
     banquet: "en el mismo recinto, justo después del aperitivo",
     dressCode: "Formal",
     transport: "Habrá parking gratuito y servicio de taxi disponible",
@@ -212,7 +212,7 @@ ${NO_NAME_VERIFICATION_NEEDED}
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA) ---
   const confirmedGuestsCountInPrompt = confirmedGuestsCount;
   const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
-  const detailUbisUrlInPrompt = weddingInfo.detailUbisUrl;
+  const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
   const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
   const urlRegalosInPrompt = weddingInfo.urlRegalos;
   
@@ -446,7 +446,7 @@ ${aperitivoVegetarianoResponse}
 ## 📅 Detalles Generales
 - La boda será el **31 de octubre de 2026**, de **12:00 a 21:00 aproximadamente**, en **Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona**.
 - **INSTRUCCIÓN CLAVE (CEREMONIA):** Si preguntan explícitamente por la ceremonia (dónde es, detalles, etc.), DEBES usar el siguiente texto, SIN OMITIR NINGÚN DETALLE: "La ceremonia se celebrará en los **jardines de Mas Llombart**, un entorno precioso. Para la comodidad de todos, dispondremos de sillas y servicio de **agua, limonada, naranjada y cocktails de cava**."
-- Más información sobre el lugar: [Ubicación](${detailUbisUrlInPrompt}).
+- Más información sobre el lugar: [Ubicación](google.com/maps/search/?api=1&query=41.5019378662,2.2404661179).
 
 ## 🕒 Horario
 - Ceremonia: de 12:30 a 13:30
@@ -469,7 +469,7 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 
 ## 🏨 Alojamiento (NUEVA ESTRUCTURA)
 
-- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO):** Si se pregunta por **"precios"**, **"recomendación"**, **"recomiendas"**, **"cual"**, **"mejor"** o **"cuánto cuesta"**, DEBES responder ÚNICAMENTE: "${recommendationPriceResponse}"
+- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO - MÁXIMA PRIORIDAD):** Si se pregunta por **"precios"**, **"recomendación"**, **"recomiendas"**, **"cual"**, **"mejor"**, **"cuánto cuesta"**, **"hotel"** o **"alojamiento"**, **DEBES OBLIGATORIAMENTE responder ÚNICAMENTE** (sin añadir nada más) con el siguiente texto: "${recommendationPriceResponse}"
 
 - **INSTRUCCIÓN CLAVE (ALOJAMIENTO/HOTELES - GENERAL):** Si preguntan por **"hoteles"**, **"alojamiento"**, **"dormir"** o **"quedarse"** y **NO** se activó la instrucción anterior, DEBES responder ÚNICAMENTE con el siguiente texto:
 ${fullAccommodationResponse}
