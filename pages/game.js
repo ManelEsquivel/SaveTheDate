@@ -4,7 +4,7 @@ import Head from 'next/head';
 // *******************************************************************
 // ⚠️ TUS IDENTIFICADORES REALES (NO CAMBIAN) ⚠️
 // *******************************************************************
-const BASE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfd6X0a5VGjQW_yy3IYqTh64HLrh1yA6CWJEGJZu4HxENr3Q/formResponse";
+const BASE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfd6X0a5VGjQW_y7e3IYqTh64HLrh1yA6CWJEGJZu4HxENr3Q/formResponse";
 
 const ENTRY_NAME = "entry.1745994476"; 
 const ENTRY_Q1 = "entry.1000057";      
@@ -19,11 +19,12 @@ const QUIZ_COMPLETED_KEY = 'manel_carla_quiz_completed';
 const ALL_QUESTIONS = [
     { id: 'q1', entry: ENTRY_Q1, label: '1. ¿De quién fue la idea de tener animales en casa?', options: ['Manel', 'Carla'] },
     { id: 'q2', entry: ENTRY_Q2, label: '2. ¿Cómo se llaman los michis de Manel y Carla?', options: ['Wasabi y Abby', 'Sky y Wasabi', 'Mia y Sombra', 'Mochi y Abby'] },
-    { id: 'q3', entry: ENTRY_Q3, label: '3. ¿En qué Provincia/Ciudad se comprometieron?', options: ['Roma/Fontana di trevi', 'París/ Torre Eiffel', 'Girona/Cadaqués', 'Menorca/Cala Turqueta'] },
-    { id: 'q4', entry: ENTRY_Q4, label: '4. ¿Dónde fue el primer bautizo de buceo de Carla?', options: ['Tossa de Mar', 'Cadaqués', 'Illes Medes', 'Palamós'] },
-    { id: 'q5', entry: ENTRY_Q5, label: '5. Número de tatuajes entre Carla y Manel', options: ['6', '7', '8', '10'] },
+    { id: 'q3', entry: ENTRY_Q3, label: '3. ¿En qué Provincia/Ciudad se comprometieron?', options: ['Roma/Fontana di trevi', 'París/ Torre eiffel', 'Girona /Cadaques', 'Menorca /Cala turqueta'] },
+    { id: 'q4', entry: ENTRY_Q4, label: '4. ¿Dónde fue el primer bautizo de buceo de Carla?', options: ['Tossa de Mar', 'Cadaques', 'Illes Medes', 'Palamos'] },
+    { id: 'q5', entry: ENTRY_Q5, label: '5. Número de tatuajes Entre Carla y Manel', options: ['6', '7', '8', '10'] },
 ];
 
+// Mapeo de IDs (Incluyendo el nombre)
 const entryMap = {
     guestName: ENTRY_NAME,
     q1: ENTRY_Q1,
@@ -35,14 +36,16 @@ const entryMap = {
 
 // *******************************************************************
 
+
 const QuizBodaPage = () => {
+    // currentStep: 0 (Bienvenida), 1 (Nombre), 2-6 (Preguntas), 7 (Enviando), 8 (Finalizado)
     const [currentStep, setCurrentStep] = useState(0); 
     const [answers, setAnswers] = useState({
         guestName: '', 
         q1: '', q2: '', q3: '', q4: '', q5: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isCompleted, setIsCompleted] = useCompleted(false); 
+    const [isCompleted, setIsCompleted] = useState(false); 
 
     const currentQuestionIndex = currentStep - 2; 
     const currentQuestion = ALL_QUESTIONS[currentQuestionIndex];
@@ -56,27 +59,33 @@ const QuizBodaPage = () => {
         }
     }, []);
 
+    // Maneja la selección de respuesta para las preguntas (Steps 2-6)
     const handleAnswerSelect = (value, questionId) => {
         const newAnswers = { ...answers, [questionId]: value };
         setAnswers(newAnswers);
 
+        // Si es la última pregunta (índice 4), vamos a la pantalla de envío
         if (currentQuestionIndex === 4) {
-            handleSubmit(newAnswers);
+            handleSubmit(newAnswers); // Enviar inmediatamente
         } else {
-            setCurrentStep(prev => prev + 1);
+            setCurrentStep(prev => prev + 1); // Siguiente pregunta
         }
     };
     
+    // Maneja el input de texto (Name) (Step 1)
     const handleNameChange = (e) => {
         const name = e.target.value;
         setAnswers(prev => ({ ...prev, guestName: name }));
         localStorage.setItem('manel_carla_quiz_name', name);
     };
 
+
+    // --- Lógica de Envío (Método GET / window.open) ---
     const handleSubmit = (finalAnswers) => { 
         setIsSubmitting(true);
-        setCurrentStep(7);
+        setCurrentStep(7); // Muestra la pantalla "Enviando"
         
+        // 1. Construir la URL de Envío (GET Request)
         let submissionUrl = `${BASE_FORM_URL}?`;
         submissionUrl += `&${entryMap.guestName}=${encodeURIComponent(finalAnswers.guestName)}`; 
         submissionUrl += `&${entryMap.q1}=${encodeURIComponent(finalAnswers.q1)}`;
@@ -84,32 +93,372 @@ const QuizBodaPage = () => {
         submissionUrl += `&${entryMap.q3}=${encodeURIComponent(finalAnswers.q3)}`;
         submissionUrl += `&${entryMap.q4}=${encodeURIComponent(finalAnswers.q4)}`;
         submissionUrl += `&${entryMap.q5}=${encodeURIComponent(finalAnswers.q5)}`;
-        submissionUrl += `&submit=Submit`;
+        submissionUrl += `&submit=Submit`; 
 
         submissionUrl = submissionUrl.replace('?&', '?');
+
+        // 2. Abrir la URL en una nueva pestaña (El método que funcionó)
         window.open(submissionUrl, '_blank');
 
+        // 3. Transición local garantizada
         localStorage.setItem(QUIZ_COMPLETED_KEY, 'true');
         setIsCompleted(true);
         
+        // Esperar 2 segundos y forzar la transición a la pantalla final
         setTimeout(() => { 
              setIsSubmitting(false);
-             setCurrentStep(8);
+             setCurrentStep(8); // Muestra el mensaje final
         }, 2000); 
     };
+    
+    
+    // --- Renderizado de Vistas ---
 
     const renderStep = () => {
+        // Pantalla de bloqueo/éxito (STEP 8)
         if (isCompleted || currentStep === 8) {
              return (
                  <div className="step-content success-screen">
+                    {/* Mensaje de éxito personalizado */}
                     <h2>¡Respuestas Enviadas con Éxito! 🎉</h2>
-                    <p>¡Gracias por participar **{answers.guestName || 'invitado/a'}**!</p>
+                    <p>¡Vuestro conocimiento sobre Manel y Carla ha sido registrado, **{answers.guestName || 'invitado/a'}**!</p>
+                    <p>Vuestras respuestas han sido validadas. Si habéis acertado las preguntas o sois de las personas con mayor acierto, **¡tendréis un Detalle Especial!**</p>
+                    <p>¡Gracias por jugar y nos vemos muy pronto en la boda!</p>
+                    <p style={{ marginTop: '20px', fontWeight: 'bold', fontSize: '1.2rem', color: '#f0e1c9' }}>Con cariño, Manel y Carla.</p>
                 </div>
              );
         }
 
         switch (currentStep) {
+            
+            // STEP 0: BIENVENIDA
             case 0:
                 return (
                     <div className="step-content welcome-screen">
+                        <h1>💍 ¡Bienvenido/a al Gran Quiz de Manel y Carla!</h1>
+                        <p>Pon a prueba cuánto sabes de nuestra historia. Si aciertas, entrarás en el sorteo de un detalle especial de nuestra parte.</p>
+                        <button 
+                            className="button" 
+                            onClick={() => setCurrentStep(1)}
+                            disabled={isSubmitting}
+                        >
+                            ¡EMPEZAR A JUGAR!
+                        </button>
+                    </div>
+                );
+            
+            // STEP 1: NOMBRE Y APELLIDO (RESTAURADO)
+            case 1:
+                 return (
+                    <div className="step-content name-screen">
+                        <h2>Tu Identificación</h2>
+                        <label htmlFor="guestName">Nombre y Apellido (Necesario para el sorteo)</label>
+                        <input
+                            type="text"
+                            id="guestName"
+                            name="guestName"
+                            value={answers.guestName}
+                            onChange={handleNameChange}
+                            required
+                        />
+                        <button 
+                            className="button next-button" 
+                            onClick={() => setCurrentStep(2)}
+                            disabled={answers.guestName.trim().length < 3 || isSubmitting}
+                        >
+                            SIGUIENTE PREGUNTA »
+                        </button>
+                    </div>
+                );
 
+            // STEPS 2-6: PREGUNTAS
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                return (
+                    <div className="step-content question-screen">
+                        <h2>{currentQuestion.label}</h2>
+                        <div className="options-grid">
+                            {currentQuestion.options.map((option, index) => (
+                                <button
+                                    key={index}
+                                    className="option-button" 
+                                    onClick={() => handleAnswerSelect(option, currentQuestion.id)}
+                                    disabled={isSubmitting}
+                                >
+                                    <span className="option-text">{option}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                );
+            
+            // STEP 7: ENVIANDO RESPUESTAS
+            case 7:
+                return (
+                    <div className="step-content submit-screen">
+                        <h2>¡Enviando tus Respuestas!</h2>
+                        <div className="spinner"></div>
+                        <p>No cierres la página, estamos registrando tu participación...</p>
+                    </div>
+                );
+                
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <>
+            <Head>
+                <title>El Gran Quiz de Manel y Carla 💍</title>
+                <meta name="description" content="Pon a prueba cuánto sabes de nuestra historia" />
+            </Head>
+
+            <div className="container">
+                <div className="card">
+                    {renderStep()}
+                    
+                    {/* Indicador de progreso (Steps 1-6) */}
+                    {(currentStep >= 1 && currentStep <= 6) && (
+                        <div className="progress-bar-container">
+                             <div 
+                                className="progress-bar" 
+                                style={{ width: `${(currentStep / 6) * 100}%` }} 
+                            ></div>
+                            <p className="progress-text">Paso {currentStep} de 6</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* --- 🎯 ESTILOS DE VIDEOJUEGO MODERNO/FANTASÍA --- */}
+            <style jsx global>{`
+                 /* Importamos fuentes épicas y legibles */
+                 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap'); 
+            `}</style>
+            <style jsx>{`
+                .container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    /* Fondo degradado oscuro (morado/azul noche) */
+                    background: linear-gradient(135deg, #23074d, #440a5b);
+                    font-family: 'Lato', sans-serif; /* Fuente base legible */
+                    padding: 20px;
+                }
+                .card { 
+                    background: #1f2937; 
+                    color: #fff; 
+                    padding: 3rem; 
+                    border-radius: 16px; 
+                    /* Borde y brillo dorado sutil */
+                    border: 2px solid #a88a53; 
+                    box-shadow: 0 0 25px rgba(168, 138, 83, 0.3); 
+                    text-align: center; 
+                    max-width: 700px; 
+                    width: 100%; 
+                    min-height: 500px; 
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: space-between; 
+                }
+                
+                /* Títulos con fuente épica */
+                h1, h2 { 
+                    font-family: 'Cinzel', serif;
+                    color: #f0e1c9; /* Dorado pálido */
+                    text-shadow: 0 0 10px rgba(240, 225, 201, 0.3);
+                    line-height: 1.4;
+                }
+                h1 { font-size: 2.2rem; margin-bottom: 1rem; }
+                h2 { font-size: 1.5rem; margin-bottom: 2rem; border-bottom: 2px solid #374151; padding-bottom: 1rem; }
+
+                p { 
+                    color: #e5e7eb; 
+                    font-size: 1.1rem; 
+                    margin-bottom: 2rem; 
+                    line-height: 1.6;
+                }
+
+                /* 🎯 BOTÓN DE BIENVENIDA (EMPEZAR A JUGAR) - ENORME Y SÚPER LLAMATIVO */
+                .button { 
+                    display: inline-block; 
+                    /* TAMAÑO MAXIMIZADO */
+                    padding: 1.8rem 4rem; 
+                    
+                    /* Gradiente dorado */
+                    background: linear-gradient(145deg, #d4af37, #b8860b);
+                    color: #1f2937; 
+                    border: none; 
+                    border-radius: 50px; 
+                    text-decoration: none; 
+                    font-weight: 700; 
+                    /* FUENTE MÁS GRANDE */
+                    font-size: 1.5rem; 
+                    cursor: pointer; 
+                    transition: all 0.2s ease; 
+                    box-shadow: 0 8px 0 #8c690a; /* Sombra 3D profunda */
+                    text-transform: uppercase;
+                    font-family: 'Cinzel', serif;
+                    /* ANIMACIÓN DE PULSO MÁS INTENSA */
+                    animation: pulse-gold 1.5s infinite;
+                    position: relative; /* Asegurar que se posicione sobre el fondo */
+                    z-index: 10;
+                }
+                
+                @keyframes pulse-gold {
+                    0% { transform: scale(1); box-shadow: 0 8px 0 #8c690a, 0 0 15px rgba(212,175,55,0.4); }
+                    50% { transform: scale(1.1); box-shadow: 0 10px 0 #8c690a, 0 0 40px rgba(212,175,55,1); } 
+                    100% { transform: scale(1); box-shadow: 0 8px 0 #8c690a, 0 0 15px rgba(212,175,55,0.4); }
+                }
+
+                .button:hover { 
+                    background: linear-gradient(145deg, #e7c85f, #d4af37); 
+                    transform: translateY(-2px) scale(1.12); 
+                    box-shadow: 0 10px 0 #8c690a; 
+                    animation: none; 
+                }
+                
+                /* 🎯 INPUT DE IDENTIFICACIÓN */
+                .name-screen label { 
+                    display: block; 
+                    margin-bottom: 10px; 
+                    color: #d4af37; 
+                    font-weight: 700; 
+                    font-family: 'Cinzel', serif;
+                    font-size: 1.2rem;
+                }
+                .name-screen input { 
+                    width: 100%; 
+                    padding: 14px; 
+                    border: 2px solid #5a6475; 
+                    border-radius: 8px; 
+                    background: #2d3748; 
+                    color: #fff; 
+                    font-size: 1.1rem; 
+                    margin-bottom: 20px;
+                    font-family: 'Lato', sans-serif;
+                    box-shadow: 0 0 0px rgba(212,175,55,0);
+                    transition: border-color 0.3s, box-shadow 0.3s;
+                    box-sizing: border-box;
+                }
+                /* Efecto "Glow" al hacer focus */
+                .name-screen input:focus {
+                    border-color: #d4af37;
+                    box-shadow: 0 0 15px rgba(212,175,55,0.5);
+                    outline: none;
+                }
+                
+                /* 🎯 BOTÓN SIGUIENTE (MÁS VISTOSO Y GRANDE) */
+                .next-button { 
+                    width: 100%; 
+                    font-size: 1.2rem;
+                    padding: 1rem;
+                    margin-top: 10px;
+                    background: linear-gradient(145deg, #a88a53, #8c690a); 
+                    animation: none; 
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                /* Animación de Brillo Deslizante para SIGUIENTE */
+                .next-button::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 50%;
+                    height: 100%;
+                    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
+                    transform: skewX(-30deg);
+                    animation: shine 3s infinite linear;
+                }
+                
+                /* --- KEYFRAMES DE BRILLO DESLIZANTE --- */
+                @keyframes shine {
+                    0% { left: -100%; }
+                    100% { left: 150%; }
+                }
+
+                /* --- 🎯 BOTONES DE PREGUNTAS (RESPUESTAS) - CON BRILLO DESLIZANTE INTEGRADO --- */
+                .options-grid {
+                    display: flex;
+                    flex-direction: column; 
+                    gap: 15px;
+                    justify-content: center;
+                    margin-top: 20px;
+                }
+
+                .option-button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center; 
+                    width: 100%; 
+                    /* TAMAÑO AUMENTADO */
+                    min-height: 95px;
+                    padding: 2rem; 
+                    
+                    background-color: #374151; 
+                    color: #f0e1c9; 
+                    
+                    /* Borde moderno (1px) y sombra suave */
+                    border: 1px solid #5a6475; 
+                    border-radius: 12px; 
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
+                    
+                    text-align: center;
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                    font-family: 'Lato', sans-serif;
+                    font-weight: 700;
+                    font-size: 1.4rem; 
+                    
+                    /* 🚨 CLAVES PARA EL BRILLO DESLIZANTE: */
+                    position: relative;
+                    overflow: hidden; /* Asegura que el brillo no se salga del botón */
+                }
+
+                /* 🚨 APLICAMOS EL MISMO BRILLO DESLIZANTE AL BOTÓN DE RESPUESTA: */
+                .option-button::after { 
+                    content:''; 
+                    position:absolute; 
+                    top:0; 
+                    left:-100%; 
+                    width: 50%; /* La mitad del botón para un brillo fino */
+                    height:100%; 
+                    background:linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
+                    transform: skewX(-30deg);
+                    opacity: 0.5; /* Lo hacemos semitransparente */
+                    animation: shine 3s infinite linear 1s; /* Animación con un retraso para que no coincida con el botón 'Siguiente' */
+                }
+
+
+                .option-button:hover {
+                    background: #d4af37; 
+                    color: #1f2937; 
+                    border-color: #f0e1c9; 
+                    transform: scale(1.03); 
+                    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5); 
+                }
+                
+                .option-text { 
+                    flex-grow: 0; 
+                }
+                
+                /* --- (Resto de estilos) --- */
+                .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                .progress-bar-container { width: 90%; height: 15px; background: #374151; border-radius: 10px; overflow: hidden; margin: 20px auto 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3) inset; }
+                .progress-bar { height: 100%; background: linear-gradient(90deg, #d4af37, #b8860b); transition: width 0.5s ease-in-out; border-radius: 10px; }
+                .progress-text { margin-top: 5px; font-size: 0.9rem; color: #d4af37; font-family: 'Lato', sans-serif; }
+                .success-screen h2 { color: #70e000; text-shadow: 0 0 5px #70e000; font-size: 1.8rem; }
+            `}</style>
+        </>
+    );
+};
+
+export default QuizBodaPage;
