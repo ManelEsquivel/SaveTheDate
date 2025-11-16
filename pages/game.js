@@ -136,7 +136,8 @@ const QuizBodaPage = () => {
                 return (
                     <div className="step-content welcome-screen">
                         <h1>💍 ¡Bienvenido/a al Gran Quiz de Manel y Carla!</h1>
-                        <p>Pon a prueba cuánto sabes de nuestra historia. Si aciertas, entrarás en el sorteo de un detalle especial de nuestra parte.</p>
+                        <p>Pon a prueba cuánto sabes sobre nosotros!. Entre todas las personas que participen, <strong>quienes consigan el mayor número de aciertos recibirán un regalo exclusivo el día de la boda </strong>.</p>
+                        <p>¡Demuestra tu conocimiento y mucha suerte! 🎁✨</p>
                         <button 
                             className="button" 
                             onClick={() => setCurrentStep(1)}
@@ -214,7 +215,7 @@ const QuizBodaPage = () => {
         <>
             <Head>
                 <title>El Gran Quiz de Manel y Carla 💍</title>
-                <meta name="description" content="Pon a prueba cuánto sabes de nuestra historia" />
+                <meta name="description" content="Pon a prueba cuánto sabes de nosotros" />
             </Head>
 
             <div className="container">
