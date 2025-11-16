@@ -12,7 +12,7 @@ const handleSubmit = (e) => {
   }
 
   // Crear formulario oculto
-  const tempForm = document.createElement('form');
+  const tempForm = document.createElement('form'); 
   tempForm.action = BASE_FORM_URL;
   tempForm.method = 'POST';
   tempForm.target = 'google-iframe-target';
