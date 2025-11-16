@@ -13,14 +13,13 @@ const ENTRY_Q3 = "entry.551001831";
 const ENTRY_Q4 = "entry.1989972928";   
 const ENTRY_Q5 = "entry.694289165";    
 
-// CLAVE PARA LOCAL STORAGE
 const QUIZ_COMPLETED_KEY = 'manel_carla_quiz_completed'; 
 
-// --- ESTRUCTURA DE PREGUNTAS (con opciones y variables) ---
 const ALL_QUESTIONS = [
     { id: 'q1', entry: ENTRY_Q1, label: '1. ¿De quién fue la idea de tener animales en casa?', options: ['Manel', 'Carla'] },
     { id: 'q2', entry: ENTRY_Q2, label: '2. ¿Cómo se llaman los michis de Manel y Carla?', options: ['Wasabi y Abby', 'Sky y Wasabi', 'Mia y Sombra', 'Mochi y Abby'] },
     { id: 'q3', entry: ENTRY_Q3, label: '3. ¿En qué Provincia/Ciudad se comprometieron?', options: ['Roma/Fontana di trevi', 'París/ Torre eiffel', 'Girona /Cadaques', 'Menorca /Cala turqueta'] },
+    // ATENCIÓN: Esta era la Pregunta 4 antes, ahora es Q4, asegúrate que el ID sea correcto para "Illes Medes"
     { id: 'q4', entry: ENTRY_Q4, label: '4. ¿Dónde fue el primer bautizo de buceo de Carla?', options: ['Tossa de Mar', 'Cadaques', 'Illes Medes', 'Palamos'] },
     { id: 'q5', entry: ENTRY_Q5, label: '5. Número de tatuajes Entre Carla y Manel', options: ['6', '7', '8', '10'] },
 ];
@@ -38,25 +37,24 @@ const entryMap = {
 
 
 const QuizBodaPage = () => {
-    // currentStep: 0 (Bienvenida), 1 (Nombre), 2-6 (Preguntas), 7 (Enviando), 8 (Finalizado)
     const [currentStep, setCurrentStep] = useState(0); 
     const [answers, setAnswers] = useState({
-        guestName: '', 
-        q1: '', q2: '', q3: '', q4: '', q5: '',
+        guestName: '', q1: '', q2: '', q3: '', q4: '', q5: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isCompleted, setIsCompleted] = useState(false); // Nuevo estado para el bloqueo
+    const [isCompleted, setIsCompleted] = useState(false); 
 
-    // Mapeo de letras para el diseño A, B, C, D
     const optionLetters = ['A', 'B', 'C', 'D'];
     const currentQuestionIndex = currentStep - 2;
     const currentQuestion = ALL_QUESTIONS[currentQuestionIndex];
 
-    // --- EFECTO INICIAL: COMPROBAR SI EL QUIZ YA FUE COMPLETADO ---
     useEffect(() => {
         if (typeof window !== 'undefined' && localStorage.getItem(QUIZ_COMPLETED_KEY) === 'true') {
             setIsCompleted(true);
-            setCurrentStep(8); // Saltar a la pantalla final
+            setCurrentStep(8); 
+            // Intentar recuperar el nombre para la pantalla final
+            const storedName = localStorage.getItem('manel_carla_quiz_name') || '';
+            setAnswers(prev => ({ ...prev, guestName: storedName }));
         }
     }, []);
 
@@ -66,66 +64,69 @@ const QuizBodaPage = () => {
     };
 
     const handleNameChange = (e) => {
-        setAnswers(prev => ({ ...prev, guestName: e.target.value }));
+        const name = e.target.value;
+        setAnswers(prev => ({ ...prev, guestName: name }));
+        // Guardamos el nombre al escribirlo, por si lo necesitamos en la pantalla de bloqueo
+        localStorage.setItem('manel_carla_quiz_name', name);
     };
 
     // --- Lógica de Envío al Google Form (Step 7) ---
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setCurrentStep(7); // Cambia a estado de enviando
+        setCurrentStep(7); 
         
         const allAnswered = Object.values(answers).every(val => val.trim() !== '');
         
         if (!allAnswered) {
              alert("Error: Por favor, responde a todas las preguntas antes de enviar.");
              setIsSubmitting(false);
-             setCurrentStep(1); 
+             setCurrentStep(6); 
              return;
         }
 
-        // 2. Construir la URL de Envío
-        let submissionUrl = BASE_FORM_URL;
-        submissionUrl += Object.keys(answers).map(key => {
-            const entryId = entryMap[key];
-            const value = encodeURIComponent(answers[key]);
-            return `&${entryId}=${value}`;
-        }).join('');
-        
-        submissionUrl = submissionUrl.replace('?&', '?');
+        // 2. Construir el cuerpo de FormData para la solicitud POST
+        const formData = new FormData();
+        formData.append(entryMap.guestName, answers.guestName);
+        formData.append(entryMap.q1, answers.q1);
+        formData.append(entryMap.q2, answers.q2);
+        formData.append(entryMap.q3, answers.q3);
+        formData.append(entryMap.q4, answers.q4);
+        formData.append(entryMap.q5, answers.q5);
 
-        // 3. Envío Silencioso con Iframe
+        // 3. Envío Silencioso con Fetch (POST directo, más fiable que el iframe)
         try {
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = submissionUrl;
-            document.body.appendChild(iframe);
+            // El modo 'no-cors' es esencial para que la petición no sea bloqueada
+            await fetch(BASE_FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: formData,
+            });
+
+            // Si llegamos aquí, la petición fue enviada (aunque la respuesta es opaca, asumimos éxito)
             
-            // Esperar 1 segundo para el envío y luego marcar como completado
+            // BLOQUEO: Guardar la marca de completado en el navegador
+            localStorage.setItem(QUIZ_COMPLETED_KEY, 'true');
+            setIsCompleted(true);
+            
+            // Un pequeño retraso para la sensación de carga
             setTimeout(() => {
-                 iframe.remove(); 
-                 
-                 // BLOQUEO: Guardar la marca de completado en el navegador
-                 localStorage.setItem(QUIZ_COMPLETED_KEY, 'true');
-                 setIsCompleted(true);
-                 
                  setIsSubmitting(false);
                  setCurrentStep(8); 
             }, 1000); 
            
         } catch (error) {
-            console.error("Error al enviar el formulario:", error);
+            console.error("Error al enviar el formulario (Fetch):", error);
             setIsSubmitting(false);
-            alert("Hubo un error al enviar. Por favor, inténtalo de nuevo.");
+            alert("Hubo un error al enviar. Por favor, asegúrate de que el formulario de Google no requiere inicio de sesión.");
             setCurrentStep(6); 
         }
     };
     
     
-    // --- Renderizado de Vistas ---
+    // --- Renderizado de Vistas (El resto del código es el mismo) ---
 
     const renderStep = () => {
-        // Pantalla de bloqueo si ya se completó
         if (isCompleted) {
              return (
                  <div className="step-content success-screen">
@@ -143,7 +144,6 @@ const QuizBodaPage = () => {
 
         switch (currentStep) {
             
-            // ... (STEP 0: BIENVENIDA) ...
             case 0:
                 return (
                     <div className="step-content welcome-screen">
@@ -159,7 +159,6 @@ const QuizBodaPage = () => {
                     </div>
                 );
             
-            // ... (STEP 1: NOMBRE Y APELLIDO) ...
             case 1:
                  return (
                     <div className="step-content name-screen">
@@ -183,7 +182,6 @@ const QuizBodaPage = () => {
                     </div>
                 );
 
-            // ... (STEPS 2-6: PREGUNTAS MÚLTIPLES) ...
             case 2:
             case 3:
             case 4:
@@ -208,7 +206,6 @@ const QuizBodaPage = () => {
                     </div>
                 );
             
-            // ... (STEP 7: ENVIANDO RESPUESTAS) ...
             case 7:
                 return (
                     <div className="step-content submit-screen">
@@ -217,9 +214,6 @@ const QuizBodaPage = () => {
                         <p>No cierres la página, estamos registrando tu participación...</p>
                     </div>
                 );
-
-            // ... (STEP 8: FINALIZADO - NO SE DEBERÍA LLEGAR AQUÍ DIRECTAMENTE AHORA, LO GESTIONA `isCompleted`) ...
-            // El caso 8 se maneja ahora con el estado `isCompleted` para mostrar el mensaje de éxito/bloqueo.
                 
             default:
                 return null;
@@ -264,6 +258,7 @@ const QuizBodaPage = () => {
                  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap'); 
             `}</style>
             <style jsx>{`
+                /* ... (Estilos Millonarios idénticos al código anterior) ... */
                 .container {
                     display: flex;
                     justify-content: center;
@@ -354,8 +349,6 @@ const QuizBodaPage = () => {
                     min-width: 250px;
                     margin-top: 10px;
                 }
-
-                /* --- DISEÑO DE OPCIONES (ESTILO MILLONARIO) --- */
 
                 .options-grid {
                     display: flex;
