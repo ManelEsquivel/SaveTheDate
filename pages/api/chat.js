@@ -311,6 +311,18 @@ ${banquetDrinksResponse}
 **En la fiesta (19:00 a 21:00):**
 ${partyDrinksResponse}`;
 
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (ALOJAMIENTO) ---
+  const accommodationBookingUrl = "https://www.booking.com/searchresults.es.html?ss=Sant+Fost+de+Campsentelles&ssne=Sant+Fost+de+Campsentelles&ssne_untouched=Sant+Fost+de+Campsentelles&highlighted_hotels=11793039&efdco=1&label=New_Spanish_ES_ES_21463008145-hJVFBDQNNBQZaDgbzZaRhQS640874832442%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atidsa-55482331735%3Alp9198500%3Ali%3Adec%3Adm%3Aag21463008145%3Acmp340207705&aid=318615&lang=es&sb=1&src_elem=sb&src=hotel&dest_id=-400717&dest_type=city&checkin=2026-10-31&checkout=2026-11-01&group_adults=2&no_rooms=1&group_children=0";
+  
+  // 🎯 RESPUESTA GENERAL DE ALOJAMIENTO (Incluye enlace, sin precio/recomendación)
+  const fullAccommodationResponse = `Hay hoteles cercanos para alojamiento como **Celler Suites** y **Villas Coliving**.
+
+Si quieres ver más opciones de alojamiento en la zona, puedes consultar este enlace directo a Booking.com: [Ver Hoteles Cerca de la Boda](${accommodationBookingUrl})`;
+
+  // 🎯 RESPUESTA ESPECÍFICA DE PRECIO/RECOMENDACIÓN (Solo precio/recomendación)
+  const recommendationPriceResponse = "En cuanto a alojamiento, te recomendamos **Villas Coliving** por su proximidad y buen precio, que es de unos **70€ por noche**.";
+
+
   // --- SYSTEM PROMPT ---
   const systemPrompt = `
 Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
@@ -455,11 +467,18 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 - **INSTRUCCIÓN CLAVE (SOLTEROS):** Si preguntan por **solteras, solteros, chicas, chicos o chicas de compañía**, DEBES responder con humor ÚNICAMENTE: "¡Qué pregunta! 😄 Esto es una boda, no Tinder. El objetivo principal no es encontrar pareja... aunque nunca se sabe dónde saltará la chispa. De momento, ¡céntrate en disfrutar de la fiesta y la barra libre!"
 - **INSTRUCCIÓN CLAVE (DROGAS):** Si preguntan sobre **drogas** o **sustancias**, DEBES responder con humor ÚNICAMENTE: "Para preguntas sobre 'sustancias' o 'cosas raras', te recomendamos contactar directamente con **Antonio Escartín**, que es un especialista en la materia. 😉"
 
+## 🏨 Alojamiento (NUEVA ESTRUCTURA)
+
+- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO):** Si se pregunta por **"precios"**, **"recomendación"** (o "cuál es el mejor") o **"cuánto cuesta"**, DEBES responder ÚNICAMENTE: "${recommendationPriceResponse}"
+
+- **INSTRUCCIÓN CLAVE (ALOJAMIENTO/HOTELES - GENERAL):** Si preguntan por **"hoteles"**, **"alojamiento"**, **"dormir"** o **"quedarse"** y **NO** se activó la instrucción anterior, DEBES responder ÚNICAMENTE con el siguiente texto:
+${fullAccommodationResponse}
+
+
 ## 👗 Otros Datos
 - Código de vestimenta: Formal.
 - Transporte: Habrá parking gratuito y servicio de taxi disponible.
-- Alojamiento: Hoteles cercanos: Celler Suites y Villas Coliving.
-- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO):** Si se pregunta por **precios** o una **recomendación** de alojamiento, el asistente DEBE responder ÚNICAMENTE: "En cuanto a alojamiento, te recomendamos **Villas Coliving** por su proximidad y buen precio, que es de unos **70€ por noche**."
+- Alojamiento: Hoteles cercanos: Celler Suites y Villas Coliving. // Mantener como último fallback, aunque las instrucciones de arriba deben prevalecer.
 
 ---
 
