@@ -287,12 +287,26 @@ h1, h2 { font-family: 'Cinzel', serif; color: #f0e1c9; text-shadow: 0 0 10px rgb
 .button:active { animation: clickBounce 0.3s; }
 @keyframes clickBounce { 0%{transform:scale(1);}50%{transform:scale(0.9);}100%{transform:scale(1);} }
 
-.next-button { width: 100%; font-size: 1.3rem; padding: 1rem; margin-top: 10px; background: linear-gradient(145deg,#a88a53,#8c690a); position:relative; overflow:hidden; }
-.next-button::before { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background:linear-gradient(100deg,transparent,rgba(255,255,255,0.3),transparent); transform:skewX(-30deg); animation:shine 3s infinite linear; }
-@keyframes shine { 0%{left:-100%;}100%{left:150%;} }
+.next-button {
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-top: 10px;
+  background: #e5e7eb; /* Gris claro */
+  color: #1f2937; /* Texto oscuro */
+  border: 1px solid #d1d5db; /* Borde suave */
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.next-button:hover {
+  background: #d1d5db; /* Un poco más oscuro al hover */
+}
+100%{left:150%;} }
 
-.option-button { min-height:90px; padding:1.8rem; background:#374151; color:#f0e1c9; border-radius:12px; font-size:1.3rem; font-weight:700; transition:all 0.3s ease; position:relative; overflow:hidden; }
-.option-button:hover { background:#d4af37; color:#1f2937; transform:scale(1.05); box-shadow:0 6px 15px rgba(212,175,55,0.5); }
+.option-button { min-height:90px; padding:1.8rem; background:#374151; color:#f0e1c9; border-radius:12px; font-size:1.3rem; font-weight:700; transition:all 0.3s ease; position:relative; overflow:hidden;  margin-bottom: 10px;}
+.option-button:hover { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
 .option-button::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:radial-gradient(circle,rgba(255,255,255,0.4),transparent); animation:shine 2s infinite linear; }
 .spinner { border:4px solid #f3f3f3; border-top:4px solid #ffcc00; border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite; margin:20px auto; }
 @keyframes spin { 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
