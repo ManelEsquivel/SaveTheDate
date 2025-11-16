@@ -153,7 +153,8 @@ const QuizBodaPage = () => {
                  return (
                     <div className="step-content name-screen">
                         <h2>Tu Identificación</h2>
-                        <label htmlFor="guestName">Nombre y Apellido (Necesario para el sorteo)</label>
+                        <label htmlFor="guestName">Nombre y Apellido (Necesario para identificarte si eres el premiado 🎉)</label>
+                        <br></br>
                         <input
                             type="text"
                             id="guestName"
