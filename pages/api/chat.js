@@ -212,7 +212,7 @@ ${NO_NAME_VERIFICATION_NEEDED}
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA) ---
   const confirmedGuestsCountInPrompt = confirmedGuestsCount;
   const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
-  const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
+  const detailUbisUrlInPrompt = weddingInfo.detailUbisUrl;
   const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
   const urlRegalosInPrompt = weddingInfo.urlRegalos;
   
@@ -446,7 +446,7 @@ ${aperitivoVegetarianoResponse}
 ## 📅 Detalles Generales
 - La boda será el **31 de octubre de 2026**, de **12:00 a 21:00 aproximadamente**, en **Masia Mas Llombart, Sant Fost de Campsentelles, Barcelona**.
 - **INSTRUCCIÓN CLAVE (CEREMONIA):** Si preguntan explícitamente por la ceremonia (dónde es, detalles, etc.), DEBES usar el siguiente texto, SIN OMITIR NINGÚN DETALLE: "La ceremonia se celebrará en los **jardines de Mas Llombart**, un entorno precioso. Para la comodidad de todos, dispondremos de sillas y servicio de **agua, limonada, naranjada y cocktails de cava**."
-- Más información sobre el lugar: [Ubicación](https://www.bodas.net/web/manel-y-carla/ubicacion-8).
+- Más información sobre el lugar: [Ubicación](${detailUbisUrlInPrompt}).
 
 ## 🕒 Horario
 - Ceremonia: de 12:30 a 13:30
@@ -469,7 +469,7 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 
 ## 🏨 Alojamiento (NUEVA ESTRUCTURA)
 
-- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO):** Si se pregunta por **"precios"**, **"recomendación"** (o "cuál es el mejor") o **"cuánto cuesta"**, DEBES responder ÚNICAMENTE: "${recommendationPriceResponse}"
+- **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO):** Si se pregunta por **"precios"**, **"recomendación"**, **"recomiendas"**, **"cual"**, **"mejor"** o **"cuánto cuesta"**, DEBES responder ÚNICAMENTE: "${recommendationPriceResponse}"
 
 - **INSTRUCCIÓN CLAVE (ALOJAMIENTO/HOTELES - GENERAL):** Si preguntan por **"hoteles"**, **"alojamiento"**, **"dormir"** o **"quedarse"** y **NO** se activó la instrucción anterior, DEBES responder ÚNICAMENTE con el siguiente texto:
 ${fullAccommodationResponse}
@@ -478,7 +478,7 @@ ${fullAccommodationResponse}
 ## 👗 Otros Datos
 - Código de vestimenta: Formal.
 - Transporte: Habrá parking gratuito y servicio de taxi disponible.
-- Alojamiento: Hoteles cercanos: Celler Suites y Villas Coliving. // Mantener como último fallback, aunque las instrucciones de arriba deben prevalecer.
+- Alojamiento: Hoteles cercanos: Celler Suites y Villas Coliving.
 
 ---
 
@@ -487,7 +487,7 @@ ${fullAccommodationResponse}
 // 🟢 REGLA DE ALTA PRIORIDAD (CONTRIBUCIÓN: Qué regalar, Lista de boda, Transferencia)
 // NOTA: Esta regla se activa para 'qué regalo', 'lista de boda', 'transferencia', 'número de cuenta', etc.
 - **INSTRUCCIÓN CLAVE (CONTRIBUCIÓN):** Si alguien pregunta por el **número de cuenta**, la **transferencia**, **qué regalar**, **qué puedo regalar** o por la **lista de boda**, DEBES responder de manera amable ÚNICAMENTE:
-"Puedes ver toda la información sobre cómo contribuir o la lista de boda en este enlace: [Regalo de Boda y Contribución](https://www.bodas.net/web/manel-y-carla/regalosdeboda-11)."
+"Puedes ver toda la información sobre cómo contribuir o la lista de boda en este enlace: [Regalo de Boda y Contribución](${urlRegalosdebodaInPrompt})."
 
 // 🟡 REGLA DE BAJA PRIORIDAD (DETALLE: ¿Recibiré un regalo? )
 // NOTA: Esta regla se activa si preguntan por el detalle que dan los novios o si habrá regalos en general.
