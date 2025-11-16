@@ -47,8 +47,6 @@ const QuizBodaPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false); 
 
-    // (Eliminamos optionLetters ya que no se usan)
-    // const optionLetters = ['A', 'B', 'C', 'D'];
     const currentQuestionIndex = currentStep - 2; 
     const currentQuestion = ALL_QUESTIONS[currentQuestionIndex];
 
@@ -149,7 +147,7 @@ const QuizBodaPage = () => {
                     </div>
                 );
             
-            // STEP 1: NOMBRE Y APELLIDO (RESTAURADO)
+            // STEP 1: NOMBRE Y APELLIDO 
             case 1:
                  return (
                     <div className="step-content name-screen">
@@ -186,11 +184,10 @@ const QuizBodaPage = () => {
                             {currentQuestion.options.map((option, index) => (
                                 <button
                                     key={index}
-                                    className="option-button" // <-- Eliminada la clase de letra A, B, C
+                                    className="option-button" 
                                     onClick={() => handleAnswerSelect(option, currentQuestion.id)}
                                     disabled={isSubmitting}
                                 >
-                                    {/* 🎯 ELIMINADO EL SPAN DE LA LETRA */}
                                     <span className="option-text">{option}</span>
                                 </button>
                             ))}
@@ -229,7 +226,7 @@ const QuizBodaPage = () => {
                         <div className="progress-bar-container">
                              <div 
                                 className="progress-bar" 
-                                style={{ width: `${(currentStep / 6) * 100}%` }} // Ajustado a 6 pasos (1 Nombre + 5 Preguntas)
+                                style={{ width: `${(currentStep / 6) * 100}%` }} 
                             ></div>
                             <p className="progress-text">Paso {currentStep} de 6</p>
                         </div>
@@ -321,7 +318,7 @@ const QuizBodaPage = () => {
                     animation: none; /* Detener pulso en hover */
                 }
                 
-                /* 🎯 INPUT DE IDENTIFICACIÓN (MÁS BONITO) */
+                /* 🎯 INPUT DE IDENTIFICACIÓN */
                 .name-screen label { 
                     display: block; 
                     margin-bottom: 10px; 
@@ -333,7 +330,7 @@ const QuizBodaPage = () => {
                 .name-screen input { 
                     width: 100%; 
                     padding: 14px; 
-                    border: 2px solid #5a6475; /* Borde neutral */
+                    border: 2px solid #5a6475; 
                     border-radius: 8px; 
                     background: #2d3748; 
                     color: #fff; 
@@ -381,10 +378,10 @@ const QuizBodaPage = () => {
                     100% { left: 150%; }
                 }
 
-                /* --- 🎯 BOTONES DE PREGUNTAS (MÁS GRANDES, SIN LETRAS) --- */
+                /* --- 🎯 BOTONES DE PREGUNTAS (RESPUESTAS) - GRANDES Y MODERNOS --- */
                 .options-grid {
                     display: flex;
-                    flex-direction: column; /* Apilado vertical */
+                    flex-direction: column; 
                     gap: 15px;
                     justify-content: center;
                     margin-top: 20px;
@@ -393,36 +390,41 @@ const QuizBodaPage = () => {
                 .option-button {
                     display: flex;
                     align-items: center;
-                    justify-content: center; /* Centrar texto */
-                    width: 100%; /* 100% Ancho */
-                    min-height: 70px;
-                    padding: 1.2rem; /* Más grande */
+                    justify-content: center; 
+                    width: 100%; 
+                    /* 🎯 Hacemos el botón MÁS GRANDE Y ALTO */
+                    min-height: 80px;
+                    padding: 1.5rem; 
+                    
                     background-color: #374151; 
-                    color: #f0e1c9; /* Texto dorado pálido */
-                    border: 2px solid #5a6475; 
-                    border-radius: 8px; /* Bordes modernos */
+                    color: #f0e1c9; 
+                    
+                    /* 🎯 Borde moderno y sombra suave */
+                    border: 1px solid #5a6475; 
+                    border-radius: 12px; /* Más redondeado */
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
+                    
                     text-align: center;
-                    transition: all 0.2s ease;
-                    box-shadow: 0 4px 0 #2d3748;
+                    transition: all 0.3s ease;
                     cursor: pointer;
                     font-family: 'Lato', sans-serif;
                     font-weight: 700;
-                    font-size: 1.1rem;
+                    font-size: 1.2rem; /* Fuente un poco más grande */
                 }
 
                 .option-button:hover {
-                    background: #d4af37; /* Fondo dorado */
-                    color: #1f2937; /* Texto oscuro */
-                    border-color: #f0e1c9; /* Borde dorado claro */
+                    background: #d4af37; 
+                    color: #1f2937; 
+                    border-color: #f0e1c9; 
                     transform: scale(1.03); /* Efecto Pop */
-                    box-shadow: 0 6px 0 #2d3748;
+                    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5); /* Sombra de brillo en hover */
                 }
                 
                 .option-text { 
-                    flex-grow: 0; /* No necesita crecer, ya que está centrado */
+                    flex-grow: 0; 
                 }
                 
-                /* --- (Resto de estilos de progreso y spinner sin cambios) --- */
+                /* --- (Resto de estilos) --- */
                 .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                 .progress-bar-container { width: 90%; height: 15px; background: #374151; border-radius: 10px; overflow: hidden; margin: 20px auto 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3) inset; }
