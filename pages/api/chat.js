@@ -20,6 +20,8 @@ export default async function handler(req, res) {
               .trim();
   };
 
+  const normalizedMessage = normalize(message); // Normalizamos el mensaje de entrada una sola vez
+
   // --- LISTA DE INVITADOS (NOMBRE, APELLIDO, CONFIRMADO) ---
   const guestList = `
 NOMBRE,APELLIDOS,CONFIRMADO
@@ -112,10 +114,75 @@ Kike Masgrau,Masgrau,PENDIENTE
     urlRegalosdeboda: "https://www.bodas.net/web/manel-y-carla/regalosdeboda-11",
     urlRegalos: "https://wwwas.net/web/manel-y-carla/regalos-8"
   };
+  
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (ALOJAMIENTO) ---
+  const accommodationBookingUrl = "https://www.booking.com/searchresults.es.html?ss=Sant+Fost+de+Campsentelles&ssne=Sant+Fost+de+Campsentelles&ssne_untouched=Sant+Fost+de+Campsentelles&highlighted_hotels=11793039&efdco=1&label=New_Spanish_ES_ES_21463008145-hJVFBDQNNBQZaDgbzZaRhQS640874832442%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atidsa-55482331735%3Alp9198500%3Ali%3Adec%3Adm%3Aag21463008145%3Acmp340207705&aid=318615&lang=es&sb=1&src_elem=sb&src=hotel&dest_id=-400717&dest_type=city&checkin=2026-10-31&checkout=2026-11-01&group_adults=2&no_rooms=1&group_children=0";
+  
+  // 🎯 RESPUESTA GENERAL DE ALOJAMIENTO (Incluye enlace, sin precio/recomendación)
+  const fullAccommodationResponse = `Hay hoteles cercanos para alojamiento como **Celler Suites** y **Villas Coliving**.
+
+Si quieres ver más opciones de alojamiento en la zona, puedes consultar este enlace directo a Booking.com: [Ver Hoteles Cerca de la Boda](${accommodationBookingUrl})`;
+
+  // 🎯 RESPUESTA ESPECÍFICA DE PRECIO/RECOMENDACIÓN (Ahora incluye la URL de Booking)
+  const recommendationPriceResponse = `En cuanto a alojamiento, te recomendamos **Villas Coliving** por su proximidad y buen precio, que es de unos **70€ por noche**.
+
+Si quieres ver más opciones en la zona, o reservar en otro hotel cercano, puedes consultar este enlace directo a Booking.com: [Ver Hoteles Cerca de la Boda](${accommodationBookingUrl})`;
+
+
+  // --- ⚡️ OPTIMIZACIÓN DE VELOCIDAD: RESPUESTA RÁPIDA DE ALOJAMIENTO ---
+
+  // Keywords para MÁXIMA PRIORIDAD (Recomendación/Precio)
+  const maxPriorityAccommodationKeywords = [
+    "cual", "precios", "recomendacion", "recomiendas", "recomiendes", "mejor", 
+    "cuanto cuesta", "hotel", "alojamiento" // 'alojamiento' va aquí por la regla
+  ];
+
+  // Keywords para Alojamiento GENERAL
+  const generalAccommodationKeywords = [
+    "hoteles", "dormir", "quedarse" // 'alojamiento' ya se cubre arriba
+  ];
+
+  let hardcodedReplyRaw = null;
+
+  // 1. Check para MÁXIMA PRIORIDAD (Recomendación/Precio)
+  const isMaxPriorityAccommodationQuery = maxPriorityAccommodationKeywords.some(keyword => 
+    normalizedMessage.includes(keyword)
+  );
+
+  if (isMaxPriorityAccommodationQuery) {
+    hardcodedReplyRaw = recommendationPriceResponse;
+  } else {
+    // 2. Check para Alojamiento GENERAL
+    const isGeneralAccommodationQuery = generalAccommodationKeywords.some(keyword => 
+        normalizedMessage.includes(keyword)
+    ) || (normalizedMessage.includes("alojamiento") && !isMaxPriorityAccommodationQuery); 
+    // Comprueba explícitamente "alojamiento" solo si no se activó la prioridad.
+
+    if (isGeneralAccommodationQuery) {
+        hardcodedReplyRaw = fullAccommodationResponse;
+    }
+  }
+
+  if (hardcodedReplyRaw) {
+    // Si se encuentra una respuesta fija, se devuelve inmediatamente (¡sin llamar a OpenAI!)
+    marked.use({
+      renderer: {
+        link(href, title, text) {
+          // Devolvemos el enlace con target="_blank" para abrir en una nueva pestaña.
+          return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        }
+      }
+    });
+
+    const aiReplyHTML = marked.parse(hardcodedReplyRaw);
+    return res.status(200).json({ reply: aiReplyHTML });
+  }
+
+  // --- FIN DE LA OPTIMIZACIÓN DE VELOCIDAD ---
+
 
   // --- PROCESAMIENTO DE NOMBRES EN JAVASCRIPT (Solo para INYECCIÓN de Prioridad Absoluta) ---
 
-  const normalizedMessage = normalize(message);
   const messageWords = normalizedMessage
     .replace(/[.,;:!?¡¿'"()]/g, "")
     .split(/\s+/)
@@ -209,7 +276,8 @@ ${NO_NAME_VERIFICATION_NEEDED}
   }
   // --- FIN DE INYECCIÓN ---
 
-  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA) ---
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA y BEBIDA) ---
+  // ... (Variables de comida y bebida inyectadas aquí para completar el prompt)
   const confirmedGuestsCountInPrompt = confirmedGuestsCount;
   const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
   const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
@@ -310,20 +378,6 @@ ${banquetDrinksResponse}
 
 **En la fiesta (19:00 a 21:00):**
 ${partyDrinksResponse}`;
-
-  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (ALOJAMIENTO) ---
-  const accommodationBookingUrl = "https://www.booking.com/searchresults.es.html?ss=Sant+Fost+de+Campsentelles&ssne=Sant+Fost+de+Campsentelles&ssne_untouched=Sant+Fost+de+Campsentelles&highlighted_hotels=11793039&efdco=1&label=New_Spanish_ES_ES_21463008145-hJVFBDQNNBQZaDgbzZaRhQS640874832442%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atidsa-55482331735%3Alp9198500%3Ali%3Adec%3Adm%3Aag21463008145%3Acmp340207705&aid=318615&lang=es&sb=1&src_elem=sb&src=hotel&dest_id=-400717&dest_type=city&checkin=2026-10-31&checkout=2026-11-01&group_adults=2&no_rooms=1&group_children=0";
-  
-  // 🎯 RESPUESTA GENERAL DE ALOJAMIENTO (Incluye enlace, sin precio/recomendación)
-  const fullAccommodationResponse = `Hay hoteles cercanos para alojamiento como **Celler Suites** y **Villas Coliving**.
-
-Si quieres ver más opciones de alojamiento en la zona, puedes consultar este enlace directo a Booking.com: [Ver Hoteles Cerca de la Boda](${accommodationBookingUrl})`;
-
-  // 🎯 RESPUESTA ESPECÍFICA DE PRECIO/RECOMENDACIÓN (Ahora incluye la URL de Booking)
-  const recommendationPriceResponse = `En cuanto a alojamiento, te recomendamos **Villas Coliving** por su proximidad y buen precio, que es de unos **70€ por noche**.
-
-Si quieres ver más opciones en la zona, o reservar en otro hotel cercano, puedes consultar este enlace directo a Booking.com: [Ver Hoteles Cerca de la Boda](${accommodationBookingUrl})`;
-
 
   // --- SYSTEM PROMPT ---
   const systemPrompt = `
@@ -469,7 +523,7 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 - **INSTRUCCIÓN CLAVE (SOLTEROS):** Si preguntan por **solteras, solteros, chicas, chicos o chicas de compañía**, DEBES responder con humor ÚNICAMENTE: "¡Qué pregunta! 😄 Esto es una boda, no Tinder. El objetivo principal no es encontrar pareja... aunque nunca se sabe dónde saltará la chispa. De momento, ¡céntrate en disfrutar de la fiesta y la barra libre!"
 - **INSTRUCCIÓN CLAVE (DROGAS):** Si preguntan sobre **drogas** o **sustancias**, DEBES responder con humor ÚNICAMENTE: "Para preguntas sobre 'sustancias' o 'cosas raras', te recomendamos contactar directamente con **Antonio Escartín**, que es un especialista en la materia. 😉"
 
-## 🏨 Alojamiento (NUEVA ESTRUCTURA)
+## 🏨 Alojamiento (DEJADO PARA GPT EN CASOS COMPLEJOS)
 
 - **INSTRUCCIÓN CLAVE (PRECIO/RECOMENDACIÓN ALOJAMIENTO - MÁXIMA PRIORIDAD):** Si se pregunta por **"cual"**, **"precios"**, **"recomendación"**, **"recomiendas"**, **"recomiendes"**, **"mejor"**, **"cuánto cuesta"**, **"hotel"** o **"alojamiento"**, **DEBES OBLIGATORIAMENTE responder ÚNICAMENTE** (sin añadir nada más) con el siguiente texto: "${recommendationPriceResponse}"
 
