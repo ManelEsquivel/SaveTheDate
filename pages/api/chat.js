@@ -18,7 +18,7 @@ marked.use({
 });
 
 // URL Fija de Booking (Larga)
-const accommodationBookingUrl = "https://www.booking.com/searchresults.es.html?ss=Sant+Fost+de+Campsentelles&checkin=2026-10-31&checkout=2026-11-01&group_adults=2&no_rooms=1&group_children=0&lang=es;
+const accommodationBookingUrl = "https://www.booking.com/searchresults.es.html?ss=Sant+Fost+de+Campsentelles&checkin=2026-10-31&checkout=2026-11-01&group_adults=2&no_rooms=1&group_children=0&lang=es";
 
 // 2. Definición de las respuestas RAW (Markdown)
 const fullAccommodationResponseRaw = `Hay hoteles cercanos para alojamiento como **Celler Suites** y **Villas Coliving**.
