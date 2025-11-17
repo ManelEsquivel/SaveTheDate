@@ -204,7 +204,9 @@ Kike Masgrau,Masgrau,PENDIENTE
   // Stop words para filtrar frases conversacionales (soy, me llamo, etc.)
   const stopWords = new Set([
       'soy', 'me', 'llamo', 'mi', 'nombre', 'es', 'yo', 'la', 'el', 'los', 'las', 'un', 'una', 'de', 'del', 'al', 'o', 'y', 'si', 'no', 'que', 'en', 'para', 'a', 'e', 'mis',
-      'todo', 'todos', 'aperitivo', 'banquete', 'comida', 'menu', 'completo', 'ambos', 'bebidas', 'fiesta', 'ceremonia', 'vinos', 'cavas'
+      // FIX: Añadidas palabras clave de menú y bebidas para evitar que se confundan con nombres
+      'todo', 'todos', 'toda', 'todas', 'aperitivo', 'banquete', 'comida', 'menu', 'completo', 'ambos', 
+      'bebidas', 'fiesta', 'ceremonia', 'vinos', 'cavas', 'platos'
   ]);
   
   // Palabras relevantes para la búsqueda (excluyendo stop words)
@@ -453,8 +455,11 @@ Además, tendremos Showcooking y Corte:
 
 **IMPORTANTE:** Los platos definitivos (primero, segundo y postre) **aún están pendientes de la decisión final de los novios** tras la prueba de menú.`;
 
-  // Respuesta Menú Completo para inyección
-  const menuCompletoResponse = `${aperitivoCompletoResponse}\n\n---\n\n${menuPrincipalResponse}`;
+  // FIX: Respuesta de comida de fiesta
+  const partyFoodResponse = "Además, durante la fiesta (de 19:00 a 21:00) contaremos con un **Candy Bar** y **repostería** por si a alguien le entra el apetito.";
+
+  // FIX: Respuesta Menú Completo para inyección (Ahora incluye la repostería)
+  const menuCompletoResponse = `${aperitivoCompletoResponse}\n\n---\n\n${menuPrincipalResponse}\n\n---\n\n${partyFoodResponse}`;
 
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (BEBIDAS) ---
   const ceremonyDrinksResponse = "En la ceremonia se va a servir: agua, limonada, naranjada y cocktails de cava.";
@@ -571,7 +576,7 @@ ${guestList}
 ## 🍽️ Aperitivo y Opciones Especiales
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
-- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"ambos"**, DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
+- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"menu completo"** (refiriéndose a comida), DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
 
 - **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
 
@@ -587,7 +592,7 @@ ${aperitivoVegetarianoResponse}
 
 ## 🥂 Bebidas
 
-- **INSTRUCCIÓN CLAVE (BEBIDAS TODO - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todas"** O **"bebidas completas"** (refiriéndose a bebidas) O **"ambos"** (refiriéndose a bebidas), DEBES responder ÚNICAMENTE con el contenido de ${allDrinksResponse}.
+- **INSTRUCCIÓN CLAVE (BEBIDAS TODO - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todas"** O **"bebidas completas"** (refiriéndose a bebidas), DEBES responder ÚNICAMENTE con el contenido de ${allDrinksResponse}.
 
 - **INSTRUCCIÓN CLAVE (VINOS - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"vinos"**, DEBES responder ÚNICAMENTE con el contenido de ${winesResponse}.
 
