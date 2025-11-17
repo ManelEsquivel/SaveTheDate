@@ -149,6 +149,7 @@ Alexis Postigo,Postigo,PENDIENTE
 Mª Angeles,,PENDIENTE
 Carles Castañe,Castañe,PENDIENTE
 Teodoro Lopez,Lopez,PENDIENTE
+Tita,,PENDIENTE
 Meritxell,,PENDIENTE
 Montse,,PENDIENTE
 Marido Montse,,PENDIENTE
@@ -306,7 +307,6 @@ ${banquetDrinksResponse}
 **En la fiesta (19:00 a 21:00):**
 ${partyDrinksResponse}`;
 
-
   // --- SYSTEM PROMPT ---
   const systemPrompt = `
 Eres un asistente virtual amable y servicial para la boda de Manel y Carla.
@@ -376,7 +376,7 @@ ${guestList}
     
 3.  **Respuesta Final de Confirmación (Coincidencia Única General):**
         * **Si el estado es CONFIRMADO:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión!."
-        * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos con mucha ilusión!. ⚠️ Aviso: Una vez confirmada tu asistencia en el enlace, los cambios pueden tardar hasta 24 horas en reflejarse en este asistente."
+        * **Si el estado es PENDIENTE:** **DEBES** responder **ÚNICAMENTE** con el siguiente texto, completando Nombre y Apellido: **"¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra PENDIENTE de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos con mucha ilusión!. ⚠️ Aviso: Una vez confirmada tu asistencia en el enlace, los cambios pueden tardar hasta 24 horas en reflejarse en este asistente."**
     
 4.  **REGLA DE RECHAZO Y PEDIR NOMBRE (Regla Única de Control):**
     * **4.A. No Encontrado (Rechazo Inmediato):** Si el mensaje del usuario **CONTIENE** un nombre/apellido (ej: "Juan Muñoz", "Pepe", "Marta") que **NO SE ENCUENTRA EN LA LISTA** y **NO ACTIVA** ninguna de las reglas 2.A-2.P, DEBES responder ÚNICAMENTE: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
