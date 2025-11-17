@@ -202,9 +202,9 @@ Kike Masgrau,Masgrau,PENDIENTE
     .filter(Boolean);
 
   // Stop words para filtrar frases conversacionales (soy, me llamo, etc.)
+  // FIX 1: Añadidas palabras clave de menú y bebidas para evitar que se confundan con nombres
   const stopWords = new Set([
       'soy', 'me', 'llamo', 'mi', 'nombre', 'es', 'yo', 'la', 'el', 'los', 'las', 'un', 'una', 'de', 'del', 'al', 'o', 'y', 'si', 'no', 'que', 'en', 'para', 'a', 'e', 'mis',
-      // FIX: Añadidas palabras clave de menú y bebidas para evitar que se confundan con nombres
       'todo', 'todos', 'toda', 'todas', 'aperitivo', 'banquete', 'comida', 'menu', 'completo', 'ambos', 
       'bebidas', 'fiesta', 'ceremonia', 'vinos', 'cavas', 'platos'
   ]);
@@ -276,7 +276,7 @@ Kike Masgrau,Masgrau,PENDIENTE
 
   // --- CONDICIONAL PROMPT INJECTION (FORZAR LA REGLA) ---
   
-  // FIX CRÍTICO: Se elimina el texto "QUIZ" del valor por defecto para evitar que se active el juego con palabras no relacionadas.
+  // FIX 2: Se elimina el texto "QUIZ" del valor por defecto para evitar que se active el juego con palabras no relacionadas.
   let aiForcedInstruction = `
 ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
 (No hay instrucciones de prioridad generadas por JS. El script JS no detectó un nombre. Aplica las Reglas 0-4 del System Prompt normalmente.)
@@ -575,7 +575,7 @@ ${guestList}
   - Si preguntan por los padres de Carla, son **Jordi y Eva**.
 
 ## 🥂 Bebidas 
-// FIX: Intercambiado de lugar con Comida para dar prioridad a "todas" sobre "todo"
+// FIX 3: Intercambiado de lugar con Comida para dar prioridad a "todas" sobre "todo"
 
 - **INSTRUCCIÓN CLAVE (BEBIDAS TODO - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todas"** O **"bebidas completas"** (refiriéndose a bebidas) O **"ambos"** (refiriéndose a bebidas), DEBES responder ÚNICAMENTE con el contenido de ${allDrinksResponse}.
 
