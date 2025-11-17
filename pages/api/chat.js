@@ -246,6 +246,17 @@ Kike Masgrau,Masgrau,PENDIENTE
       }
   }
 
+  // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (PROMPT INJECTION USES) ---
+  const confirmedGuestsCountInPrompt = confirmedGuestsCount;
+  const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
+  const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
+  const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
+  const urlRegalosInPrompt = weddingInfo.urlRegalos;
+  
+  // CRÍTICO: Definición de la respuesta de Regla 4 para forzar el texto exacto.
+  const notFoundResponse = "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla.";
+
+
   // --- CONDICIONAL PROMPT INJECTION (FORZAR LA REGLA) ---
   const NO_NAME_VERIFICATION_NEEDED = "¡VERIFICACIÓN DE NOMBRE REQUERIDA PARA ACCESO AL QUIZ!";
 
@@ -270,21 +281,32 @@ ${NO_NAME_VERIFICATION_NEEDED}
       **TU TAREA ES LA SIGUIENTE, EN ESTE ORDEN:**
       
       1.  IGNORA la Regla 1, Regla Cero, Regla 2.K y Regla 4.
-      2.  BUSCA la coincidencia para "${fullName}" SÓLO en las Reglas Especiales (2.A a 2.J).
-      3.  **Si encuentras una coincidencia en 2.A-2.J, APLICA esa regla ÚNICAMENTE.**
-      4.  Si NO encuentras una coincidencia en 2.A-2.J, APLICA la Regla 3 usando el estado "${guestStatus}" y el nombre "${fullName}" para generar la respuesta.
+      2.  BUSCA la coincidencia para "${fullName}" SÓLO en las Reglas Especiales (2.A a 2.P).
+      3.  **Si encuentras una coincidencia en 2.A-2.P, APLICA esa regla ÚNICAMENTE.**
+      4.  Si NO encuentras una coincidencia en 2.A-2.P, APLICA la Regla 3 usando el estado "${guestStatus}" y el nombre "${fullName}" para generar la respuesta.
       
       ¡NO vuelvas a preguntar el nombre ni digas que no lo encuentras!
+      `;
+  } else if (isLikelyNameQuery && nameLikeWords.length > 0) { // FIX CRÍTICO: Nombre introducido, pero no encontrado.
+      // ----------------------------------------------------
+      // ** CRITICAL FIX: FORCE RULE 4 (NOT FOUND) FROM JS **
+      // ----------------------------------------------------
+      
+      aiForcedInstruction = `
+      ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
+      El mensaje del usuario ha sido analizado por el backend y se ha determinado que el nombre **NO** se encuentra en la lista de invitados.
+      
+      **TU TAREA ES LA SIGUIENTE, EN ESTE ORDEN:**
+      
+      1.  IGNORA TODAS las Reglas (1, Cero, 2, 3, 2.K, 2.A-2.P).
+      2.  APLICA la **Regla 4 (No Encontrado)** OBLIGATORIAMENTE, usando el texto exacto: "${notFoundResponse}"
+      
+      ¡NO busques el nombre en la lista ni intentes aplicar ninguna otra regla!
       `;
   }
   // --- FIN DE INYECCIÓN ---
 
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (COMIDA) ---
-  const confirmedGuestsCountInPrompt = confirmedGuestsCount;
-  const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
-  const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
-  const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
-  const urlRegalosInPrompt = weddingInfo.urlRegalos;
   
   // Lista del Aperitivo para inyección
   const aperitivoCompletoResponse = `¡Claro! Para el aperitivo, habrá una gran variedad de platos deliciosos. 🍽️
@@ -451,7 +473,7 @@ ${guestList}
         * **Si el estado es CONFIRMADO:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión!".
         * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos con mucha ilusión!".
     
-4.  **No Encontrado:** Si el nombre/apellido no tiene ninguna coincidencia en la lista, debes responder: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+4.  **No Encontrado:** Si el nombre/apellido no tiene ninguna coincidencia en la lista, debes responder: "${notFoundResponse}"
     
 
 ## 📊 STATUS
@@ -607,4 +629,3 @@ ${fullAccommodationResponse}
     res.status(500).json({ reply: "Error interno del servidor. Intenta más tarde." });
   }
 }
-
