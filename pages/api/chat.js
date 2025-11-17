@@ -205,6 +205,7 @@ Kike Masgrau,Masgrau,PENDIENTE
   // FIX 1: Añadidas palabras clave de menú y bebidas para evitar que se confundan con nombres
   const stopWords = new Set([
       'soy', 'me', 'llamo', 'mi', 'nombre', 'es', 'yo', 'la', 'el', 'los', 'las', 'un', 'una', 'de', 'del', 'al', 'o', 'y', 'si', 'no', 'que', 'en', 'para', 'a', 'e', 'mis',
+      'ver', // <-- AÑADIDO 'ver'
       'todo', 'todos', 'toda', 'todas', 'aperitivo', 'banquete', 'comida', 'menu', 'completo', 'ambos', 
       'bebidas', 'fiesta', 'ceremonia', 'vinos', 'cavas', 'platos'
   ]);
@@ -579,7 +580,7 @@ ${guestList}
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
 // FIX 4: Desambiguación. "todo" (comida) vs "todas" (bebidas)
-- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"menu completo"** (refiriéndose a comida), DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
+- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"ver todo"** O **"completo"** O **"menu completo"** (refiriéndose a comida), DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
 
 - **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
 
@@ -634,7 +635,7 @@ Además, habrá barra libre durante **2 horas**, y contaremos con un **Candy Bar
 
 ## 😂 Preguntas Graciosas (No-serias)
 - **INSTRUCCIÓN CLAVE (SOLTEROS):** Si preguntan por **solteras, solteros, chicas, chicos o chicas de compañía**, DEBES responder con humor ÚNICAMENTE: "¡Qué pregunta! 😄 Esto es una boda, no Tinder. El objetivo principal no es encontrar pareja... aunque nunca se sabe dónde saltará la chispa. De momento, ¡céntrate en disfrutar de la fiesta y la barra libre!"
-- **INSTRUCCIÓN CLAVE (DROGAS):** Si preguntan sobre **drogas** o **sustancias**, DEBES responder con humor ÚNICAMENTE: "Para preguntas sobre 'sustancias' o 'cosas raras', te recomendamos contactar directamente con **Antonio Escartín**, que es un especialista en la materia. 😉"
+- **INSTRUCCIÓN CLAVE (DROGAS):** Si preguntan sobre **drogas** o **sustancias**, DEBES responder ÚNICAMENTE: "Para preguntas sobre 'sustancias' o 'cosas raras', te recomendamos contactar directamente con **Antonio Escartín**, que es un especialista en la materia. 😉"
 
 ## 🏨 Alojamiento (DEJADO PARA GPT EN CASOS COMPLEJOS - YA NO SE USA PARA ALOJAMIENTO BÁSICO)
 
