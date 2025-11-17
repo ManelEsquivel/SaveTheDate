@@ -591,7 +591,7 @@ ${guestList}
 
 - **INSTRUCCIÓN CLAVE (FIESTA BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"fiesta"** (o "en la fiesta"), DEBES responder ÚNICAMENTE con el contenido de ${partyDrinksResponse}.
 
-- **INSTRUCCIÓN CLAVE (BEBIDAS GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por las **bebidas** o **que hay de beber** y NINGUNA de las instrucciones de ALTA PRIORIDAD se ha activado, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿Las bebidas de la **ceremonia**? ¿Del **aperitivo**? ¿Del **banquete**? ¿O de la **fiesta**?"
+- **INSTRUCCIÓN CLAVE (BEBIDAS GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por las **bebidas** o **que hay de beber** y NINGUNA de las instrucciones de ALTA PRIORIDAD se ha activado, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿Las bebidas de la **ceremonia**? ¿Del **aperitivo**? ¿Del **banquete**? ¿O de la **fiesta**? ¿O de la **todas**?"
 
 ## 🍽️ Aperitivo y Opciones Especiales
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
