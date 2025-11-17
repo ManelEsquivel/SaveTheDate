@@ -276,10 +276,7 @@ Kike Masgrau,Masgrau,PENDIENTE
 
   // --- CONDICIONAL PROMPT INJECTION (FORZAR LA REGLA) ---
   
-  // FIX: Esta constante ya no se usa, pero la dejamos para referencia
-  // const NO_NAME_VERIFICATION_NEEDED = "¡VERIFICACIÓN DE NOMBRE REQUERIDA PARA ACCESO AL QUIZ!";
-
-  // FIX: La instrucción por defecto DEBE ser neutral
+  // FIX CRÍTICO: Se elimina el texto "QUIZ" del valor por defecto para evitar que se active el juego con palabras no relacionadas.
   let aiForcedInstruction = `
 ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
 (No hay instrucciones de prioridad generadas por JS. El script JS no detectó un nombre. Aplica las Reglas 0-4 del System Prompt normalmente.)
@@ -439,7 +436,7 @@ Además, tendremos Showcooking y Corte:
   `;
   
   // Respuesta Menú Principal para inyección
-  const menuPrincipalResponse = `El banquete comenzará tras el aperitivo (cuya lista puedes consultar por separado preguntandome por el aperitivo). RespectT...a los **platos principales**, los novios están pendientes de realizar la prueba de menú entre las siguientes opciones. ¡Estarán deliciosas!
+  const menuPrincipalResponse = `El banquete comenzará tras el aperitivo (cuya lista puedes consultar por separado preguntandome por el aperitivo). Respecto a los **platos principales**, los novios están pendientes de realizar la prueba de menú entre las siguientes opciones. ¡Estarán deliciosas!
   
 **PRIMEROS PLATOS (a elegir por los novios):**
 * Caldereta de bogavante con patata confitada y crujiente de puerro
@@ -458,10 +455,10 @@ Además, tendremos Showcooking y Corte:
 
 **IMPORTANTE:** Los platos definitivos (primero, segundo y postre) **aún están pendientes de la decisión final de los novios** tras la prueba de menú.`;
 
-  // FIX: Respuesta de comida de fiesta
+  // FIX: Respuesta de comida de fiesta (Candy Bar/Repostería)
   const partyFoodResponse = "Además, durante la fiesta (de 19:00 a 21:00) contaremos con un **Candy Bar** y **repostería** por si a alguien le entra el apetito.";
 
-  // FIX: Respuesta Menú Completo para inyección (Ahora incluye la repostería)
+  // FIX CRÍTICO: Respuesta Menú Completo para inyección (Ahora incluye el aperitivo, el banquete y la repostería)
   const menuCompletoResponse = `${aperitivoCompletoResponse}\n\n---\n\n${menuPrincipalResponse}\n\n---\n\n${partyFoodResponse}`;
 
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (BEBIDAS) ---
@@ -579,7 +576,7 @@ ${guestList}
 ## 🍽️ Aperitivo y Opciones Especiales
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
-- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"menu completo"** (refiriéndose a comida), DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
+- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"** O **"completo"** O **"ambos"**, DEBES responder ÚNICAMENTE con el contenido de ${menuCompletoResponse}.
 
 - **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
 
@@ -595,7 +592,7 @@ ${aperitivoVegetarianoResponse}
 
 ## 🥂 Bebidas
 
-- **INSTRUCCIÓN CLAVE (BEBIDAS TODO - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todas"** O **"bebidas completas"** (refiriéndose a bebidas), DEBES responder ÚNICAMENTE con el contenido de ${allDrinksResponse}.
+- **INSTRUCCIÓN CLAVE (BEBIDAS TODO - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todas"** O **"bebidas completas"** (refiriéndose a bebidas) O **"ambos"** (refiriéndose a bebidas), DEBES responder ÚNICAMENTE con el contenido de ${allDrinksResponse}.
 
 - **INSTRUCCIÓN CLAVE (VINOS - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"vinos"**, DEBES responder ÚNICAMENTE con el contenido de ${winesResponse}.
 
@@ -605,7 +602,7 @@ ${aperitivoVegetarianoResponse}
 
 - **INSTRUCCIÓN CLAVE (APERITIVO BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"aperitivo"** (o "en el aperitivo") **y no se refiere a comida**, DEBES responder ÚNICAMENTE con el contenido de ${aperitifDrinksResponse}.
 
-- **INSTRUCCIÓN CLAVE (BANQUETE BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"banquete"** O **"comida banquete"** (o "en el banquete") **y no se refiere a comida**, DEBES responder ÚNICL...mente con el contenido de ${banquetDrinksResponse}.
+- **INSTRUCCIÓN CLAVE (BANQUETE BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"banquete"** O **"comida banquete"** (o "en el banquete") **y no se refiere a comida**, DEBES responder ÚNICAMENTE con el contenido de ${banquetDrinksResponse}.
 
 - **INSTRUCCIÓN CLAVE (FIESTA BEBIDAS - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene la palabra clave **"fiesta"** (o "en la fiesta"), DEBES responder ÚNICAMENTE con el contenido de ${partyDrinksResponse}.
 
