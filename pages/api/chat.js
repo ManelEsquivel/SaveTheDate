@@ -186,9 +186,6 @@ Kike Masgrau,Masgrau,PENDIENTE
   };
   
   // --- PROCESAMIENTO DE NOMBRES EN JAVASCRIPT (LÓGICA ELIMINADA PARA OPTIMIZACIÓN) ---
-  // Se eliminaron todos los bloques de código JavaScript que procesaban la lista de invitados
-  // para mejorar la velocidad y evitar el timeout. La IA gestionará la verificación.
-
   const aiForcedInstruction = `
       ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
       ESTA SECCIÓN ESTÁ INACTIVA. LA VERIFICACIÓN DE NOMBRES ES GESTIONADA POR LAS REGLAS DE LA IA.
@@ -268,7 +265,7 @@ Además, tendremos Showcooking y Corte:
 
 **IMPORTANTE:** Los platos definitivos (primero, segundo y postre) **aún están pendientes de la decisión final de los novios** tras la prueba de menú.`;
 
-  // Respuesta Menú Completo para inyección (Incluye Candy Bar - CORRECCIÓN 1)
+  // Respuesta Menú Completo para inyección (Incluye Candy Bar)
   const menuCompletoResponse = `¡Claro! Aquí tienes la información completa sobre la comida de la boda:
   
 ${aperitivoCompletoResponse}
@@ -330,11 +327,9 @@ ${guestList}
 
 // *** REGLAS DE VERIFICACIÓN GESTIONADAS POR LA IA (Prioridad Máxima en Conversación) ***
 
-// 1. REGLA DE INICIO Y SALUDO (Gestión del primer contacto - CORRECCIÓN 3)
-// El modelo DEBE detectar el nombre para usarlo en 1.A, o pasar a 1.B si no hay nombre.
-- **1.A. INSTRUCCIÓN CLAVE (SALUDO CORDIAL):** Si el mensaje del usuario **contiene un nombre o una frase de presentación** (ej: "soy Juan", "hola me llamo Juan", "Juan"), PERO **NO** pregunta explícitamente por el estado de la invitación, **DEBES** responder ÚNICAMENTE: "¡Hola, [Nombre detectado]! Gracias por presentarte. ¿En qué puedo ayudarte hoy?"
-// 1.B. INSTRUCCIÓN CLAVE (PEDIR NOMBRE - Prioridad Baja): Si el mensaje del usuario NO contiene ningún nombre (ej. "¿Estoy invitado?", "¿Qué tal?"), DEBES responder ÚNICAMENTE: "¡Qué buena pregunta! Para poder confirmarlo, ¿podrías indicarme tu nombre completo (Nombre y Apellido) por favor?".
-// OJO: Si se detecta un nombre Y el usuario pregunta por el estado de la invitación, la IA DEBE pasar directamente a la Regla 2 o 4.
+// 1. REGLA DE INICIO (Pide el nombre si no se detecta ninguno)
+- **INSTRUCCIÓN CLAVE (PEDIR NOMBRE - Prioridad Baja):** Si el mensaje del usuario **NO contiene ningún nombre** (ej. "¿Estoy invitado?", "¿Qué tal?"), **DEBES** responder ÚNICAMENTE: "¡Qué buena pregunta! Para poder confirmarlo, ¿podrías indicarme tu nombre completo (Nombre y Apellido) por favor?".
+// OJO: Si se detecta un nombre, la IA DEBE pasar a la Regla 2 o a la Regla 4.
 
 // *** REGLA CERO: QUIZ Y JUEGO (PRIORIDAD MÁXIMA UNIVERSAL) ***
 
@@ -384,8 +379,10 @@ ${guestList}
         * **Si el estado es CONFIRMADO:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión!".
         * **Si el estado es PENDIENTE:** "¡Sí, [Nombre] [Apellido], estás en la lista de invitados! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${urlConfirmacionInPrompt}). ¡Te esperamos con mucha ilusión!".
     
-4.  **No Encontrado (VERIFICACIÓN FALLIDA - CORRECCIÓN 3):** Si el mensaje del usuario contiene palabras clave de **verificación de estado** (ej: "¿estoy invitado?", "¿estamos en la lista?", "confirmar asistencia") **Y** el nombre proporcionado no tiene ninguna coincidencia única en la lista o en las reglas 2.A-2.P, debes responder ÚNICAMENTE: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
-    
+4.  **No Encontrado (VERIFICACIÓN FALLIDA):** Si el mensaje del usuario contiene palabras clave de **verificación de estado** (ej: "¿estoy invitado?", "¿estamos en la lista?", "confirmar asistencia") **O** contiene un nombre/apellido (ej: "soy Juan", "Marta Oliver", "Pau") que **no tiene ninguna coincidencia única** en la lista o en las reglas 2.A-2.P, debes responder ÚNICAMENTE: "Lo siento mucho, pero no encuentro tu nombre en la lista de invitados. Si crees que puede ser un error, por favor, contacta directamente con Manel o Carla."
+
+// *** REGLA DE CIERRE/SALUDO POR "SOY" (ÚLTIMA OPCIÓN PARA SALUDAR SIN VERIFICACIÓN) ***
+- **INSTRUCCIÓN CLAVE (SALUDO POR SOY - Última opción):** Si el mensaje contiene la palabra clave **"soy"** (o "me llamo", "mi nombre es") y **NINGUNA** de las reglas 1, 2, 3 o 4 se ha activado (lo que significa que el nombre no se encontró Y no preguntó por su estado), DEBES responder ÚNICAMENTE: "¡Hola, [Detecta y usa el nombre que sigue a 'soy']! Gracias por presentarte. ¿En qué puedo ayudarte hoy?"
 
 ## 📊 STATUS
 - **INSTRUCCIÓN CLAVE (CONFIRMADOS):** Si preguntan cuánta gente o cuántos invitados han confirmado, DEBES responder ÚNICAMENTE: "Hasta el momento, un total de **${confirmedGuestsCountInPrompt} invitados** han confirmado su asistencia."
