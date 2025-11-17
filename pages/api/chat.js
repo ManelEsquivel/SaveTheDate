@@ -184,6 +184,16 @@ Kike Masgrau,Masgrau,PENDIENTE
     urlRegalos: "https://wwwas.net/web/manel-y-carla/regalos-8"
   };
   
+  // --- RESPUESTAS TEMPLATE FORZADAS (NUEVO BLOQUE PARA GARANTIZAR EL AVISO) ---
+  const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
+
+  // Plantilla exacta para invitados PENDIENTES (General)
+  const PENDIENTE_TEMPLATE = (fullName, url) => `¡${fullName}! ¡Claro que estás invitado/a! Sin embargo, tu asistencia se encuentra **PENDIENTE** de confirmación. Por favor, confírmala en la web: [Confirmar Asistencia Aquí](${url}). ¡Te esperamos con mucha ilusión! 🌸\n\n⚠️ Aviso: Una vez confirmada tu asistencia en el enlace, los cambios pueden tardar hasta 24 horas en reflejarse en este asistente.`;
+  
+  // Plantilla exacta para invitados CONFIRMADOS (General)
+  const CONFIRMADO_TEMPLATE = (fullName) => `¡${fullName}! ¡Sí, estás en la lista de invitados! Tu asistencia está **CONFIRMADA**. ¡Te esperamos con mucha ilusión! 🎉`;
+  
+  
   // --- PROCESAMIENTO DE NOMBRES EN JAVASCRIPT (Solo para INYECCIÓN de Prioridad Absoluta) ---
 
   const messageWords = normalizedMessage
@@ -251,7 +261,6 @@ Kike Masgrau,Masgrau,PENDIENTE
 
   // --- CONFIGURACIÓN DE RESPUESTAS FIJAS (PROMPT INJECTION USES) ---
   const confirmedGuestsCountInPrompt = confirmedGuestsCount;
-  const urlConfirmacionInPrompt = weddingInfo.urlConfirmacion;
   const detailUbisUrlInPrompt = weddingInfo.urlConfirmacion;
   const urlRegalosdebodaInPrompt = weddingInfo.urlRegalosdeboda;
   const urlRegalosInPrompt = weddingInfo.urlRegalos;
@@ -274,22 +283,67 @@ ${NO_NAME_VERIFICATION_NEEDED}
       const guestStatus = forcedGuest.confirmado;
       const fullName = `${guestName} ${guestSurname}`.trim();
       
-      // *** INSTRUCCIÓN LIMPIA: SÓLO PARA CONFIRMACIÓN DE NOMBRE (EL QUIZ ES UNIVERSAL Y ES GESTIONADO POR REGLA CERO) ***
-      aiForcedInstruction = `
-      ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
-      El mensaje del usuario ha sido analizado por el backend y se ha identificado a un ÚNICO invitado:
-      - Nombre Completo: **${fullName}**
-      - Estado: **${guestStatus}**
+      // Lista de Nombres COMPLETOS normalizados que tienen una REGLA ESPECIAL (2.A-2.P)
+      const specialCaseNames = new Set([
+        normalize("Antonio Escartín"), normalize("Beatriz Esquivel"), normalize("Kike Masgrau"), 
+        normalize("Jordi Bartual"), normalize("Eva Lopez"), normalize("Alex Ferré"), 
+        normalize("Iker Zarate"), normalize("Ivan Alamo"), normalize("Carlos Barceló"), 
+        normalize("Victor Lopez"), normalize("Anna Bernal"), normalize("Alex Espada"), 
+        normalize("Manel Esquivel"), normalize("Carla Bartual")
+      ]);
       
-      **TU TAREA ES LA SIGUIENTE, EN ESTE ORDEN:**
+      const normalizedFullName = normalize(fullName);
       
-      1.  IGNORA la Regla 1, Regla Cero, Regla 2.K, Regla 4.
-      2.  BUSCA la coincidencia para "${fullName}" SÓLO en las Reglas Especiales (2.A a 2.P).
-      3.  **Si encuentras una coincidencia en 2.A-2.P, APLICA esa regla ÚNICAMENTE.**
-      4.  Si NO encuentras una coincidencia en 2.A-2.P, APLICA la Regla 3 usando el estado "${guestStatus}" y el nombre "${fullName}" para generar la respuesta.
+      let forcedReplyText = null;
+
+      // 1. Check for General Cases (Rule 3) - Marta Oliver falls here.
+      if (!specialCaseNames.has(normalizedFullName)) {
+          if (guestStatus === 'CONFIRMADO') {
+              forcedReplyText = CONFIRMADO_TEMPLATE(fullName);
+          } else if (guestStatus === 'PENDIENTE') {
+              // Esta es la solución para Marta Oliver y todos los PENDIENTES generales.
+              forcedReplyText = PENDIENTE_TEMPLATE(fullName, urlConfirmacionInPrompt);
+          }
+      }
+
+      if (forcedReplyText) {
+          // APLICAR INSTRUCCIÓN DE FUERZA BRUTA (No Paraphrasing)
+          // La IA debe responder con el texto exacto, garantizando que el aviso de 24h está.
+          const formattedForPrompt = forcedReplyText
+              // Reemplazamos \n con ' \n\n' para que el salto de línea del aviso se mantenga.
+              .replace(/\n\n⚠️ Aviso:/g, ' \n\n⚠️ Aviso:') 
+              .replace(/\n/g, ' ') // Reemplazamos el resto de saltos de línea para seguridad.
+              .trim();
+              
+          aiForcedInstruction = `
+          ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
+          El mensaje del usuario ha sido analizado y se ha encontrado un invitado ÚNICO.
+          
+          **TU TAREA ES LA SIGUIENTE, EN ESTE ORDEN:**
+          
+          1.  IGNORA TODAS las Reglas (1, Cero, 2, 3, 4, 2.A-2.P).
+          2.  **DEBES** responder ÚNICAMENTE con el siguiente texto, sin añadir, cambiar o parafrasear nada: "${formattedForPrompt}"
+          `;
+
+      } else {
+          // Es un caso especial (2.A-2.P), dejamos que la IA aplique la regla especial del prompt.
+          aiForcedInstruction = `
+          ## 🎯 INSTRUCCIÓN DE PRIORIDAD ABSOLUTA (¡Generada por JS!)
+          El mensaje del usuario ha sido analizado por el backend y se ha identificado a un ÚNICO invitado:
+          - Nombre Completo: **${fullName}**
+          - Estado: **${guestStatus}**
+          
+          **TU TAREA ES LA SIGUIENTE, EN ESTE ORDEN:**
+          
+          1.  IGNORA la Regla 1, Regla Cero, Regla 2.K, Regla 4 y Regla 3.
+          2.  BUSCA la coincidencia para "${fullName}" SÓLO en las Reglas Especiales (2.A a 2.P).
+          3.  **Si encuentras una coincidencia en 2.A-2.P, APLICA esa regla ÚNICAMENTE.**
+          4.  Si NO encuentras una coincidencia en 2.A-2.P, APLICA la Regla 3 usando el estado "${guestStatus}" y el nombre "${fullName}" para generar la respuesta.
+          
+          ¡NO vuelvas a preguntar el nombre ni digas que no lo encuentras!
+          `;
+      }
       
-      ¡NO vuelvas a preguntar el nombre ni digas que no lo encuentras!
-      `;
   } else if (isLikelyNameQuery && nameLikeWords.length > 0) { 
       // Si se proporciona un nombre (Pepe/Maria Pombo), pero NO está en la lista.
       
