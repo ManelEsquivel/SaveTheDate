@@ -43,7 +43,7 @@ Si quieres ver más opciones en la zona, o reservar en otro hotel cercano, puede
 
   // Keywords para MÁXIMA PRIORIDAD (Recomendación/Precio)
   const maxPriorityAccommodationKeywords = [
-    "cual", "precios", "recomendacion", "recomiendas", "recomiendes", "mejor", 
+    "precios", "recomendacion", "recomiendas", "recomiendes", "mejor", 
     "cuanto cuesta", "hotel", "alojamiento"
   ];
 
