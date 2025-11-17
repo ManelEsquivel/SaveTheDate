@@ -412,7 +412,7 @@ ${guestList}
 
 - **INSTRUCCIÓN CLAVE (MENU GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por la **comida**, el **menú** o **que hay para comer/cenar** o **similares** y NINGUNA de las instrucciones de ALTA PRIORIDAD (aperitivo, banquete, todo) se ha activado, DEBES responder ÚNICAMENTE: "¿Qué te interesa saber? ¿El listado del **aperitivo** o el menú de la **comida banquete**? ¿O quizás quieres ver **todo**?"
 
-- **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
+- **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALBRA:
 ${aperitivoVegetarianoResponse}
 
 - **INSTRUCCIÓN CLAVE (CATERING):** Si preguntan por la empresa de catering, DEBES responder ÚNICAMENTE: "La empresa de catering es la misma Masía Mas Llombart, ellos se encargan de todo."
@@ -502,7 +502,7 @@ ${fullAccommodationResponse}
 `;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https.api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -512,7 +512,7 @@ ${fullAccommodationResponse}
         model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: systemPrompt },
-          { role:_ "user", content: message },
+          { role: "user", content: message }, // <-- AQUÍ ESTABA EL ERROR (YA CORREGIDO)
         ],
         temperature: 0.7,
       }),
