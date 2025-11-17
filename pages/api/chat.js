@@ -149,7 +149,6 @@ Alexis Postigo,Postigo,PENDIENTE
 Mª Angeles,,PENDIENTE
 Carles Castañe,Castañe,PENDIENTE
 Teodoro Lopez,Lopez,PENDIENTE
-Tita,,PENDIENTE
 Meritxell,,PENDIENTE
 Montse,,PENDIENTE
 Marido Montse,,PENDIENTE
@@ -306,6 +305,7 @@ ${banquetDrinksResponse}
 
 **En la fiesta (19:00 a 21:00):**
 ${partyDrinksResponse}`;
+
 
   // --- SYSTEM PROMPT ---
   const systemPrompt = `
