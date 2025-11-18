@@ -1,4 +1,4 @@
-// pages/api/chat.js
+// pages/api/chat.js 
 import { marked } from "marked";
 
 // Importamos el SDK de OpenAI si fuera necesario, pero en este caso solo usamos fetch.
