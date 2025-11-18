@@ -9,12 +9,16 @@ export default function IntroPage() {
   const [isStarted, setIsStarted] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
 
-  // --- DATOS WHATSAPP ---
+  // --- DATOS ---
   const pageTitle = "Asistente de la Boda de Manel & Carla";
   const pageDescription = "Entra aquí para interactuar con nuestro asistente virtual.";
   const pageImage = "https://bodamanelcarla.vercel.app/icono.png"; 
 
   useEffect(() => {
+    // 1. FORZADO NUCLEAR DE NEGRO PARA IPHONE
+    document.body.style.backgroundColor = "#000000";
+    document.documentElement.style.backgroundColor = "#000000"; // Esto pinta el 'rebote' del scroll en Safari
+
     if (!window.YT) {
       const tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
@@ -34,7 +38,6 @@ export default function IntroPage() {
           modestbranding: 1,
           loop: 0,
           fs: 0
-          // Hemos quitado 'end: 7' para que el video no se pare de golpe mientras hacemos el fundido
         },
         events: {
           'onStateChange': onPlayerStateChange
@@ -43,6 +46,9 @@ export default function IntroPage() {
     };
 
     return () => {
+      // AL SALIR: Dejamos el body listo para que la siguiente página pueda ponerlo blanco
+      document.body.style.backgroundColor = "";
+      document.documentElement.style.backgroundColor = "";
       window.onYouTubeIframeAPIReady = null;
     };
   }, []);
@@ -54,23 +60,13 @@ export default function IntroPage() {
       playerRef.current.setVolume(100);
       playerRef.current.playVideo();
 
-      // --- CRONÓMETRO AJUSTADO ---
-      
-      // 1. En el SEGUNDO 7 (7000ms) empezamos a oscurecer
-      setTimeout(() => {
-        setIsFadingOut(true);
-      }, 7000);
-
-      // 2. En el SEGUNDO 8.5 (8500ms) nos vamos a la otra página
-      // (Damos 1.5 segundos para que la transición a negro se complete)
-      setTimeout(() => {
-        router.push('/bot_boda_asistente');
-      }, 8500);
+      // Cronómetro para video de 9 segundos
+      setTimeout(() => { setIsFadingOut(true); }, 7000); // Empieza fundido
+      setTimeout(() => { router.push('/bot_boda_asistente'); }, 8500); // Cambia página
     }
   };
 
   const onPlayerStateChange = (event) => {
-    // Respaldo por si acaso el video acaba antes de tiempo (poco probable)
     if (event.data === 0 && !isFadingOut) { 
        router.push('/bot_boda_asistente');
     }
@@ -84,9 +80,23 @@ export default function IntroPage() {
         <meta property="og:description" content={pageDescription} />
         <meta property="og:image" content={pageImage} />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:type" content="website" />
+        
+        {/* --- TRUCOS PARA IPHONE NEGRO --- */}
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+        {/* CSS GLOBAL FORZADO */}
+        <style>{`
+          html, body, #__next {
+            background-color: #000000 !important;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Evita que se vea blanco al hacer scroll elástico */
+            overscroll-behavior: none; /* Bloquea el rebote en iOS */
+          }
+        `}</style>
       </Head>
 
       <div style={{ 
@@ -95,58 +105,25 @@ export default function IntroPage() {
         display: 'flex', justifyContent: 'center', alignItems: 'center'
       }}>
 
-        {/* CONTENEDOR QUE SE DIFUMINA */}
         <div style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
           opacity: isFadingOut ? 0 : 1, 
-          transition: 'opacity 1.5s ease-in-out' // La transición dura 1.5 segundos exactos
+          transition: 'opacity 1.5s ease-in-out'
         }}>
-
             {!isStarted && (
-              <div 
-                onClick={startExperience}
-                style={{
+              <div onClick={startExperience} style={{
                   position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%',
-                  backgroundColor: 'black',
-                  display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+                  backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
                   color: 'white', cursor: 'pointer'
-                }}
-              >
-                <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>
-                  Manel & Carla
-                </h1>
-                
-                <div style={{
-                  padding: '12px 24px', 
-                  border: '1px solid white', 
-                  borderRadius: '4px', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '2px', 
-                  fontSize: '0.9rem',
-                  textAlign: 'center'
                 }}>
-                  Entrar al asistente
-                </div>
-                
-                <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>
-                  (Toca para comenzar)
-                </p>
+                <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
+                <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>Entrar al asistente</div>
+                <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
               </div>
             )}
-
-            <div style={{ 
-              width: '100%', 
-              height: '100%', 
-              pointerEvents: 'none',
-              transform: 'scale(1.4)', 
-              opacity: isStarted ? 1 : 0,
-              transition: 'opacity 1s'
-            }}>
+            <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
               <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
             </div>
-
         </div>
       </div>
     </>
