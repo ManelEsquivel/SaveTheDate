@@ -3,7 +3,7 @@ import Head from "next/head";
 
 // 1. Mensaje de Bienvenida en HTML - ¡MÁS LARGO!
 const WELCOME_MESSAGE_HTML = `
-  <strong>¡Hola a todos! 👋 Soy tu asistente  para la boda de Manel y Carla.</strong><br/><br/>
+  <strong>¡Hola a todos! 👋 Soy tu asistente para la boda de Manel y Carla.</strong><br/><br/>
   Estoy aquí para resolver cualquier duda que tengáis.<br/>
   
   <strong>Ejemplos de preguntas:</strong>
@@ -11,7 +11,7 @@ const WELCOME_MESSAGE_HTML = `
     <li>&iquest;Qu&eacute; comida se va a servir? (Men&uacute;, opciones vegetarianas/alergias)</li>
     <li>Quiero confirmar mi asistencia</li>
     <li>&iquest;Cu&aacute;l es el plan del d&iacute;a? (Horarios de ceremonia, aperitivo, cena y fiesta)</li>
-    <li>&iquest;D&oacute;nde es la ceremonia y la celebraci&oacute;n? (&iquest;C&oacute;mo llegar?)</li>
+    <li>&iquest;D&oacute;nde es la ceremonia? (&iquest;C&oacute;mo llegar?)</li>
   </ul>
   <br/>
   <strong>¡Escribe tu pregunta abajo!</strong> Te responderé al instante. ¡Gracias por compartir este día con nosotros!
@@ -119,8 +119,8 @@ export default function BotBodaAsistente() {
           ref={chatBoxRef}
           style={{
             maxWidth: "400px",
-            // Altura AUMENTADA para empujar el input hacia abajo
-            height: "500px", 
+            // CAMBIO: Altura REDUCIDA para que todo quepa en una vista móvil
+            height: "320px", 
             overflowY: "auto",
             border: "1px solid #ccc",
             borderRadius: "10px",
@@ -156,7 +156,7 @@ export default function BotBodaAsistente() {
           {isTyping && <p style={{ textAlign: 'left' }}>...</p>} 
         </div>
 
-        {/* Esta sección del input se ha movido hacia abajo debido al aumento de altura del chatBox */}
+        {/* Esta sección del input ahora se verá en pantalla sin scroll vertical */}
         <div style={{ maxWidth: "400px", margin: "10px auto", display: "flex", flexDirection: "column" }}>
           <textarea
             ref={textAreaRef}
