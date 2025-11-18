@@ -8,10 +8,10 @@ const WELCOME_MESSAGE_HTML = `
   
   <strong>Ejemplos de preguntas:</strong>
   <ul>
-    <li>&iquest;Qu&eacute; comida se va a servir? (Men&uacute;, opciones vegetarianas/alergias)</li>
+    <li>&iquest;Qu&eacute; comida se va a servir?</li>
     <li>Quiero confirmar mi asistencia</li>
-    <li>&iquest;Cu&aacute;l es el plan del d&iacute;a? (Horarios de ceremonia, aperitivo, cena y fiesta)</li>
-    <li>&iquest;D&oacute;nde es la ceremonia? (&iquest;C&oacute;mo llegar?)</li>
+    <li>&iquest;Cu&aacute;l es el plan del d&iacute;a?</li>
+    <li>&iquest;D&oacute;nde es la ceremonia?</li>
   </ul>
   <br/>
   <strong>¡Escribe tu pregunta abajo!</strong> Te responderé al instante. ¡Gracias por compartir este día con nosotros!
