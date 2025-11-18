@@ -26,25 +26,17 @@ export default function BotBodaAsistente() {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    // 1. FORZADO INMEDIATO DEL BLANCO
-    const setWhiteBackground = () => {
-        document.body.style.backgroundColor = "#ffffff";
-        document.documentElement.style.backgroundColor = "#ffffff";
-        document.body.style.overscrollBehaviorY = "auto"; // Reactivar el rebote natural
-    };
+    // 1. FORZAR MODO CLARO VIA JS
+    document.documentElement.style.colorScheme = "light";
+    document.body.style.backgroundColor = "#ffffff";
+    document.documentElement.style.backgroundColor = "#ffffff";
+    document.body.style.overscrollBehaviorY = "auto"; 
 
-    setWhiteBackground();
-
-    // 2. TRANSICIÓN DE LA CORTINA
-    setTimeout(() => {
-      setIsPageLoaded(true);
-    }, 100);
-
-    // 3. REFUERZO AL REDIMENSIONAR (Para cuando se esconde la barra del iPhone)
-    window.addEventListener('resize', setWhiteBackground);
+    setTimeout(() => { setIsPageLoaded(true); }, 100);
 
     return () => {
-      window.removeEventListener('resize', setWhiteBackground);
+      // Limpieza
+      document.documentElement.style.colorScheme = "";
       document.body.style.backgroundColor = "";
       document.documentElement.style.backgroundColor = "";
       document.body.style.overscrollBehaviorY = "";
@@ -87,22 +79,27 @@ export default function BotBodaAsistente() {
     <>
       <Head>
         <title>Asistente de Boda</title>
-        {/* FORZAR LA BARRA DE ESTADO BLANCA */}
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         
+        {/* --- LA SOLUCIÓN DEFINITIVA --- */}
+        {/* Le decimos al iPhone: "Esta web es CLARA (Light), no uses modo oscuro aquí" */}
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+        
         <style>{`
-          /* REGLAS CRÍTICAS PARA IPHONE */
+          :root {
+            color-scheme: light; /* Desactiva modo oscuro a nivel de navegador */
+          }
           html {
             background-color: #ffffff !important;
-            height: 100dvh; /* Usamos Dynamic Viewport Height */
+            height: 100dvh;
           }
           body {
             background-color: #ffffff !important;
             min-height: 100dvh;
             margin: 0;
             padding: 0;
-            /* Reactivamos el scroll elástico pero forzamos que el fondo sea blanco */
             overscroll-behavior-y: auto; 
           }
           #__next {
@@ -122,7 +119,7 @@ export default function BotBodaAsistente() {
       {/* CONTENEDOR PRINCIPAL */}
       <div style={{ 
         textAlign: "center", backgroundColor: "white", 
-        minHeight: "100dvh", /* OJO: 'dvh' para que se adapte a la barra del iPhone */
+        minHeight: "100dvh", 
         width: "100%",
         margin: "0", padding: "20px", boxSizing: "border-box", overflowX: "hidden"
       }}>
