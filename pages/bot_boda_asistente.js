@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Head from "next/head"; 
+import Head from "next/head";
 
 const WELCOME_MESSAGE_HTML = `
   <strong>¡Hola a todos! 👋 Soy tu asistente para la boda de Manel y Carla.</strong><br/><br/>
@@ -26,37 +26,36 @@ export default function BotBodaAsistente() {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    // 1. RESETEO AGRESIVO DE COLOR PARA IPHONE
-    // Importante: Pintamos html y body de blanco inmediatamente
-    document.body.style.backgroundColor = "#ffffff";
-    document.body.style.minHeight = "100vh";
-    document.documentElement.style.backgroundColor = "#ffffff";
+    // 1. FORZADO INMEDIATO DEL BLANCO
+    const setWhiteBackground = () => {
+        document.body.style.backgroundColor = "#ffffff";
+        document.documentElement.style.backgroundColor = "#ffffff";
+        document.body.style.overscrollBehaviorY = "auto"; // Reactivar el rebote natural
+    };
 
-    setTimeout(() => { setIsPageLoaded(true); }, 100);
+    setWhiteBackground();
 
-    // Aseguramos que al desmontar no dejemos estilos raros
+    // 2. TRANSICIÓN DE LA CORTINA
+    setTimeout(() => {
+      setIsPageLoaded(true);
+    }, 100);
+
+    // 3. REFUERZO AL REDIMENSIONAR (Para cuando se esconde la barra del iPhone)
+    window.addEventListener('resize', setWhiteBackground);
+
     return () => {
+      window.removeEventListener('resize', setWhiteBackground);
       document.body.style.backgroundColor = "";
       document.documentElement.style.backgroundColor = "";
+      document.body.style.overscrollBehaviorY = "";
     };
   }, []);
 
-  // ... (resto de lógica de chat igual que tenías, omitida para brevedad, pon aquí tu sendMessage y useEffect del scroll) ...
-  // Asegúrate de copiar las funciones sendMessage, handleInputChange y el useEffect de scroll de tu archivo anterior
-  // Pego aquí lo esencial para que funcione el renderizado:
-  
   useEffect(() => {
     if (chatBoxRef.current) { chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight; }
   }, [messages, isTyping]);
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-    const el = textAreaRef.current;
-    el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 100) + "px"; setTextAreaHeight(el.style.height);
-  };
-  
-  const sendMessage = async () => { /* ... TU LÓGICA DE ENVIAR MENSAJE AQUÍ ... */ 
-    // (Copia tu función sendMessage tal cual la tenías en el último paso)
+  const sendMessage = async () => {
     if (!input.trim()) return;
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage, { role: "assistant", content: "" }]);
@@ -78,26 +77,42 @@ export default function BotBodaAsistente() {
     setMessages((prev) => { const updated = [...prev]; updated[prev.length - 1] = { role: "assistant", content: fullReplyHTML }; return updated; });
   };
 
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    const el = textAreaRef.current;
+    el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 100) + "px"; setTextAreaHeight(el.style.height);
+  };
+
   return (
     <>
       <Head>
         <title>Asistente de Boda</title>
-        {/* ESTO ES LO QUE ARREGLA EL IPHONE BLANCO: */}
+        {/* FORZAR LA BARRA DE ESTADO BLANCA */}
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         
         <style>{`
-          html, body, #__next {
+          /* REGLAS CRÍTICAS PARA IPHONE */
+          html {
             background-color: #ffffff !important;
-            margin: 0; padding: 0;
-            min-height: 100vh;
-            width: 100%;
+            height: 100dvh; /* Usamos Dynamic Viewport Height */
+          }
+          body {
+            background-color: #ffffff !important;
+            min-height: 100dvh;
+            margin: 0;
+            padding: 0;
+            /* Reactivamos el scroll elástico pero forzamos que el fondo sea blanco */
+            overscroll-behavior-y: auto; 
+          }
+          #__next {
+            background-color: #ffffff !important;
+            min-height: 100dvh;
           }
         `}</style>
       </Head>
 
-      {/* CORTINA NEGRA QUE DESAPARECE */}
+      {/* CORTINA NEGRA DE TRANSICIÓN */}
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
         backgroundColor: 'black', zIndex: 9999, opacity: isPageLoaded ? 0 : 1, 
@@ -106,7 +121,9 @@ export default function BotBodaAsistente() {
 
       {/* CONTENEDOR PRINCIPAL */}
       <div style={{ 
-        textAlign: "center", backgroundColor: "white", minHeight: "100vh", width: "100%",
+        textAlign: "center", backgroundColor: "white", 
+        minHeight: "100dvh", /* OJO: 'dvh' para que se adapte a la barra del iPhone */
+        width: "100%",
         margin: "0", padding: "20px", boxSizing: "border-box", overflowX: "hidden"
       }}>
         <h1>Asistente de Boda 💍</h1>
