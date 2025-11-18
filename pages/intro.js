@@ -6,8 +6,8 @@ export default function IntroPage() {
   const router = useRouter();
   const playerRef = useRef(null);
   
-  const [isStarted, setIsStarted] = useState(false);     // Controla si hemos dado al botón
-  const [isFadingOut, setIsFadingOut] = useState(false); // <--- NUEVO: Controla el final
+  const [isStarted, setIsStarted] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   // --- DATOS WHATSAPP ---
   const pageTitle = "Asistente de la Boda de Manel & Carla";
@@ -33,8 +33,8 @@ export default function IntroPage() {
           playsinline: 1,
           modestbranding: 1,
           loop: 0,
-          fs: 0,
-          end: 7 // Corta a los 7 segundos
+          fs: 0
+          // Hemos quitado 'end: 7' para que el video no se pare de golpe mientras hacemos el fundido
         },
         events: {
           'onStateChange': onPlayerStateChange
@@ -53,21 +53,26 @@ export default function IntroPage() {
       playerRef.current.unMute();
       playerRef.current.setVolume(100);
       playerRef.current.playVideo();
+
+      // --- CRONÓMETRO AJUSTADO ---
+      
+      // 1. En el SEGUNDO 7 (7000ms) empezamos a oscurecer
+      setTimeout(() => {
+        setIsFadingOut(true);
+      }, 7000);
+
+      // 2. En el SEGUNDO 8.5 (8500ms) nos vamos a la otra página
+      // (Damos 1.5 segundos para que la transición a negro se complete)
+      setTimeout(() => {
+        router.push('/bot_boda_asistente');
+      }, 8500);
     }
   };
 
   const onPlayerStateChange = (event) => {
-    // Cuando el video termina (o llega al segundo 7)
-    if (event.data === 0) { 
-      
-      // 1. Activamos el fundido a negro
-      setIsFadingOut(true);
-
-      // 2. Esperamos 1.5 segundos (1500ms) para que la animación termine
-      // y entonces cambiamos de página sin que se note el corte.
-      setTimeout(() => {
-        router.push('/bot_boda_asistente');
-      }, 1500);
+    // Respaldo por si acaso el video acaba antes de tiempo (poco probable)
+    if (event.data === 0 && !isFadingOut) { 
+       router.push('/bot_boda_asistente');
     }
   };
 
@@ -90,20 +95,15 @@ export default function IntroPage() {
         display: 'flex', justifyContent: 'center', alignItems: 'center'
       }}>
 
-        {/* ENVOLTORIO DE CONTENIDO QUE SE DIFUMINA 
-            Todo lo que esté aquí dentro se volverá transparente al final,
-            dejando ver el fondo negro del 'div' padre.
-        */}
+        {/* CONTENEDOR QUE SE DIFUMINA */}
         <div style={{
           width: '100%',
           height: '100%',
           display: 'flex', justifyContent: 'center', alignItems: 'center',
-          // MAGIA CSS: Si isFadingOut es true, opacidad 0. Si no, opacidad 1.
           opacity: isFadingOut ? 0 : 1, 
-          transition: 'opacity 1.5s ease-in-out' // Dura 1.5 segundos
+          transition: 'opacity 1.5s ease-in-out' // La transición dura 1.5 segundos exactos
         }}>
 
-            {/* PANTALLA DE BIENVENIDA */}
             {!isStarted && (
               <div 
                 onClick={startExperience}
@@ -136,7 +136,6 @@ export default function IntroPage() {
               </div>
             )}
 
-            {/* VIDEO */}
             <div style={{ 
               width: '100%', 
               height: '100%', 
