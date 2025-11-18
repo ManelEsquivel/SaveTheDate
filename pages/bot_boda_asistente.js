@@ -25,29 +25,33 @@ export default function BotBodaAsistente() {
   const chatBoxRef = useRef(null);
   const textAreaRef = useRef(null);
 
+  // --- 1. EL "BLANQUEADOR" ---
   useEffect(() => {
-    // --- LA TÉCNICA DEL MARTILLO ---
-    // El iPhone a veces tarda en soltar el color negro de la intro.
-    // Vamos a forzar el blanco repetidamente durante la carga para asegurar que "agarra".
-    
-    const paintItWhite = () => {
-        document.documentElement.style.backgroundColor = "#ffffff"; // Chasis (HTML)
-        document.body.style.backgroundColor = "#ffffff";            // Cuerpo (BODY)
-        document.documentElement.style.colorScheme = "light";       // Modo Claro
+    // Función agresiva para forzar el blanco
+    const forceWhite = () => {
+        // Atacamos al HTML (la raíz) con prioridad máxima
+        document.documentElement.style.setProperty('background-color', '#ffffff', 'important');
+        document.body.style.setProperty('background-color', '#ffffff', 'important');
+        
+        // Forzamos modo claro
+        document.documentElement.style.colorScheme = "light";
     };
 
-    // 1. Pintar ya
-    paintItWhite();
+    // Ejecutar inmediatamente
+    forceWhite();
 
-    // 2. Insistir cada 50ms durante medio segundo (para vencer al scroll elástico)
-    const intervalId = setInterval(paintItWhite, 50);
-    setTimeout(() => clearInterval(intervalId), 1000);
+    // Ejecutar repetidamente durante la transición (para vencer al iPhone)
+    const timer = setInterval(forceWhite, 50);
 
-    // Transición de entrada
-    setTimeout(() => { setIsPageLoaded(true); }, 100);
+    // Parar el martillo a los 2 segundos
+    setTimeout(() => {
+        clearInterval(timer);
+        setIsPageLoaded(true); // Abrir cortina
+    }, 100);
 
     return () => {
-      clearInterval(intervalId);
+      clearInterval(timer);
+      // Limpieza suave
       document.documentElement.style.backgroundColor = "";
       document.body.style.backgroundColor = "";
     };
@@ -89,37 +93,34 @@ export default function BotBodaAsistente() {
     <>
       <Head>
         <title>Asistente de Boda</title>
-        
-        {/* METAETIQUETAS CRÍTICAS PARA IPHONE */}
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+        <meta name="color-scheme" content="light" />
         
-        {/* IMPORTANTE: 'key' fuerza a Next.js a reemplazar este estilo en lugar de mezclarlo */}
-        <style key="global-bg-style">{`
-          :root {
-            color-scheme: light; 
-          }
-          html {
-            background-color: #ffffff !important; /* Blanco nuclear */
-            height: 100%; /* Cambiado de dvh a % para estabilidad en iOS */
-          }
-          body {
-            background-color: #ffffff !important;
-            min-height: 100%;
-            margin: 0;
-            padding: 0;
-            /* Importante: fixed a veces ayuda a que el rebote coja el color del html */
-            position: relative; 
-          }
-          #__next {
-            background-color: #ffffff !important;
-            height: 100%;
-          }
+        <style>{`
+            :root { color-scheme: light; }
+            
+            /* REGLAS CSS CON !important PARA GANAR A CUALQUIER OTRA */
+            html {
+                background-color: #ffffff !important;
+                /* Quitamos altura fija para evitar problemas de scroll en iOS */
+                min-height: 100%; 
+            }
+            body {
+                background-color: #ffffff !important;
+                min-height: 100%;
+                margin: 0;
+                /* El truco final: relative permite que el blanco cubra todo */
+                position: relative; 
+            }
+            #__next {
+                background-color: #ffffff !important;
+                min-height: 100%;
+            }
         `}</style>
       </Head>
 
-      {/* CORTINA NEGRA (Desaparece) */}
+      {/* CORTINA NEGRA */}
       <div style={{
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
         backgroundColor: 'black', zIndex: 9999, opacity: isPageLoaded ? 0 : 1, 
