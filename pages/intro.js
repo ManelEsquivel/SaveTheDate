@@ -1,49 +1,55 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function IntroPage() {
   const router = useRouter();
-  const [isFading, setIsFading] = useState(false);
+  const videoRef = useRef(null);
+  
+  // Estado para controlar la opacidad (fade out)
+  const [opacity, setOpacity] = useState(1);
 
-  // Función que se ejecuta cuando el video termina
   const handleVideoEnd = () => {
-    // 1. Activamos el estado de desvanecimiento
-    setIsFading(true);
-
-    // 2. Esperamos 1 segundo (1000ms) para que se vea la transición y cambiamos de página
+    // 1. Empezar a desvanecer
+    setOpacity(0);
+    
+    // 2. Esperar 1 seg a que se ponga negro y cambiar de página
     setTimeout(() => {
       router.push('/bot_boda_asistente');
     }, 1000);
   };
 
+  // Forzar play por si acaso
+  useEffect(() => {
+    if(videoRef.current) {
+      videoRef.current.play().catch(e => console.error("Autoplay bloqueado:", e));
+    }
+  }, []);
+
   return (
-    <div 
-      style={{ 
-        height: '100vh', 
-        width: '100vw', 
-        backgroundColor: 'black', 
-        overflow: 'hidden',
-        // La transición suave ocurre aquí:
-        opacity: isFading ? 0 : 1, 
-        transition: 'opacity 1s ease-in-out' 
-      }}
-    >
+    <div style={{ 
+      height: '100vh', 
+      width: '100vw', 
+      backgroundColor: 'black',
+      overflow: 'hidden',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      transition: 'opacity 1s ease-in-out', // La magia del desvanecimiento
+      opacity: opacity 
+    }}>
       <video
-        // IMPORTANTE: Estas 3 propiedades son OBLIGATORIAS para el autoplay
+        ref={videoRef}
         autoPlay
-        muted
-        playsInline 
-        
-        // Detecta el final
+        muted        // <--- CRÍTICO: Si quitas esto, no arranca solo
+        playsInline  // <--- CRÍTICO: Si quitas esto, falla en iPhone
         onEnded={handleVideoEnd}
-        
         style={{ 
           width: '100%', 
           height: '100%', 
-          objectFit: 'cover' // Cubre toda la pantalla sin bordes negros
+          objectFit: 'cover' 
         }}
       >
-        {/* Asegúrate de que el video esté en la carpeta /public */}
+        {/* Como ya confirmamos que el video carga, esta ruta es la buena: */}
         <source src="/wedding-intro.mp4" type="video/mp4" />
       </video>
     </div>
