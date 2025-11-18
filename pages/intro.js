@@ -1,54 +1,69 @@
-import { useRouter } from 'next/router'; // O 'next/navigation'
-import { useEffect } from 'react';
+import { useRouter } from 'next/router'; // O 'next/navigation' si usas la carpeta 'app'
+import { useEffect, useRef } from 'react';
 
 export default function IntroPage() {
   const router = useRouter();
+  const playerRef = useRef(null);
 
   useEffect(() => {
-    // Buscamos el video manualmente una vez que se ha "inyectado"
-    const videoElement = document.getElementById('intro-video-player');
+    // 1. Cargar la API de YouTube manualmente (ya que no podemos instalar librerías)
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    if (videoElement) {
-      // 1. Forzamos reproducción silenciosa
-      videoElement.muted = true;
-      videoElement.play().catch(e => console.log("Forzando play:", e));
+    // 2. Esta función se ejecuta automáticamente cuando la API de YouTube está lista
+    window.onYouTubeIframeAPIReady = () => {
+      playerRef.current = new window.YT.Player('youtube-player', {
+        videoId: 'VDqdb9hQZMc', // TU VIDEO ID
+        playerVars: {
+          autoplay: 1,      // Autoplay
+          mute: 1,          // OBLIGATORIO para que arranque solo en móviles
+          controls: 0,      // Sin barra de control
+          showinfo: 0,      // Sin titulo
+          rel: 0,           // Sin videos recomendados al final
+          playsinline: 1,   // Para iPhone
+          modestbranding: 1 // Menos logos
+        },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    };
 
-      // 2. Escuchamos cuando termina para redirigir
-      videoElement.onended = () => {
-        // Efecto visual de salida (opcional)
-        videoElement.style.opacity = '0';
-        setTimeout(() => {
-          router.push('/bot_boda_asistente');
-        }, 1000);
-      };
-    }
+    // Limpieza al salir
+    return () => {
+      window.onYouTubeIframeAPIReady = null;
+    };
   }, []);
 
-  // El código HTML del video en texto plano para engañar a React
-  const videoHTML = `
-    <video
-      id="intro-video-player"
-      src="/wedding-intro.mp4"
-      autoplay
-      muted
-      playsinline
-      style="width: 100%; height: 100%; object-fit: cover; transition: opacity 1s;"
-    ></video>
-  `;
+  // 3. Función que vigila el video. Cuando acaba (data === 0), redirige.
+  const onPlayerStateChange = (event) => {
+    if (event.data === 0) { // 0 significa "Ended" (Terminado)
+      router.push('/bot_boda_asistente');
+    }
+  };
 
   return (
-    <div 
-      style={{ 
-        height: '100vh', 
-        width: '100vw', 
-        backgroundColor: 'black', 
-        overflow: 'hidden',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-      // AQUÍ ESTÁ LA MAGIA: Inyectamos el HTML directamente
-      dangerouslySetInnerHTML={{ __html: videoHTML }}
-    />
+    <div style={{ 
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw', 
+      height: '100vh', 
+      backgroundColor: 'black', 
+      zIndex: 9999,
+      overflow: 'hidden'
+    }}>
+      {/* Contenedor que evita que se pueda clicar encima del video */}
+      <div style={{ 
+        width: '100%', 
+        height: '100%', 
+        pointerEvents: 'none' // Esto evita pausar el video por error con el dedo
+      }}>
+        {/* YouTube inyectará el video AQUÍ dentro de este div */}
+        <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
+      </div>
+    </div>
   );
 }
