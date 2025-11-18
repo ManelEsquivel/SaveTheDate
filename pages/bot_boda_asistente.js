@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Head from "next/head"; 
+import Head from "next/head";
 
 const WELCOME_MESSAGE_HTML = `
   <strong>¡Hola a todos! 👋 Soy tu asistente para la boda de Manel y Carla.</strong><br/><br/>
@@ -25,33 +25,28 @@ export default function BotBodaAsistente() {
   const chatBoxRef = useRef(null);
   const textAreaRef = useRef(null);
 
-  // --- 1. EL "BLANQUEADOR" ---
   useEffect(() => {
-    // Función agresiva para forzar el blanco
-    const forceWhite = () => {
-        // Atacamos al HTML (la raíz) con prioridad máxima
+    // Esta función se asegura de que el blanco gane
+    const paintWhite = () => {
         document.documentElement.style.setProperty('background-color', '#ffffff', 'important');
         document.body.style.setProperty('background-color', '#ffffff', 'important');
-        
-        // Forzamos modo claro
         document.documentElement.style.colorScheme = "light";
     };
 
-    // Ejecutar inmediatamente
-    forceWhite();
+    // Ejecutamos YA
+    paintWhite();
 
-    // Ejecutar repetidamente durante la transición (para vencer al iPhone)
-    const timer = setInterval(forceWhite, 50);
-
-    // Parar el martillo a los 2 segundos
+    // Insistimos un poco por si acaso
+    const interval = setInterval(paintWhite, 50);
+    
     setTimeout(() => {
-        clearInterval(timer);
-        setIsPageLoaded(true); // Abrir cortina
+      clearInterval(interval);
+      setIsPageLoaded(true); 
     }, 100);
 
     return () => {
-      clearInterval(timer);
-      // Limpieza suave
+      clearInterval(interval);
+      // AQUÍ SÍ LIMPIAMOS: Si salimos del bot, dejamos el navegador limpio
       document.documentElement.style.backgroundColor = "";
       document.body.style.backgroundColor = "";
     };
@@ -99,23 +94,11 @@ export default function BotBodaAsistente() {
         
         <style>{`
             :root { color-scheme: light; }
-            
-            /* REGLAS CSS CON !important PARA GANAR A CUALQUIER OTRA */
-            html {
-                background-color: #ffffff !important;
-                /* Quitamos altura fija para evitar problemas de scroll en iOS */
-                min-height: 100%; 
-            }
-            body {
+            html, body, #__next {
                 background-color: #ffffff !important;
                 min-height: 100%;
                 margin: 0;
-                /* El truco final: relative permite que el blanco cubra todo */
-                position: relative; 
-            }
-            #__next {
-                background-color: #ffffff !important;
-                min-height: 100%;
+                padding: 0;
             }
         `}</style>
       </Head>
