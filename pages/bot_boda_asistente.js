@@ -4,8 +4,7 @@ import Head from "next/head";
 // 1. Mensaje de Bienvenida en HTML - ¡MÁS LARGO!
 const WELCOME_MESSAGE_HTML = `
   <strong>¡Hola a todos! 👋 Soy tu asistente  para la boda de Manel y Carla.</strong><br/><br/>
-  Estoy aquí para resolver cualquier inquietud que tengáis.<br/>
-  Queremos que os sintáis cómodos y tengáis toda la información necesaria para disfrutar al máximo.<br/><br/>
+  Estoy aquí para resolver cualquier duda que tengáis.<br/>
   
   <strong>Ejemplos de preguntas:</strong>
   <ul>
