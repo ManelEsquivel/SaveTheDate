@@ -1,57 +1,55 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'; // O 'next/navigation' si usas app directory
 import { useState, useEffect, useRef } from 'react';
 
 export default function IntroPage() {
   const router = useRouter();
   const videoRef = useRef(null);
   
-  // Estado para controlar la opacidad (fade out)
-  const [opacity, setOpacity] = useState(1);
-
   const handleVideoEnd = () => {
-    // 1. Empezar a desvanecer
-    setOpacity(0);
-    
-    // 2. Esperar 1 seg a que se ponga negro y cambiar de página
-    setTimeout(() => {
-      router.push('/bot_boda_asistente');
-    }, 1000);
+    // Cuando acaba, vamos a la siguiente página
+    router.push('/bot_boda_asistente');
   };
 
-  // Forzar play por si acaso
   useEffect(() => {
-    if(videoRef.current) {
-      videoRef.current.play().catch(e => console.error("Autoplay bloqueado:", e));
+    // Intentamos forzar el play cuando la página carga
+    if (videoRef.current) {
+      const playPromise = videoRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("Autoplay bloqueado por el navegador:", error);
+          // Si entra aquí, es que el navegador requiere clic del usuario
+        });
+      }
     }
   }, []);
 
   return (
-    <div style={{ 
-      height: '100vh', 
-      width: '100vw', 
-      backgroundColor: 'black',
-      overflow: 'hidden',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      transition: 'opacity 1s ease-in-out', // La magia del desvanecimiento
-      opacity: opacity 
-    }}>
+    <div style={{ height: '100vh', width: '100vw', backgroundColor: 'black', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      
       <video
         ref={videoRef}
+        width="100%"
+        height="100%"
+        
+        // 1. ATRIBUTOS CRÍTICOS
         autoPlay
-        muted        // <--- CRÍTICO: Si quitas esto, no arranca solo
-        playsInline  // <--- CRÍTICO: Si quitas esto, falla en iPhone
+        muted        // OBLIGATORIO
+        playsInline  // OBLIGATORIO PARA MOVIL
+        preload="auto" // Ayuda a cargar rápido
+        
+        // 2. DEJA ESTO ACTIVADO TEMPORALMENTE
+        controls={true} // Esto mostrará la barra de play/pausa.
+        
         onEnded={handleVideoEnd}
-        style={{ 
-          width: '100%', 
-          height: '100%', 
-          objectFit: 'cover' 
-        }}
+        style={{ objectFit: 'cover' }}
       >
-        {/* Como ya confirmamos que el video carga, esta ruta es la buena: */}
+        {/* 3. LA RUTA EXACTA (Fíjate en la barra al inicio) */}
         <source src="/wedding-intro.mp4" type="video/mp4" />
+        
+        <p style={{color: 'white'}}>Tu navegador no soporta video o la ruta está mal.</p>
       </video>
+
     </div>
   );
 }
