@@ -1,222 +1,152 @@
-import { useState, useRef, useEffect } from "react";
-import Head from "next/head";
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
 
-// 1. Mensaje de Bienvenida
-const WELCOME_MESSAGE_HTML = `
-  <strong>¡Hola a todos! 👋 Soy tu asistente para la boda de Manel y Carla.</strong><br/><br/>
-  Estoy aquí para resolver cualquier duda que tengáis.<br/>
+export default function IntroPage() {
+  const router = useRouter();
+  const playerRef = useRef(null);
   
-  <strong>Ejemplos de preguntas:</strong>
-  <ul>
-    <li>&iquest;Qu&eacute; comida se va a servir?</li>
-    <li>Quiero confirmar mi asistencia</li>
-    <li>&iquest;Cu&aacute;l es el plan del d&iacute;a?</li>
-    <li>&iquest;D&oacute;nde es la ceremonia?</li>
-  </ul>
-  <br/>
-  <strong>¡Escribe tu pregunta abajo!</strong> Te responderé al instante. ¡Gracias por compartir este día con nosotros!
-`;
+  const [isStarted, setIsStarted] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
-export default function BotBodaAsistente() {
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
-  
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: WELCOME_MESSAGE_HTML }
-  ]);
-  
-  const [input, setInput] = useState("");
-  const [textAreaHeight, setTextAreaHeight] = useState("40px");
-  const [isTyping, setIsTyping] = useState(false);
-  const chatBoxRef = useRef(null);
-  const textAreaRef = useRef(null);
+  // --- DATOS WHATSAPP ---
+  const pageTitle = "Asistente de la Boda de Manel & Carla";
+  const pageDescription = "Entra aquí para interactuar con nuestro asistente virtual.";
+  const pageImage = "https://bodamanelcarla.vercel.app/icono.png"; 
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsPageLoaded(true);
-    }, 100);
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      playerRef.current = new window.YT.Player('youtube-player', {
+        videoId: 'XZ8ktV9YgCQ', 
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          showinfo: 0,
+          rel: 0,
+          playsinline: 1,
+          modestbranding: 1,
+          loop: 0,
+          fs: 0
+          // Hemos quitado 'end: 7' para que el video no se pare de golpe mientras hacemos el fundido
+        },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    };
+
+    return () => {
+      window.onYouTubeIframeAPIReady = null;
+    };
   }, []);
 
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+  const startExperience = () => {
+    if (playerRef.current && playerRef.current.playVideo) {
+      setIsStarted(true);
+      playerRef.current.unMute();
+      playerRef.current.setVolume(100);
+      playerRef.current.playVideo();
+
+      // --- CRONÓMETRO AJUSTADO ---
+      
+      // 1. En el SEGUNDO 7 (7000ms) empezamos a oscurecer
+      setTimeout(() => {
+        setIsFadingOut(true);
+      }, 7000);
+
+      // 2. En el SEGUNDO 8.5 (8500ms) nos vamos a la otra página
+      // (Damos 1.5 segundos para que la transición a negro se complete)
+      setTimeout(() => {
+        router.push('/bot_boda_asistente');
+      }, 8500);
     }
-  }, [messages, isTyping]);
-
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const userMessage = { role: "user", content: input };
-    
-    setMessages((prev) => [...prev, userMessage, { role: "assistant", content: "" }]);
-    setInput("");
-    setTextAreaHeight("40px");
-    setIsTyping(true);
-
-    const history = messages.slice(1).map(msg => ({ role: msg.role, content: msg.content }));
-
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input, history: history }),
-    });
-
-    const data = await res.json();
-    const fullReplyHTML = data.reply;
-    
-    const replyForTyping = fullReplyHTML.replace(/<br\s*\/?>/gi, '\n');
-    
-    let currentText = "";
-    
-    for (let i = 0; i < replyForTyping.length; i++) {
-        const char = replyForTyping[i];
-        if (char === '<' && replyForTyping.substring(i, i + 10).match(/<\/?[a-z][^>]*>/i)) {
-             const endIndex = replyForTyping.indexOf('>', i) + 1;
-             currentText += replyForTyping.substring(i, endIndex);
-             i = endIndex - 1; 
-        } else {
-             await new Promise((resolve) => setTimeout(resolve, 30)); 
-             currentText += char;
-        }
-        setMessages((prev) => {
-            const updated = [...prev];
-            updated[prev.length - 1] = { role: "assistant", content: currentText }; 
-            return updated;
-        });
-    }
-
-    setIsTyping(false); 
-    setMessages((prev) => {
-        const updated = [...prev];
-        updated[prev.length - 1] = { role: "assistant", content: fullReplyHTML }; 
-        return updated;
-    });
   };
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-    const el = textAreaRef.current;
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 100) + "px";
-    setTextAreaHeight(el.style.height);
+  const onPlayerStateChange = (event) => {
+    // Respaldo por si acaso el video acaba antes de tiempo (poco probable)
+    if (event.data === 0 && !isFadingOut) { 
+       router.push('/bot_boda_asistente');
+    }
   };
 
   return (
     <>
       <Head>
-        <title>Asistente de Boda</title>
-        {/* Forzamos que el body sea blanco por si acaso */}
-        <style>{`body { background-color: white; margin: 0; }`}</style>
+        <title>{pageTitle}</title>
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={pageImage} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:type" content="website" />
       </Head>
 
-      {/* CORTINA DE TRANSICIÓN */}
-      <div style={{
-        position: 'fixed',
-        top: 0, left: 0, width: '100vw', height: '100vh',
-        backgroundColor: 'black',
-        zIndex: 9999,
-        opacity: isPageLoaded ? 0 : 1, 
-        transition: 'opacity 1.5s ease-in-out',
-        pointerEvents: 'none' 
-      }}></div>
-
-      {/* CONTENEDOR PRINCIPAL */}
       <div style={{ 
-        textAlign: "center",
-        backgroundColor: "white",
-        minHeight: "100vh",
-        width: "100%",
-        
-        // --- EL CAMBIO CLAVE ESTÁ AQUÍ ---
-        margin: "0",           // Quitamos márgenes externos
-        paddingTop: "20px",    // Usamos relleno interno para el espacio
-        boxSizing: "border-box" // Asegura que el padding no rompa el ancho
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
+        backgroundColor: 'black', zIndex: 9999, overflow: 'hidden',
+        display: 'flex', justifyContent: 'center', alignItems: 'center'
       }}>
-        <h1>Asistente de Boda 💍</h1>
-        <div
-          ref={chatBoxRef}
-          style={{
-            maxWidth: "400px",
-            height: "380px", 
-            overflowY: "auto",
-            border: "1px solid #ccc",
-            borderRadius: "10px",
-            padding: "10px",
-            backgroundColor: "#fff",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            margin: "20px auto",
-          }}
-        >
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                textAlign: msg.role === "user" ? "right" : "left",
-                margin: "10px 0",
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-block",
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  backgroundColor: msg.role === "user" ? "#d1e7dd" : "#cce5ff",
-                  maxWidth: "80%",
-                  wordWrap: "break-word",
-                }}
-                dangerouslySetInnerHTML={{ __html: msg.content }} 
-              />
-            </div>
-          ))}
-          {isTyping && <p style={{ textAlign: 'left' }}>...</p>} 
-        </div>
 
-        <div style={{ maxWidth: "400px", margin: "10px auto", display: "flex", flexDirection: "column", paddingBottom: "20px" }}>
-          <textarea
-            ref={textAreaRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            placeholder="Escribe tu mensaje..."
-            style={{
-              resize: "none",
-              height: textAreaHeight,
-              maxHeight: "100px",
-              padding: "10px 12px",
-              borderRadius: "10px",
-              border: "1px solid #ccc",
-              outline: "none",
-              fontSize: "16px", 
-              lineHeight: "1.4",
-              transition: "all 0.2s ease",
-              background: "#fff",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1) inset",
-              marginBottom: "10px",
-            }}
-          />
-          <button
-            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            onClick={sendMessage}
-            style={{
-              padding: "12px 20px",
-              borderRadius: "12px",
-              border: "1px solid #007bff",
-              backgroundColor: "#007bff",
-              color: "#fff",
-              fontSize: "16px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-              transition: "transform 0.2s ease, background-color 0.3s ease",
-            }}
-          >
-            Enviar
-          </button>
+        {/* CONTENEDOR QUE SE DIFUMINA */}
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          opacity: isFadingOut ? 0 : 1, 
+          transition: 'opacity 1.5s ease-in-out' // La transición dura 1.5 segundos exactos
+        }}>
+
+            {!isStarted && (
+              <div 
+                onClick={startExperience}
+                style={{
+                  position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%',
+                  backgroundColor: 'black',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+                  color: 'white', cursor: 'pointer'
+                }}
+              >
+                <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>
+                  Manel & Carla
+                </h1>
+                
+                <div style={{
+                  padding: '12px 24px', 
+                  border: '1px solid white', 
+                  borderRadius: '4px', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '2px', 
+                  fontSize: '0.9rem',
+                  textAlign: 'center'
+                }}>
+                  Entrar al asistente
+                </div>
+                
+                <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>
+                  (Toca para comenzar)
+                </p>
+              </div>
+            )}
+
+            <div style={{ 
+              width: '100%', 
+              height: '100%', 
+              pointerEvents: 'none',
+              transform: 'scale(1.4)', 
+              opacity: isStarted ? 1 : 0,
+              transition: 'opacity 1s'
+            }}>
+              <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
+            </div>
+
         </div>
       </div>
     </>
