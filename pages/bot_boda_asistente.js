@@ -31,17 +31,16 @@ export default function BotBodaAsistente() {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    // Forzamos fondo blanco
+    // Forzamos fondo blanco mediante JS también por si acaso
     document.body.style.backgroundColor = "#ffffff";
-    document.documentElement.style.backgroundColor = "#ffffff";
-
+    
+    // Iniciamos la transición de entrada
     setTimeout(() => {
       setIsPageLoaded(true);
     }, 100);
 
     return () => {
       document.body.style.backgroundColor = "";
-      document.documentElement.style.backgroundColor = "";
     };
   }, []);
 
@@ -112,9 +111,25 @@ export default function BotBodaAsistente() {
     <>
       <Head>
         <title>Asistente de Boda</title>
+        {/* 1. ESTO PINTA LA BARRA DE DIRECCIONES DEL NAVEGADOR DE BLANCO */}
+        <meta name="theme-color" content="#ffffff" />
+        
+        {/* 2. ESTO FUERZA AL HTML Y BODY A SER BLANCOS SIEMPRE */}
+        <style>{`
+          html, body {
+            background-color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+          }
+          #__next {
+            background-color: #ffffff !important;
+            min-height: 100%;
+          }
+        `}</style>
       </Head>
 
-      {/* CORTINA DE TRANSICIÓN */}
+      {/* CORTINA DE TRANSICIÓN (NEGRA -> TRANSPARENTE) */}
       <div style={{
         position: 'fixed',
         top: 0, left: 0, width: '100vw', height: '100vh',
@@ -125,17 +140,17 @@ export default function BotBodaAsistente() {
         pointerEvents: 'none' 
       }}></div>
 
-      {/* CONTENEDOR PRINCIPAL (ESTILOS CORREGIDOS) */}
+      {/* CONTENEDOR PRINCIPAL */}
       <div style={{ 
         textAlign: "center",
         backgroundColor: "white",
         minHeight: "100vh",
         width: "100%",
         
-        // --- CAMBIO AQUÍ: Padding general en lugar de solo Top ---
+        // --- MANTENEMOS EL PADDING PARA QUE HAYA AIRE EN LOS BORDES ---
         margin: "0",
-        padding: "20px",        // 20px de espacio en TODOS los lados (Arriba, Abajo, Izq, Der)
-        boxSizing: "border-box", // Esto asegura que el padding no ensanche la página más del 100%
+        padding: "20px", 
+        boxSizing: "border-box",
         overflowX: "hidden"
       }}>
         <h1>Asistente de Boda 💍</h1>
@@ -150,7 +165,8 @@ export default function BotBodaAsistente() {
             padding: "10px",
             backgroundColor: "#fff",
             boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            margin: "0 auto 20px auto", // Centrado horizontalmente
+            // Centrado pero respetando el padding del padre
+            margin: "0 auto 20px auto", 
           }}
         >
           {messages.map((msg, i) => (
