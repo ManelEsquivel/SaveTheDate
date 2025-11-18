@@ -6,7 +6,6 @@ export default function IntroPage() {
   const playerRef = useRef(null);
 
   useEffect(() => {
-    // Cargamos API de YouTube
     if (!window.YT) {
       const tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
@@ -18,16 +17,18 @@ export default function IntroPage() {
       playerRef.current = new window.YT.Player('youtube-player', {
         videoId: 'VDqdb9hQZMc',
         playerVars: {
-          autoplay: 1,
-          mute: 1,
-          controls: 0,      // Sin controles
-          showinfo: 0,      // (Ya no funciona al 100% en YouTube, por eso haremos zoom)
+          autoplay: 1,      
+          mute: 1,          // Vital para móvil
+          controls: 0,
+          showinfo: 0,
           rel: 0,
-          playsinline: 1,
+          playsinline: 1,   // Vital para iPhone (evita pantalla completa obligatoria)
           modestbranding: 1,
-          loop: 0 
+          loop: 0,
+          fs: 0             // Desactiva botón fullscreen
         },
         events: {
+          'onReady': onPlayerReady,       // <--- NUEVO: Aquí forzamos el arranque
           'onStateChange': onPlayerStateChange
         }
       });
@@ -38,8 +39,14 @@ export default function IntroPage() {
     };
   }, []);
 
+  // NUEVA FUNCIÓN: Se ejecuta en cuanto el video carga
+  const onPlayerReady = (event) => {
+    // Doble seguridad para móviles:
+    event.target.mute();      // 1. Silenciar explícitamente
+    event.target.playVideo(); // 2. Ordenar Play explícitamente
+  };
+
   const onPlayerStateChange = (event) => {
-    // Cuando termina (estado 0), nos vamos
     if (event.data === 0) { 
       router.push('/bot_boda_asistente');
     }
@@ -48,24 +55,6 @@ export default function IntroPage() {
   return (
     <div style={{ 
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
-      backgroundColor: 'black', zIndex: 9999, 
-      overflow: 'hidden', // <--- IMPORTANTE: Esto corta lo que sobra
+      backgroundColor: 'black', zIndex: 9999, overflow: 'hidden',
       display: 'flex', justifyContent: 'center', alignItems: 'center'
     }}>
-      
-      {/* CONTENEDOR CON ZOOM */}
-      <div style={{ 
-        width: '100%', 
-        height: '100%', 
-        pointerEvents: 'none', // Evita que pulsen el video y salga el título
-        
-        // TRUCO: Escalamos al 140% para sacar los logos fuera de la pantalla
-        transform: 'scale(1.4)', 
-        transformOrigin: 'center center'
-      }}>
-        <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
-      </div>
-      
-    </div>
-  );
-}
