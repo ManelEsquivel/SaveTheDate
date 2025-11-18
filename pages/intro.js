@@ -1,50 +1,54 @@
-import { useRouter } from 'next/router'; // O 'next/navigation' si usas App Router
-import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/router'; // O 'next/navigation'
+import { useEffect } from 'react';
 
 export default function IntroPage() {
   const router = useRouter();
-  const videoRef = useRef(null);
 
   useEffect(() => {
-    const videoElement = videoRef.current;
+    // Buscamos el video manualmente una vez que se ha "inyectado"
+    const videoElement = document.getElementById('intro-video-player');
 
     if (videoElement) {
-      // 1. Forzamos el silencio por código (Esto arregla el bug de React)
-      videoElement.muted = true; 
-      
-      // 2. Forzamos el play
-      videoElement.play().catch(error => {
-        console.log("Autoplay falló:", error);
-      });
+      // 1. Forzamos reproducción silenciosa
+      videoElement.muted = true;
+      videoElement.play().catch(e => console.log("Forzando play:", e));
+
+      // 2. Escuchamos cuando termina para redirigir
+      videoElement.onended = () => {
+        // Efecto visual de salida (opcional)
+        videoElement.style.opacity = '0';
+        setTimeout(() => {
+          router.push('/bot_boda_asistente');
+        }, 1000);
+      };
     }
   }, []);
 
-  const handleVideoEnd = () => {
-    router.push('/bot_boda_asistente');
-  };
+  // El código HTML del video en texto plano para engañar a React
+  const videoHTML = `
+    <video
+      id="intro-video-player"
+      src="/wedding-intro.mp4"
+      autoplay
+      muted
+      playsinline
+      style="width: 100%; height: 100%; object-fit: cover; transition: opacity 1s;"
+    ></video>
+  `;
 
   return (
-    <div style={{ 
-      height: '100vh', 
-      width: '100vw', 
-      backgroundColor: 'black', 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      overflow: 'hidden'
-    }}>
-      <video
-        ref={videoRef}
-        // Usamos estos atributos como respaldo
-        playsInline
-        muted
-        autoPlay
-        onEnded={handleVideoEnd}
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-      >
-        {/* Usamos la URL que ME HAS CONFIRMADO que funciona */}
-        <source src="/wedding-intro.mp4" type="video/mp4" />
-      </video>
-    </div>
+    <div 
+      style={{ 
+        height: '100vh', 
+        width: '100vw', 
+        backgroundColor: 'black', 
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+      // AQUÍ ESTÁ LA MAGIA: Inyectamos el HTML directamente
+      dangerouslySetInnerHTML={{ __html: videoHTML }}
+    />
   );
 }
