@@ -1,9 +1,11 @@
 // pages/index.js
 import Head from "next/head";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from 'react';
+import styles from '../styles/Home.module.css'; 
 
 export default function Home() {
   useEffect(() => {
+    // Lógica original de redirección
     const timer = setTimeout(() => {
       const overlay = document.querySelector(".overlay");
       if (overlay) overlay.classList.add("fade-out");
@@ -13,6 +15,7 @@ export default function Home() {
       document.body.appendChild(flash);
 
       setTimeout(() => {
+        // Redirección a la URL
         window.location.href = "https://manelesquivel.github.io/UnMensajeParaTi/SavetheDate.html";
       }, 2000);
     }, 8000);
@@ -46,7 +49,8 @@ export default function Home() {
           margin: 0;
           padding: 0;
           font-family: "Georgia", serif;
-          background: url("https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1600&q=80")
+          /* --- MODIFICACIÓN CLAVE: Nueva imagen de fondo con nombre actualizado --- */
+          background: url("/manel-carla-propuesta.jpg") /* RUTA DE TU IMAGEN */
             no-repeat center center fixed;
           background-size: cover;
           color: #3e2f1c;
@@ -55,7 +59,8 @@ export default function Home() {
         }
 
         .overlay {
-          background-color: rgba(245, 235, 220, 0.85);
+          /* El overlay mantiene la opacidad y el color para que el texto sea legible */
+          background-color: rgba(245, 235, 220, 0.9); /* Opacidad ajustada */
           position: fixed;
           top: 0;
           left: 0;
@@ -138,4 +143,3 @@ export default function Home() {
     </>
   );
 }
-
