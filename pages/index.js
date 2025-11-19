@@ -19,7 +19,7 @@ export default function Home() {
         // Redirección a la URL
         window.location.href = "https://manelesquivel.github.io/UnMensajeParaTi/SavetheDate.html";
       }, 2000);
-    }, 11000); // <--- TIEMPO AMPLIADO a 11 segundos (11000ms)
+    }, 11000); // Mantenemos 11 segundos para el inicio del FADE OUT (el punto final)
 
     return () => clearTimeout(timer);
   }, []);
@@ -57,11 +57,13 @@ export default function Home() {
           color: #3e2f1c;
           height: 100%;
           overflow: hidden;
+          /* Aseguramos que la opacidad del body sea 1 al inicio */
+          opacity: 1; 
         }
 
         .overlay {
-          /* El overlay mantiene la opacidad y el color para que el texto sea legible */
-          background-color: rgba(245, 235, 220, 0.9); /* Opacidad ajustada */
+          /* El overlay debe ser invisible al inicio para que solo se vea el fondo */
+          background-color: rgba(245, 235, 220, 0.9); 
           position: fixed;
           top: 0;
           left: 0;
@@ -70,7 +72,12 @@ export default function Home() {
           display: flex;
           justify-content: center;
           align-items: center;
-          animation: fadeIn 2s ease-in;
+          
+          /* --- MODIFICACIÓN CLAVE PARA RETRASO DEL TEXTO (PASO 2) --- */
+          animation: fadeIn 2s ease-in forwards; /* Añadimos forwards para que se quede visible */
+          animation-delay: 2s; /* RETRASO DE 2 SEGUNDOS antes de que empiece el fadeIn */
+          opacity: 0; /* Lo hacemos invisible por defecto antes de que empiece la animación */
+          /* --- FIN MODIFICACIÓN CLAVE --- */
         }
 
         .message-box {
