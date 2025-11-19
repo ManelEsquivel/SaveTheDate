@@ -35,7 +35,7 @@ export default function Home() {
         {/* --- ETIQUETAS OPEN GRAPH MODIFICADAS --- */}
         <meta property="og:title" content="Tenemos un mensaje muy importante para ti" />
         <meta property="og:description" content="Hemos pensado en ti para que guardes una fecha muy especial." />
-        <meta property="og:image" content="/manel-carla-propuesta.JPG" /> {/* RUTA DE LA FOTO DE PROPUESTA */}
+        <meta property="og:image" content="/boda_icon_2.jpg" /> {/* RUTA DEL ICONO OPTIMIZADO */}
         <meta property="og:type" content="website" />
         {/* -------------------------------------- */}
         
@@ -59,7 +59,7 @@ export default function Home() {
           padding: 0;
           font-family: "Georgia", serif;
           /* --- CORRECCIÓN FINAL: Usando la extensión exacta .JPG --- */
-          background: url("/manel-carla-propuesta.JPG") /* RUTA CORREGIDA CON .JPG */
+          background: url("/manel-carla-propuesta.JPG") /* IMAGEN DE FONDO COMPLETA */
             no-repeat center center fixed;
           background-size: cover;
           color: #3e2f1c;
