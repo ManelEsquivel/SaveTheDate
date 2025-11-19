@@ -8,6 +8,7 @@ const LAST_VISIT_KEY = 'lastIntroVideoWatched';
 
 // --- FUNCIÓN DE UTILIDAD PARA COMPROBAR LA FECHA ---
 const isDifferentDay = (storedDateString) => {
+  if (typeof window === 'undefined') return true; // Asumir true en SSR
   if (!storedDateString) {
     return true; // No existe la marca, así que es diferente día (primera visita)
   }
@@ -31,28 +32,38 @@ export default function IntroPage() {
   const [isStarted, setIsStarted] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   
-  // --- NUEVO ESTADO PARA CONTROLAR SI DEBEMOS MOSTRAR LA INTRO ---
-  const [showIntro, setShowIntro] = useState(false); 
-  // --------------------------------------------------------------
-  
+  // --- NUEVO ESTADO: true = Mostrar video, false = Omitir video/Redirigir ---
+  const [showVideoExperience, setShowVideoExperience] = useState(false); 
+  // --- NUEVO ESTADO: Para asegurar que el componente se renderiza solo después de la comprobación ---
+  const [isReady, setIsReady] = useState(false); 
+  // --------------------------------------------------------------------------------------------------
+
   const pageTitle = "Asistente de la Boda de Manel & Carla";
   const pageDescription = "Entra aquí para interactuar con nuestro asistente virtual.";
   const pageImage = "https://bodamanelcarla.vercel.app/icono.png"; 
 
+  // Función de redirección centralizada y registro en Local Storage
+  const redirectToBot = () => {
+    if (typeof window !== 'undefined') {
+        // Guardar la marca de tiempo de la visita en el Local Storage
+        localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+    }
+    router.push('/bot_boda_asistente');
+  }
+
   useEffect(() => {
-    // Código para el manejo de Local Storage (solo en el cliente)
     if (typeof window !== 'undefined') {
       const lastVisit = localStorage.getItem(LAST_VISIT_KEY);
+      const isNewDay = isDifferentDay(lastVisit);
       
-      if (isDifferentDay(lastVisit)) {
-        // La última visita fue ayer o no existe la marca. Mostramos el video.
-        setShowIntro(true);
-        
-        // PINTAMOS DE NEGRO AL ENTRAR (sólo si se va a mostrar la intro)
+      setShowVideoExperience(isNewDay);
+      setIsReady(true);
+      
+      if (isNewDay) {
+        // Solo pintamos de negro e inicializamos YT si vamos a mostrar el video
         document.documentElement.style.setProperty('background-color', '#000000', 'important');
         document.body.style.setProperty('background-color', '#000000', 'important');
 
-        // Inicializar YouTube Iframe API
         if (!window.YT) {
           const tag = document.createElement('script');
           tag.src = "https://www.youtube.com/iframe_api";
@@ -67,60 +78,47 @@ export default function IntroPage() {
             events: { 'onStateChange': onPlayerStateChange }
           });
         };
-        
-      } else {
-        // La última visita fue hoy. Redirigir directamente.
-        router.replace('/bot_boda_asistente'); // Usar replace para evitar que la intro esté en el historial
       }
     }
 
     return () => {
       window.onYouTubeIframeAPIReady = null;
     };
-  }, []);
-
-  // Función de redirección centralizada
-  const redirectToBot = () => {
-    // Guardar la marca de tiempo de la visita en el Local Storage
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
-    }
-    router.push('/bot_boda_asistente');
-  }
-
-  const startExperience = () => {
-    if (playerRef.current && playerRef.current.playVideo) {
-      setIsStarted(true);
-      playerRef.current.unMute();
-      playerRef.current.setVolume(100);
-      playerRef.current.playVideo();
-      // El setTimeout para el fundido y la redirección es el mismo, pero ahora llama a redirectToBot
-      setTimeout(() => { setIsFadingOut(true); }, 7000);
-      setTimeout(redirectToBot, 8500); 
-    }
-  };
+  }, []); // El array vacío asegura que solo se ejecuta al montar
 
   const onPlayerStateChange = (event) => {
-    // Si el video termina (data === 0) y no estamos ya en proceso de fundido de salida, redirigimos.
     if (event.data === 0 && !isFadingOut) { 
        redirectToBot();
     }
   };
-  
-  // Si showIntro es false, el componente no renderiza nada y el useEffect ya ha redirigido.
-  if (!showIntro) {
-      // Devolver un fragmento o null para evitar un render innecesario antes de la redirección,
-      // pero manteniendo el Head por si acaso.
-      return (
-        <Head>
-            <title>{pageTitle}</title>
-            <meta property="og:title" content={pageTitle} />
-            <meta name="theme-color" content="#000000" />
-        </Head>
-      );
+
+  const handleStart = () => {
+    if (showVideoExperience) {
+      // Flujo: Reproducir Video
+      if (playerRef.current && playerRef.current.playVideo) {
+        setIsStarted(true);
+        playerRef.current.unMute();
+        playerRef.current.setVolume(100);
+        playerRef.current.playVideo();
+        setTimeout(() => { setIsFadingOut(true); }, 7000);
+        setTimeout(redirectToBot, 8500);
+      }
+    } else {
+      // Flujo: Redirección Inmediata
+      redirectToBot();
+    }
+  };
+
+  // Esperar a que se complete la comprobación del Local Storage
+  if (!isReady) {
+    return (
+      <Head>
+        <title>{pageTitle}</title>
+        <meta name="theme-color" content="#000000" />
+      </Head>
+    );
   }
 
-  // --- RENDERIZADO CONDICIONAL DE LA INTRO ---
   return (
     <>
       <Head>
@@ -135,24 +133,35 @@ export default function IntroPage() {
         
         <style>{`
           html, body, #__next {
-            background-color: #000000 !important;
+            background-color: ${showVideoExperience ? '#000000' : 'white'} !important;
             margin: 0; padding: 0; height: 100%; overflow: hidden;
           }
         `}</style>
       </Head>
 
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'black', zIndex: 9999, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* Este div controla la opacidad general, oculta el video al final */}
         <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: isFadingOut ? 0 : 1, transition: 'opacity 1.5s ease-in-out' }}>
+            
+            {/* PANTALLA DEL BOTÓN DE ACCESO (Siempre visible si no ha empezado el video) */}
+            {/* Solo se oculta cuando el video ha empezado (isStarted = true) */}
             {!isStarted && (
-              <div onClick={startExperience} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
+              <div onClick={handleStart} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
                 <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
-                <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>Entrar al asistente</div>
+                <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
+                  {/* El texto del botón cambia según el estado */}
+                  {showVideoExperience ? 'Entrar al asistente' : 'Acceder (Hoy ya has visto el vídeo)'}
+                </div>
                 <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
               </div>
             )}
-            <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
-              <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
-            </div>
+            
+            {/* REPRODUCTOR DE YOUTUBE (Solo visible si es la experiencia del video) */}
+            {showVideoExperience && (
+              <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
+                <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
+              </div>
+            )}
         </div>
       </div>
     </>
