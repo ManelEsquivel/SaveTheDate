@@ -496,13 +496,14 @@ ${guestList}
 ## 🍽️ Aperitivo y Opciones Especiales
 - El banquete será **en el mismo recinto, justo después del aperitivo**.
 
-- **INSTRUCCIÓN CLAVE (MENU COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"todo"**, **"completo"**, **"ambos"**, **"listado"** O la frase **"menu completo"** (aunque aparezca la palabra "banquete" o "comida"), DEBES responder ÚNICAMENTE y **DE FORMA EXHAUSTIVA, SIN CORTAR NI RESUMIR**, con el contenido de: ${menuCompletoResponse}.
+// 🛑 REGLA DE AMBIGÜEDAD (MÁXIMA PRIORIDAD PARA "QUE HAY DE COMER"):
+- **INSTRUCCIÓN CLAVE (PREGUNTA ACLARATORIA):** Si el usuario pregunta de forma general **"qué hay de comer"**, **"qué hay de cenar"**, **"la comida"** o **"el menú"** y **NO** especifica explícitamente "aperitivo", "banquete" o "completo", DEBES responder ÚNICAMENTE: "¿Te interesa saber el listado del aperitivo, el menú del banquete o el menú completo? ¡Déjame saber para proporcionarte la información que necesitas!."
 
-- **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
+- **INSTRUCCIÓN CLAVE (MENU COMPLETO):** Solo si el usuario pide explícitamente **"todo"**, **"completo"**, **"menu completo"** o **"listado completo"**, responde con: ${menuCompletoResponse}.
 
-- **INSTRUCCIÓN CLAVE (MENU BANQUETE - Detalle - ALTA PRIORIDAD):** Si el mensaje del usuario contiene las palabras clave **"comida banquete"** O **"banquete"** O **"platos principales"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${menuPrincipalResponse}.
+- **INSTRUCCIÓN CLAVE (APERTIVO COMPLETO):** Si el mensaje del usuario contiene las palabras clave **"aperitivo"** O **"lista del aperitivo"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${aperitivoCompletoResponse}.
 
-- **INSTRUCCIÓN CLAVE (MENU GENERAL - Inicio - BAJA PRIORIDAD):** Si preguntan en general por la **comida**, el **menú** o **que hay para comer/cenar** o **similares** y NINGUNA de las instrucciones de ALTA PRIORIDAD (aperitivo, banquete, todo) se ha activado, DEBES responder ÚNICAMENTE: "¿Te interesa saber el listado del aperitivo, el menú del banquete o el menu completo? ¡Déjame saber para proporcionarte la información que necesitas!."
+- **INSTRUCCIÓN CLAVE (MENU BANQUETE):** Si el mensaje del usuario contiene las palabras clave **"comida banquete"** O **"banquete"** O **"platos principales"** (y no "todo" o "completo"), DEBES responder ÚNICAMENTE con el contenido de ${menuPrincipalResponse}.
 
 - **INSTRUCCIÓN CLAVE (VEGETARIANOS/INTOLERANCIAS):** Si preguntan por opciones **vegetarianas**, **alergias** o **intolerancias**, DEBES responder ÚNICAMENTE con el siguiente texto, SIN AÑADIR NI OMITIR NINGUNA PALABRA:
 ${aperitivoVegetarianoResponse}
