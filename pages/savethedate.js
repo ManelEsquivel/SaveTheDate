@@ -25,6 +25,10 @@ export default function SavetheDate() {
                 
                 <div className="invitation-frame"> 
 
+                    {/* --- NUEVO: Efecto de brillo interior tipo "copos de nieve" --- */}
+                    <div className="inner-sparkle-effect"></div>
+                    {/* ----------------------------------------------------------- */}
+
                     {/* Íconos de Hoja (SVG) */}
                     <div className="leaf-detail top-left-leaf">
                         <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -75,11 +79,9 @@ export default function SavetheDate() {
                         31 · 10 · 2026
                     </p>
                     <p></p>
-                    {/* --- CORRECCIÓN AQUÍ: Volviendo a la clase original (text-xl y text-gray-800) --- */}
                     <p className="animated-item step-5 text-xl mt-16 mb-6 text-gray-800">
                         Masia Mas Llombart<br/>Sant Fost de Campsentelles, Barcelona
                     </p>
-                    {/* --------------------------------------------------------------------------------- */}
 
                     <p className="animated-item step-6 text-base italic text-gray-500 mb-8">
                         ¡Nos encantaría que nos acompañaras en nuestro gran día!
@@ -100,7 +102,6 @@ export default function SavetheDate() {
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        /* Revertimos el fondo a la imagen original */
                         background: url('https://raw.githubusercontent.com/ManelEsquivel/SaveTheDate/main/anillos.png') no-repeat center center fixed;
                         background-size: cover;
                         overflow: hidden; 
@@ -115,7 +116,7 @@ export default function SavetheDate() {
                         min-height: 100vh;
                         margin: 0;
                         background-color: #f7f3ed; /* Color de fondo base */
-                        color: #3e2f1c; /* <--- COLOR ORIGINAL REVERTIDO */
+                        color: #1c2a38; /* <--- COLOR DE TEXTO MÁS OSCURO PARA BUEN CONTRASTE */
                         overflow: hidden;
                     }
 
@@ -127,32 +128,50 @@ export default function SavetheDate() {
                         padding: 3rem 1.5rem; 
                         text-align: center;
                         
-                        background-color: rgba(245, 245, 245, 0.7); /* Opacidad original */
+                        background-color: rgba(245, 245, 245, 0.95); /* <--- OPACIDAD AUMENTADA PARA EL CONTRASTE */
                         background-blend-mode: overlay; 
 
-                        /* --- EFECTO DE BRILLO EN EL BORDE DE LA CAJA (CASCADA DE LUCES) --- */
-                        box-shadow: 0 0 0px 0px rgba(255, 255, 255, 0.8), 0 15px 50px rgba(0, 0, 0, 0.15); /* Sombra base */
+                        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); 
                         border: 1px solid #e0d8c7; 
                         border-radius: 12px;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
-                        animation: borderGlow 6s ease-in-out infinite alternate; /* Animación para el brillo */
+                        /* Eliminamos la animación de brillo en el borde directo */
                     }
 
-                    @keyframes borderGlow {
-                        0% { box-shadow: 0 0 0px 0px rgba(255, 255, 255, 0.8), 0 15px 50px rgba(0, 0, 0, 0.15); }
-                        50% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.8), 0 15px 50px rgba(0, 0, 0, 0.15); }
-                        100% { box-shadow: 0 0 0px 0px rgba(255, 255, 255, 0.8), 0 15px 50px rgba(0, 0, 0, 0.15); }
+                    /* --- NUEVO: ESTILOS PARA EL EFECTO DE BRILLO INTERIOR --- */
+                    .inner-sparkle-effect {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: hidden; /* Asegura que los brillos no se salgan del marco */
+                        border-radius: 12px; /* Hereda el border-radius del contenedor */
+                        pointer-events: none; /* No interfiere con el clic del usuario */
+                        z-index: 1; /* Detrás del texto pero dentro del marco */
+                        background: radial-gradient(circle at top left, rgba(255,255,255,0.08) 0%, transparent 20%),
+                                    radial-gradient(circle at bottom right, rgba(255,255,255,0.08) 0%, transparent 20%);
+                        background-size: 300% 300%; /* Tamaño grande para los gradientes */
+                        animation: sparkleCascade 15s linear infinite alternate;
                     }
-                    /* --- FIN EFECTO DE BRILLO --- */
+
+                    @keyframes sparkleCascade {
+                        0% { background-position: 0% 0%; opacity: 0.8; transform: scale(1); }
+                        25% { background-position: 50% 50%; opacity: 0.9; transform: scale(1.02); }
+                        50% { background-position: 100% 100%; opacity: 0.8; transform: scale(1); }
+                        75% { background-position: 50% 50%; opacity: 0.9; transform: scale(1.02); }
+                        100% { background-position: 0% 0%; opacity: 0.8; transform: scale(1); }
+                    }
+                    /* --- FIN EFECTO DE BRILLO INTERIOR --- */
                     
                     /* --- ADORNOS DE ESQUINA (LEAF DETAIL) --- */
                     .leaf-detail {
                         position: absolute;
                         width: 70px;
                         height: 70px;
-                        z-index: 15; 
+                        z-index: 15; /* Por encima de la tarjeta y los brillos */
                         color: #d4af94; /* Color suave para los adornos */
                         opacity: 0;
                         animation: fadeIn 0.8s forwards; 
@@ -218,3 +237,4 @@ export default function SavetheDate() {
         </>
     );
 }
+```http://googleusercontent.com/image_generation_content/5
