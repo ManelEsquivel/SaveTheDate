@@ -25,9 +25,9 @@ export default function SavetheDate() {
                 
                 <div className="invitation-frame"> 
 
-                    {/* --- NUEVO: Efecto de brillo interior tipo "copos de nieve" --- */}
+                    {/* --- EFECTO DE BRILLO INTERIOR (Copos de luz) --- */}
                     <div className="inner-sparkle-effect"></div>
-                    {/* ----------------------------------------------------------- */}
+                    {/* ------------------------------------------------ */}
 
                     {/* Íconos de Hoja (SVG) */}
                     <div className="leaf-detail top-left-leaf">
@@ -115,8 +115,8 @@ export default function SavetheDate() {
                         align-items: center;
                         min-height: 100vh;
                         margin: 0;
-                        background-color: #f7f3ed; /* Color de fondo base */
-                        color: #1c2a38; /* Color de texto más oscuro para buen contraste */
+                        background-color: #f7f3ed;
+                        color: #3e2f1c; /* Color original de las letras */
                         overflow: hidden;
                     }
 
@@ -128,7 +128,7 @@ export default function SavetheDate() {
                         padding: 3rem 1.5rem; 
                         text-align: center;
                         
-                        background-color: rgba(245, 245, 245, 0.95); /* OPACIDAD AUMENTADA PARA EL CONTRASTE */
+                        background-color: rgba(245, 245, 245, 0.95); /* Opacidad aumentada para el contraste del brillo */
                         background-blend-mode: overlay; 
 
                         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); 
@@ -139,17 +139,17 @@ export default function SavetheDate() {
                         justify-content: center;
                     }
 
-                    /* --- NUEVO: ESTILOS PARA EL EFECTO DE BRILLO INTERIOR (COPOS DE LUZ) --- */
+                    /* --- EFECTO DE BRILLO INTERIOR (COPOS DE LUZ) --- */
                     .inner-sparkle-effect {
                         position: absolute;
                         top: 0;
                         left: 0;
                         width: 100%;
                         height: 100%;
-                        overflow: hidden; /* Asegura que los brillos no se salgan del marco */
+                        overflow: hidden; 
                         border-radius: 12px; 
-                        pointer-events: none; /* No interfiere con el clic del usuario */
-                        z-index: 1; /* Detrás del texto pero dentro del marco */
+                        pointer-events: none; 
+                        z-index: 1; 
                         background: radial-gradient(circle at top left, rgba(255,255,255,0.08) 0%, transparent 20%),
                                     radial-gradient(circle at bottom right, rgba(255,255,255,0.08) 0%, transparent 20%);
                         background-size: 300% 300%; 
@@ -171,7 +171,7 @@ export default function SavetheDate() {
                         width: 70px;
                         height: 70px;
                         z-index: 15; 
-                        color: #d4af94; /* Color suave para los adornos */
+                        color: #d4af94;
                         opacity: 0;
                         animation: fadeIn 0.8s forwards; 
                         animation-delay: 0.2s; 
@@ -236,3 +236,4 @@ export default function SavetheDate() {
         </>
     );
 }
+  
