@@ -1,7 +1,8 @@
 // pages/index.js
 import Head from "next/head";
-import { useState, useEffect, useRef } from 'react';
-import styles from '../styles/Home.module.css'; 
+import { useEffect } from "react";
+// Se elimina la importación del módulo CSS que causa el error.
+// import styles from '../styles/Home.module.css'; 
 
 export default function Home() {
   useEffect(() => {
