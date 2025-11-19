@@ -150,7 +150,7 @@ export default function IntroPage() {
                 <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
                 <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
                   {/* El texto del botón cambia según el estado */}
-                  {showVideoExperience ? 'Entrar al asistente' : 'Acceder (Hoy ya has visto el vídeo)'}
+                  {showVideoExperience ? 'Entrar al asistente' : 'Acceder (Bienvenido de nuevo 😉)'}
                 </div>
                 <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
               </div>
