@@ -17,7 +17,9 @@ export default function SavetheDate() {
             <Head>
                 <title>Save The Date - Manel & Carla</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                {/* Tailwind CSS CDN */}
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+                {/* Google Fonts */}
                 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet" />
             </Head>
 
@@ -115,12 +117,11 @@ export default function SavetheDate() {
                         min-height: 100vh;
                         margin: 0;
                         background-color: #f7f3ed; 
-                        
                         /* --- REVERSIÓN DE ESTILOS --- */
-                        color: #3e2f1c; /* Color original de las letras (más claro) */
+                        color: #3e2f1c; /* Color original de las letras */
                         background: url('https://raw.githubusercontent.com/ManelEsquivel/SaveTheDate/main/anillos.png') no-repeat center center fixed;
                         background-size: cover;
-                        overflow: hidden;
+                        overflow: hidden; /* Oculta el scroll si el contenido es más grande */
                     }
 
                     /* --- FONDO CON BRILLOS (SPARKLE EFFECT) --- */
@@ -132,10 +133,10 @@ export default function SavetheDate() {
                         height: 100%;
                         /* Gradiente para simular brillo suave */
                         background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
-                        background-size: 200% 200%;
+                        background-size: 200% 200%; /* Tamaño grande para que se desplace */
                         z-index: 5; /* Detrás de la invitación, encima del fondo fijo */
                         animation: sparkleMove 120s linear infinite; /* Animación de movimiento muy lento */
-                        pointer-events: none;
+                        pointer-events: none; /* Asegura que no bloquea la interacción */
                     }
 
                     @keyframes sparkleMove {
@@ -146,19 +147,18 @@ export default function SavetheDate() {
 
                     .invitation-frame {
                         position: relative;
-                        z-index: 10; 
+                        z-index: 10; /* La invitación siempre por encima de los brillos */
                         width: 100%;
                         max-width: 400px;
                         padding: 3rem 1.5rem; 
                         text-align: center;
                         
-                        /* REVERSIÓN: Volvemos a la opacidad original de la capa */
                         background-image: url('https://raw.githubusercontent.com/ManelEsquivel/SaveTheDate/main/anillos.png');
                         background-size: cover;
                         background-position: center 50%; 
                         background-repeat: no-repeat;
                         
-                        background-color: rgba(245, 245, 245, 0.7); /* <--- OPACIDAD ORIGINAL */
+                        background-color: rgba(245, 245, 245, 0.7); 
                         background-blend-mode: overlay; 
 
                         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); 
@@ -169,16 +169,16 @@ export default function SavetheDate() {
                         border-radius: 12px;
                     }
                     
-                    /* El resto de estilos se mantiene igual */
+                    /* --- ADORNOS DE ESQUINA (LEAF DETAIL) --- */
                     .leaf-detail {
                         position: absolute;
                         width: 70px;
                         height: 70px;
-                        z-index: 15;
-                        color: #d4af94; 
+                        z-index: 15; /* Por encima de la tarjeta */
+                        color: #d4af94; /* Color suave para los adornos */
                         opacity: 0;
-                        animation: fadeIn 0.8s forwards; 
-                        animation-delay: 0.2s; 
+                        animation: fadeIn 0.8s forwards; /* Animación de aparición */
+                        animation-delay: 0.2s; /* Retraso para que aparezca después del fondo */
                     }
                     .top-left-leaf { top: 5px; left: 5px; transform: rotate(0deg); }
                     .top-right-leaf { top: 5px; right: 5px; transform: rotate(90deg); }
