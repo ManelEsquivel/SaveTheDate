@@ -3,9 +3,9 @@ import React, { useState, useRef } from 'react';
 export default function ImagenesBoda() {
     const [files, setFiles] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
-    const [uploading, setUploading] = useState(false); // Indica si está subiendo
+    const [uploading, setUploading] = useState(false); 
     const fileInputRef = useRef(null);
-
+    
     // --- LÓGICA DE SUBIDA A FIREBASE (USANDO FETCH NATIVO) ---
     
     // Función que sube un solo archivo usando la API REST de Google Cloud.
@@ -17,27 +17,23 @@ export default function ImagenesBoda() {
         // URL directa a la API de Google Cloud Storage (Método PUT)
         const url = `https://storage.googleapis.com/${bucketName}/${path}`;
 
-        console.log(`Intentando subir a: ${url}`);
-
-        // La subida simple requiere el método PUT y el archivo en el cuerpo (body)
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                // El Content-Type debe coincidir con el tipo de archivo
                 'Content-Type': file.type || 'application/octet-stream',
+                // ESTE ENCABEZADO ES LA CLAVE FINAL PARA AUTORIZAR LA SUBIDA PÚBLICA:
+                'X-Goog-Acl': 'public-read', 
             },
-            body: file, // Envía el objeto de archivo directamente
+            body: file, 
         });
 
         if (!response.ok) {
-            // Si la respuesta no es OK (ej. 403 Forbidden, 404 Not Found)
+            // Intenta leer el cuerpo del error para un diagnóstico más claro
             const errorText = await response.text();
             throw new Error(`Error ${response.status} (${response.statusText}): ${errorText.substring(0, 100)}...`);
         }
-        // Si response.ok es true, la promesa se resuelve y el archivo se subió.
     };
 
-    // Función principal del botón
     const handleSubmit = async () => {
         if (files.length === 0) {
             alert("Por favor selecciona al menos una foto.");
