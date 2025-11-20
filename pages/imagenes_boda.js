@@ -4,7 +4,8 @@ import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged }
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
 
 // Componente principal de la aplicación de la galería
-const App = () => {
+// Se cambia a una función con nombre explícito (function App) para resolver el error de exportación múltiple en Next.js/Vercel.
+function App() {
     // Definiciones de estado
     const [db, setDb] = useState(null);
     const [auth, setAuth] = useState(null);
@@ -13,7 +14,7 @@ const App = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
-    // Se elimina el estado 'description'
+    
     const [selectedFile, setSelectedFile] = useState(null);
     const fileInputRef = useRef(null); // Ref para el input de tipo file
 
@@ -330,8 +331,6 @@ const App = () => {
             </div>
         </div>
     );
-};
-
-export default App;
+}
 
 export default App;
