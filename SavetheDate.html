@@ -196,12 +196,13 @@
         // Función para abrir la web de confirmación en una nueva pestaña
         function openConfirmationWeb() {
             // Se usa un pequeño retraso para asegurar que el navegador inicie primero la acción del HREF (el calendario)
+            // antes de que intentemos abrir la nueva pestaña.
             setTimeout(function() {
+                // Esta línea abre la web en una nueva pestaña (segunda acción)
                 window.open('https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3', '_blank');
-            }, 300); // 300ms de retraso
+            }, 500); // 500ms de retraso para dar tiempo a iOS/Android a lanzar el diálogo del calendario
 
-            // Devolver false para que el navegador no recargue la página si el navegador no maneja el data URI
-            // de forma nativa (aunque ya está en el HREF, es una precaución).
+            // Devolver false para que el navegador no recargue la página (acción que ya hace el HREF)
             return false;
         }
 
