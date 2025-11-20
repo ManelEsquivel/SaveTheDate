@@ -1,34 +1,24 @@
-// pages/api/get-signed-url.js (FINAL ULTRA-ESTABLE)
+// pages/api/get-signed-url.js (SOLUCIÓN DE SINCRONIZACIÓN)
 
-// Importamos la instancia del Admin App directamente
 const { adminApp } = require('../../lib/firebase'); 
 
 export default async function handler(req, res) {
-  // Manejamos OPTIONS y métodos no permitidos
-  if (req.method === 'OPTIONS') {
-    res.setHeader("Access-Control-Allow-Origin", "https://bodamanelcarla.vercel.app");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    return res.status(200).end();
-  }
   if (req.method !== 'POST') {
-    res.setHeader("Allow", "POST");
-    return res.status(405).end();
+    return res.status(405).json({ message: 'Método no permitido.' });
   }
 
-  // 1. Verificación Crítica: Si el Admin SDK no se cargó, fallamos explícitamente.
   if (!adminApp) {
-    console.error('CRASH: Admin SDK no inicializado. Revise la variable de entorno FIREBASE_PRIVATE_KEY.');
-    return res.status(500).json({ message: 'Error interno: Credenciales de Firebase Admin no cargadas o malformadas.' });
+    return res.status(500).json({ message: 'Error interno: Admin SDK no inicializado.' });
   }
 
-  const { fileName } = req.body;
-  if (!fileName) {
-    return res.status(400).json({ message: 'Falta el nombre del archivo.' });
+  // Recibimos nombre Y tipo de archivo
+  const { fileName, fileType } = req.body;
+  
+  if (!fileName || !fileType) {
+    return res.status(400).json({ message: 'Faltan datos del archivo (nombre o tipo).' });
   }
 
   try {
-    // 2. Uso de la instancia Admin App
     const bucket = adminApp.storage().bucket();
     const file = bucket.file(`bodas/${fileName}`);
 
@@ -36,20 +26,15 @@ export default async function handler(req, res) {
     const options = {
       version: 'v4',
       action: 'write',
-      expires: Date.now() + 5 * 60 * 1000, 
-      contentType: 'application/octet-stream', 
-      headers: {
-          'Content-Type': 'application/octet-stream' 
-      }
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutos
+      contentType: fileType, // ⚠️ FIRMAMOS CON EL TIPO EXACTO DEL ARCHIVO
     };
 
-    // 3. Generar la URL
     const [url] = await file.getSignedUrl(options);
 
-    return res.status(200).json({ url, fileName });
+    res.status(200).json({ url });
   } catch (error) {
-    // 4. Capturamos el error y devolvemos un JSON válido (para evitar el 'Unexpected end of JSON')
-    console.error('Error FATAL al generar URL firmada:', error);
-    return res.status(500).json({ message: `Error al generar URL. Verifique clave privada. Detalle: ${error.message.substring(0, 50)}...` });
+    console.error('Error generando URL:', error);
+    res.status(500).json({ message: `Error al generar URL: ${error.message}` });
   }
 }
