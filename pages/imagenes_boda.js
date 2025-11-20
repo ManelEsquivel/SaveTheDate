@@ -231,8 +231,8 @@ export default function ImagenesBoda() {
                 <meta name="description" content="Comparte tus mejores momentos con nosotros." />
                 <meta property="og:title" content="📸 Fotos Boda: ¡Sube las tuyas!" />
                 <meta property="og:description" content="Entra aquí para compartir las fotos y vídeos que vas hacer en la boda. ¡Queremos verlas todas!" />
-                {/* Asegúrate de que boda_icon_3.JPG esté en la carpeta /public */}
-                <meta property="og:image" content="https://bodamanelcarla.vercel.app/boda_icon_3.JPG" />
+                {/* Asegúrate de que boda_icon_3.png esté en la carpeta /public */}
+                <meta property="og:image" content="https://bodamanelcarla.vercel.app/boda_icon_3.png" />
                 <meta property="og:image:width" content="800" />
                 <meta property="og:image:height" content="800" />
                 <meta property="og:url" content="https://bodamanelcarla.vercel.app/imagenes_boda" />
