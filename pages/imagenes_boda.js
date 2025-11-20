@@ -1,230 +1,174 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Fotos de Boda</title>
-    
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+import React, { useState, useRef } from 'react';
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f8; /* Fondo gris muy suave */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+export default function ImagenesBoda() {
+    const [files, setFiles] = useState([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef(null);
+
+    // --- LÓGICA ---
+    const handleZoneClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileSelect = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFiles([...files, ...Array.from(e.target.files)]);
         }
+    };
 
-        .card {
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            padding: 40px 30px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setFiles([...files, ...Array.from(e.dataTransfer.files)]);
         }
+    };
 
-        h1 {
-            color: #2d3748;
-            font-size: 24px;
-            margin-bottom: 5px;
-            margin-top: 0;
+    const handleSubmit = () => {
+        if (files.length === 0) {
+            alert("Por favor selecciona al menos una foto.");
+            return;
         }
+        alert(`¡Listo! Se enviarán ${files.length} fotos.`);
+        console.log("Archivos a subir:", files);
+    };
 
-        p.subtitle {
-            color: #a0aec0;
-            font-size: 14px;
-            margin-top: 0;
-            margin-bottom: 30px;
-        }
+    // --- RENDERIZADO ---
+    return (
+        <div style={styles.pageContainer}>
+            <div style={styles.card}>
+                <h1 style={styles.title}>Upload your photos</h1>
+                <p style={styles.subtitle}>fast and easy way</p>
 
-        /* Zona de carga (Drag & Drop) */
-        .drop-zone {
-            background-color: #f7fafc;
-            border: 2px dashed #e2e8f0;
-            border-radius: 15px;
-            padding: 40px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .drop-zone:hover, .drop-zone.active {
-            border-color: #5a67d8;
-            background-color: #ebf4ff;
-        }
-
-        .icon-container {
-            background-color: #eef1f8; /* Azul muy pálido para el fondo del icono */
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px auto;
-        }
-        
-        .icon-svg {
-            width: 40px;
-            height: 40px;
-            fill: #7f9cf5; /* Color del icono */
-        }
-
-        .drop-text {
-            color: #cbd5e0;
-            font-size: 14px;
-        }
-
-        /* Input oculto */
-        input[type="file"] {
-            display: none;
-        }
-
-        /* Botón Submit */
-        .submit-btn {
-            background: linear-gradient(90deg, #5a67d8 0%, #667eea 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 15px 0;
-            width: 100%;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(90, 103, 216, 0.3);
-            transition: transform 0.2s;
-        }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Vista previa básica */
-        .file-preview {
-            margin-top: 15px;
-            font-size: 12px;
-            color: #4a5568;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useRef } = React;
-
-        function App() {
-            const [files, setFiles] = useState([]);
-            const [isDragging, setIsDragging] = useState(false);
-            const fileInputRef = useRef(null);
-
-            // Manejar clic en la zona para abrir selector de archivos
-            const handleZoneClick = () => {
-                fileInputRef.current.click();
-            };
-
-            // Manejar selección de archivos via input
-            const handleFileSelect = (e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                    setFiles([...files, ...Array.from(e.target.files)]);
-                }
-            };
-
-            // Manejar Drag & Drop
-            const handleDragOver = (e) => {
-                e.preventDefault();
-                setIsDragging(true);
-            };
-
-            const handleDragLeave = () => {
-                setIsDragging(false);
-            };
-
-            const handleDrop = (e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    setFiles([...files, ...Array.from(e.dataTransfer.files)]);
-                }
-            };
-
-            const handleSubmit = () => {
-                if (files.length === 0) {
-                    alert("Por favor selecciona al menos una foto.");
-                    return;
-                }
-                // AQUÍ IRÍA LA LÓGICA PARA ENVIAR AL SERVIDOR
-                alert(`¡Listo! Se enviarán ${files.length} fotos.`);
-                console.log("Archivos a subir:", files);
-            };
-
-            return (
-                <div className="card">
-                    <h1>Sube tus fotos</h1>
-                    <p className="subtitle">rápido y fácil</p>
-
-                    <div 
-                        className={`drop-zone ${isDragging ? 'active' : ''}`}
-                        onClick={handleZoneClick}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                    >
-                        <div className="icon-container">
-                            {/* SVG Icono de imagen/paisaje similar al diseño */}
-                            <svg viewBox="0 0 24 24" className="icon-svg">
-                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                            </svg>
-                        </div>
-                        
-                        <div className="drop-text">
-                            {files.length === 0 
-                                ? "Arrastra y suelta o toca aquí" 
-                                : `${files.length} archivo(s) seleccionado(s)`
-                            }
-                        </div>
-                        
-                        <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleFileSelect} 
-                            multiple 
-                            accept="image/*"
-                        />
+                <div 
+                    style={{
+                        ...styles.dropZone,
+                        ...(isDragging ? styles.dropZoneActive : {})
+                    }}
+                    onClick={handleZoneClick}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
+                    <div style={styles.iconContainer}>
+                        {/* Icono SVG en línea */}
+                        <svg viewBox="0 0 24 24" style={styles.iconSvg}>
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
                     </div>
-
-                    {/* Lista simple de archivos seleccionados (Opcional) */}
-                    {files.length > 0 && (
-                        <div className="file-preview">
-                            <ul>
-                                {files.slice(0,3).map((f, i) => <li key={i}>{f.name}</li>)}
-                                {files.length > 3 && <li>... y {files.length - 3} más</li>}
-                            </ul>
-                        </div>
-                    )}
-
-                    <button className="submit-btn" onClick={handleSubmit}>
-                        Enviar
-                    </button>
+                    
+                    <div style={styles.dropText}>
+                        {files.length === 0 
+                            ? "Drag and drop files here" 
+                            : `${files.length} archivo(s) listo(s)`
+                        }
+                    </div>
+                    
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handleFileSelect} 
+                        multiple 
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                    />
                 </div>
-            );
-        }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+                {/* Botón Submit */}
+                <button style={styles.submitBtn} onClick={handleSubmit}>
+                    Submit
+                </button>
+            </div>
+        </div>
+    );
+}
 
-</body>
-</html>
+// --- ESTILOS EN JAVASCRIPT (Inline Styles) ---
+const styles = {
+    pageContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#f4f6f8',
+        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+        margin: 0,
+        padding: 0
+    },
+    card: {
+        backgroundColor: 'white',
+        borderRadius: '20px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+        padding: '40px 30px',
+        width: '90%',
+        maxWidth: '400px',
+        textAlign: 'center'
+    },
+    title: {
+        color: '#2d3748',
+        fontSize: '24px',
+        marginBottom: '5px',
+        marginTop: 0,
+        fontWeight: 'bold'
+    },
+    subtitle: {
+        color: '#a0aec0',
+        fontSize: '14px',
+        marginTop: 0,
+        marginBottom: '30px'
+    },
+    dropZone: {
+        backgroundColor: '#f7fafc',
+        border: '2px dashed #e2e8f0',
+        borderRadius: '15px',
+        padding: '40px 20px',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        position: 'relative'
+    },
+    dropZoneActive: { // Estilo cuando arrastras algo encima
+        borderColor: '#5a67d8',
+        backgroundColor: '#ebf4ff'
+    },
+    iconContainer: {
+        backgroundColor: '#eef1f8',
+        width: '80px',
+        height: '80px',
+        borderRadius: '12px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: '0 auto 20px auto'
+    },
+    iconSvg: {
+        width: '40px',
+        height: '40px',
+        fill: '#7f9cf5'
+    },
+    dropText: {
+        color: '#cbd5e0',
+        fontSize: '14px'
+    },
+    submitBtn: {
+        background: 'linear-gradient(90deg, #5a67d8 0%, #667eea 100%)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '10px',
+        padding: '15px 0',
+        width: '100%',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        marginTop: '30px',
+        cursor: 'pointer',
+        boxShadow: '0 4px 6px rgba(90, 103, 216, 0.3)'
+    }
+};
