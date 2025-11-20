@@ -1,10 +1,12 @@
+// pages/api/upload-photo.js
+
 import formidable from 'formidable'; 
 import { ref, uploadBytes } from 'firebase/storage';
 
-// Necesitamos las promesas de 'fs' para leer el archivo de forma asíncrona y segura
+// Importamos 'fs/promises' para usar la versión asíncrona y segura
 const fs = require('fs/promises'); 
 
-// Necesario para la ruta de importación de Firebase
+// ⚠️ Usamos require() para importar Storage desde lib/firebase.js
 const { storage } = require('../../lib/firebase'); 
 
 // Deshabilitamos el parser de body de Next.js
@@ -35,31 +37,33 @@ export default async function handler(req, res) {
 
     try {
       // 1. LECTURA ASÍNCRONA SEGURA: Leemos el buffer del archivo temporal
+      // El método 'fs.readFile' es seguro en Vercel y previene el error 500.
       const fileData = await fs.readFile(file.filepath); 
       
       // 2. Subir a Firebase Storage
       const storageRef = ref(storage, 'bodas/' + file.originalFilename);
       await uploadBytes(storageRef, fileData);
 
-      // 3. Éxito
+      // 3. Borramos el archivo temporal
+      try {
+          await fs.unlink(file.filepath);
+      } catch (unlinkError) {
+          console.error("Error al borrar archivo temporal (ignorado):", unlinkError);
+      }
+
+      // 4. Éxito
       res.status(200).json({ message: 'Foto subida con éxito a Firebase Storage.' });
 
     } catch (serverError) {
       console.error('Error FATAL en la función Serverless:', serverError);
       
-      // Intentamos responder con un error detallado
+      // Si falla, el error es de autenticación o de permisos
       let errorMessage = 'Error al subir a Firebase Storage. Verifica las credenciales de Service Account.';
       if (serverError.code === 'storage/unauthenticated' || serverError.code === 'permission_denied') {
           errorMessage = 'Error de Permisos. Revisa el rol asignado a la Cuenta de Servicio.';
       }
       
-      // Borramos el archivo temporal si existe y es accesible
-      try {
-          await fs.unlink(file.filepath);
-      } catch (unlinkError) {
-          console.error("Error al borrar archivo temporal:", unlinkError);
-      }
-
+      // Devolvemos el error 500
       res.status(500).json({ message: errorMessage });
     }
   });
