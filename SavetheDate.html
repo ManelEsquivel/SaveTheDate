@@ -181,10 +181,9 @@
 
         <div class="animated-item step-7">
             <a 
-                href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0APRODID:-//Manel%20&%20Carla%20Wedding//NONSGML%20v1.0//EN%0ABEGIN:VEVENT%0AUID:ManelyCarlaBoda20261031%0ADTSTAMP:20251120T073908Z%0ADTSTART:20261031T170000%0ADTEND:20261031T230000%0ASUMMARY:Boda%20de%20Manel%20y%20Carla%0ALOCATION:Masia%20Mas%20Llombart%2C%20Sant%20Fost%20de%20Campsentelles%2C%20Barcelona%0ADESCRIPTION:Confirma%20asistencia%20aquí:%20https%3A%2F%2Fwww.bodas.net%2Fweb%2Fmanel-y-carla%2Fconfirmatuasistencia-3%0AEND:VEVENT%0AEND:VCALENDAR" 
+                href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0APRODID:-//Manel%20&%20Carla%20Wedding//NONSGML%20v1.0//EN%0ABEGIN:VEVENT%0AUID:ManelyCarlaBoda20261031%0ADTSTAMP:20251120T073908Z%0ADTSTART:20261031T170000%0ADTEND:20261031T230000%0ASUMMARY:Boda%20de%20Manel%20y%20Carla%0ALOCATION:Confirma%20aquí:%20https%3A%2F%2Fwww.bodas.net%2Fweb%2Fmanel-y-carla%2Fconfirmatuasistencia-3%0ADESCRIPTION:Guarda%20la%20fecha%20y%20confirma%20tu%20asistencia%20en%20el%20siguiente%20enlace%3A%20https%3A%2F%2Fwww.bodas.net%2Fweb%2Fmanel-y-carla%2Fconfirmatuasistencia-3%0AEND:VEVENT%0AEND:VCALENDAR" 
                 download="Boda_Manel_Carla.ics"
                 class="btn-details" 
-                onclick="openConfirmationWeb()"
             >
                 Confirmar Asistencia
             </a>
@@ -193,18 +192,7 @@
     </div>
 
     <script>
-        // Función para abrir la web de confirmación en una nueva pestaña
-        function openConfirmationWeb() {
-            // Se usa un pequeño retraso para asegurar que el navegador inicie primero la acción del HREF (el calendario)
-            // antes de que intentemos abrir la nueva pestaña.
-            setTimeout(function() {
-                // Esta línea abre la web en una nueva pestaña (segunda acción)
-                window.open('https://www.bodas.net/web/manel-y-carla/confirmatuasistencia-3', '_blank');
-            }, 500); // 500ms de retraso para dar tiempo a iOS/Android a lanzar el diálogo del calendario
-
-            // Devolver false para que el navegador no recargue la página (acción que ya hace el HREF)
-            return false;
-        }
+        // La función de JavaScript se ha eliminado, ya no es necesaria.
 
         // Desplaza la página 50 píxeles hacia abajo al cargarse
         window.onload = function() {
