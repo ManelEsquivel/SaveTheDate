@@ -31,14 +31,11 @@ export default function ImagenesBoda() {
     // --- LÓGICA DE SUBIDA ---
     
     const sendFileToServer = async (file) => {
-        // 1. Pedimos la URL firmada enviando el TIPO REAL del archivo
+        // 1. Pedimos la URL firmada (El servidor forzará 'application/octet-stream')
         const urlResponse = await fetch('/api/get-signed-url', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                fileName: file.name,
-                fileType: file.type // ⚠️ Enviamos 'image/png', 'image/jpeg', etc.
-            }), 
+            body: JSON.stringify({ fileName: file.name }), 
         });
 
         if (!urlResponse.ok) {
@@ -48,11 +45,11 @@ export default function ImagenesBoda() {
 
         const { url } = await urlResponse.json();
         
-        // 2. Subimos el archivo a Google usando EXACTAMENTE el mismo Content-Type
+        // 2. Subimos el archivo a Google forzando el MISMO Content-Type de la firma
         const uploadResponse = await fetch(url, {
             method: 'PUT', 
             headers: {
-                'Content-Type': file.type, // ⚠️ Coincide con la firma
+                'Content-Type': 'application/octet-stream', // ⚠️ Coincidencia exacta forzada
             },
             body: file,
         });
@@ -95,7 +92,6 @@ export default function ImagenesBoda() {
                     onDrop={handleDrop}
                 >
                     <div style={styles.iconContainer}>
-                       {/* SVG Icon */}
                        <svg style={styles.iconSvg} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                        </svg>
@@ -131,7 +127,7 @@ export default function ImagenesBoda() {
     );
 }
 
-// Estilos simplificados para que funcione directo
+// Estilos
 const styles = {
     pageContainer: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f0f2f5', fontFamily: 'sans-serif' },
     card: { backgroundColor: 'white', borderRadius: '12px', padding: '30px', width: '90%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
