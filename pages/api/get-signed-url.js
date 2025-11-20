@@ -1,3 +1,5 @@
+// pages/api/get-signed-url.js
+
 const { adminApp } = require('../../lib/firebase'); 
 
 export default async function handler(req, res) {
@@ -19,12 +21,12 @@ export default async function handler(req, res) {
     const bucket = adminApp.storage().bucket();
     const file = bucket.file(`bodas/${fileName}`);
 
-    // ⚠️ CAMBIO CLAVE: Forzamos SIEMPRE 'application/octet-stream' en la firma
+    // ⚠️ CAMBIO CRÍTICO: Eliminamos 'contentType' y 'headers'.
+    // Esto permite subir CUALQUIER tipo de archivo sin romper la firma.
     const options = {
       version: 'v4',
       action: 'write',
-      expires: Date.now() + 15 * 60 * 1000, 
-      contentType: 'application/octet-stream', 
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutos
     };
 
     const [url] = await file.getSignedUrl(options);
