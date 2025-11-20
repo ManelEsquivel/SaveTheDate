@@ -1,36 +1,82 @@
 import React, { useState, useRef } from 'react';
 
-// NOTA: No se requiere ninguna importación de Firebase aquí.
-
+// === COMPONENTE PRINCIPAL ===
 export default function ImagenesBoda() {
     const [files, setFiles] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
-    const [uploading, setUploading] = useState(false); // Indica si está subiendo
+    const [uploading, setUploading] = useState(false); // Nuevo estado
     const fileInputRef = useRef(null);
 
-    // --- LÓGICA DE ENVÍO A LA RUTA API DEL SERVIDOR ---
-    
-    // Función que envía un solo archivo al endpoint local de Vercel (/api/upload-photo)
-    const sendFileToServer = async (file) => {
-        const formData = new FormData();
-        // 'photos' es el nombre del campo que el servidor espera (pages/api/upload-photo.js)
-        formData.append('photos', file); 
-
-        // Enviamos la petición al API Route local de Next.js
-        const response = await fetch('/api/upload-photo', {
-            method: 'POST',
-            body: formData, // FormData maneja automáticamente los headers
-        });
-
-        // Si el servidor (API Route) devuelve un error, lo lanzamos
-        if (!response.ok) {
-            // Intentamos leer el mensaje de error que devuelve el servidor
-            const result = await response.json();
-            throw new Error(result.message || `Error del servidor: Código ${response.status}`);
-        }
-        // Si response.ok es true, el archivo se subió a Firebase.
+    // --- LÓGICA DE DRAG AND DROP ---
+    const handleZoneClick = () => {
+        fileInputRef.current.click();
     };
 
+    const handleFileSelect = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            // Añade los nuevos archivos a la lista existente
+            setFiles(prevFiles => [...prevFiles, ...Array.from(e.target.files)]);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+             // Añade los archivos arrastrados a la lista
+            setFiles(prevFiles => [...prevFiles, ...Array.from(e.dataTransfer.files)]);
+        }
+    };
+    
+    // Función para remover un archivo de la lista antes de subir
+    const handleRemoveFile = (index) => {
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+
+    // --- LÓGICA DE SUBIDA CON URL FIRMADA (SIGNED URL) ---
+    
+    // ⚠️ Función clave: pide permiso al servidor y sube el archivo directo a Google Cloud
+    const sendFileToServer = async (file) => {
+        // === PASO 1: PEDIR LA URL FIRMADA AL SERVIDOR DE VERCEL ===
+        const urlResponse = await fetch('/api/get-signed-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileName: file.name }), // Solo enviamos el nombre
+        });
+
+        if (!urlResponse.ok) {
+            const error = await urlResponse.json();
+            throw new Error(error.message || 'Fallo al obtener la URL firmada.');
+        }
+
+        const { url } = await urlResponse.json();
+        
+        // === PASO 2: SUBIR EL ARCHIVO DIRECTAMENTE A GOOGLE CLOUD ===
+        // Esto evita el Error 500 al no usar la memoria del servidor de Vercel
+        const uploadResponse = await fetch(url, {
+            method: 'PUT', // Usamos PUT para subir a la URL de Google Cloud Storage
+            headers: {
+                // Definimos el tipo de archivo para GCS
+                'Content-Type': file.type || 'application/octet-stream', 
+            },
+            body: file, // Enviamos el objeto File (el payload de la foto)
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error(`Error en la subida directa: Código ${uploadResponse.status}`);
+        }
+    };
+
+    // Función principal del botón (AHORA ES ASÍNCRONA)
     const handleSubmit = async () => {
         if (files.length === 0) {
             alert("Por favor selecciona al menos una foto.");
@@ -39,112 +85,106 @@ export default function ImagenesBoda() {
 
         setUploading(true);
         try {
+            // Sube todos los archivos de forma concurrente con Promise.all
             const uploadPromises = files.map(file => sendFileToServer(file));
             await Promise.all(uploadPromises);
             
-            alert(`¡Éxito! Se subieron ${files.length} fotos a tu Firebase Storage.`);
-            setFiles([]); 
+            alert(`🎉 ¡Éxito! Se subieron ${files.length} fotos a tu Firebase Storage.`);
+            setFiles([]); // Limpiar la lista de archivos después del éxito
         } catch (error) {
             console.error("Error al subir:", error);
-            // Mostrar el error claro que devuelve el servidor
-            alert(`Fallo en la subida. Causa: ${error.message}.`);
+            alert(`🛑 Fallo en la subida. Causa: ${error.message}.`);
         } finally {
             setUploading(false);
         }
     };
-    // --- FIN LÓGICA DE ENVÍO ---
 
-
-    // --- LÓGICA DE MANEJO DE ARCHIVOS (UI) ---
-    const handleZoneClick = () => { fileInputRef.current.click(); };
-    const handleFileSelect = (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setFiles([...files, ...Array.from(e.target.files)]);
-        }
-    };
-    const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
-    const handleDragLeave = () => { setIsDragging(false); };
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            setFiles([...files, ...Array.from(e.dataTransfer.files)]);
-        }
-    };
-
-    // --- RENDERIZADO ---
-    const buttonText = uploading ? "Subiendo..." : "Submit";
-
+    // --- RENDERIZADO DEL COMPONENTE ---
     return (
         <div style={styles.pageContainer}>
             <div style={styles.card}>
-                <h1 style={styles.title}>Upload your photos</h1>
-                <p style={styles.subtitle}>fast and easy way</p>
-
+                <h1 style={styles.title}>¡Comparte tus Momentos!</h1>
+                <p style={styles.subtitle}>Sube las fotos de la boda para la galería</p>
+                
+                {/* Zona de Drop */}
                 <div 
-                    style={{
-                        ...styles.dropZone,
-                        ...(isDragging ? styles.dropZoneActive : {})
-                    }}
+                    style={{ ...styles.dropZone, ...(isDragging ? styles.dropZoneActive : {}) }}
                     onClick={handleZoneClick}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                 >
                     <div style={styles.iconContainer}>
-                        <svg viewBox="0 0 24 24" style={styles.iconSvg}>
-                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        <svg style={styles.iconSvg} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12L12 14L14 12M12 14V4M18 18H20C21.1046 18 22 17.1046 22 16V10C22 8.89543 21.1046 8 20 8H4C2.89543 8 2 8.89543 2 10V16C2 17.1046 2.89543 18 4 18H6M18 18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18M18 18H6" stroke="#7f9cf5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </div>
-                    
-                    <div style={styles.dropText}>
-                        {files.length === 0 
-                            ? "Drag and drop files here" 
-                            : `${files.length} archivo(s) listo(s)`
-                        }
-                    </div>
-                    
+                    <p style={{...styles.dropText, color: isDragging ? '#5a67d8' : styles.dropText.color}}>
+                        {isDragging ? '¡Suelta las fotos aquí!' : 'Arrastra y suelta tus fotos, o haz click para seleccionar.'}
+                    </p>
                     <input 
                         type="file" 
                         ref={fileInputRef} 
                         onChange={handleFileSelect} 
-                        multiple 
-                        accept="image/*"
                         style={{ display: 'none' }}
+                        multiple // Permite seleccionar múltiples archivos
+                        accept="image/*" // Solo permite imágenes
                     />
                 </div>
+                
+                {/* Lista de Archivos Seleccionados */}
+                {files.length > 0 && (
+                    <div style={styles.fileListContainer}>
+                        <p style={styles.fileListTitle}>Archivos listos para subir ({files.length}):</p>
+                        <ul style={styles.fileList}>
+                            {files.map((file, index) => (
+                                <li key={index} style={styles.fileItem}>
+                                    <span style={styles.fileName}>{file.name}</span>
+                                    <button 
+                                        onClick={() => handleRemoveFile(index)} 
+                                        style={styles.removeBtn}
+                                        disabled={uploading}
+                                    >
+                                        &times;
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
+                {/* Botón de Subida */}
                 <button 
-                    style={styles.submitBtn} 
-                    onClick={handleSubmit}
-                    disabled={uploading || files.length === 0}
+                    onClick={handleSubmit} 
+                    style={{...styles.submitBtn, opacity: (files.length === 0 || uploading) ? 0.6 : 1}}
+                    disabled={files.length === 0 || uploading}
                 >
-                    {buttonText}
+                    {uploading ? 'Subiendo... por favor espera' : `Subir ${files.length} Fotos`}
                 </button>
+                {uploading && <p style={styles.uploadingText}>El proceso puede tardar dependiendo de tu conexión.</p>}
+
             </div>
         </div>
     );
 }
 
-// --- ESTILOS EN JAVASCRIPT (Inline Styles) ---
+// === ESTILOS (Mantenidos desde tu código original) ===
 const styles = {
     pageContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f4f6f8',
-        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-        margin: 0,
-        padding: 0
+        backgroundColor: '#f7f8fc',
+        padding: '20px'
     },
     card: {
-        backgroundColor: 'white',
-        borderRadius: '20px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
-        padding: '40px 30px',
-        width: '90%',
-        maxWidth: '400px',
+        backgroundColor: '#ffffff',
+        borderRadius: '16px',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+        padding: '40px',
+        maxWidth: '450px',
+        width: '100%',
         textAlign: 'center'
     },
     title: {
@@ -193,16 +233,67 @@ const styles = {
         fontSize: '14px'
     },
     submitBtn: {
-        background: 'linear-gradient(90deg, #5a67d8 0%, #667eea 100%)',
-        color: 'white',
-        border: 'none',
-        borderRadius: '10px',
-        padding: '15px 0',
         width: '100%',
+        padding: '12px',
+        marginTop: '25px',
+        borderRadius: '10px',
+        border: 'none',
+        backgroundColor: '#5a67d8',
+        color: '#ffffff',
         fontSize: '16px',
         fontWeight: 'bold',
-        marginTop: '30px',
         cursor: 'pointer',
-        boxShadow: '0 4px 6px rgba(90, 103, 216, 0.3)'
+        transition: 'background-color 0.2s',
+    },
+    fileListContainer: {
+        textAlign: 'left',
+        marginTop: '20px',
+        padding: '10px',
+        border: '1px solid #e2e8f0',
+        borderRadius: '8px',
+        backgroundColor: '#f9f9f9',
+        maxHeight: '150px',
+        overflowY: 'auto',
+    },
+    fileListTitle: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: '#2d3748',
+        marginBottom: '5px',
+    },
+    fileList: {
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+    },
+    fileItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '5px 0',
+        borderBottom: '1px solid #f0f0f0',
+    },
+    fileName: {
+        fontSize: '13px',
+        color: '#4a5568',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        maxWidth: '85%',
+    },
+    removeBtn: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        color: '#e53e3e',
+        fontSize: '16px',
+        cursor: 'pointer',
+        padding: '0 5px',
+        marginLeft: '10px',
+    },
+    uploadingText: {
+        fontSize: '12px',
+        color: '#5a67d8',
+        marginTop: '10px',
+        fontStyle: 'italic',
     }
 };
