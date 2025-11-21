@@ -99,7 +99,7 @@ export default function Homepage() {
                             </div>
                             <div style={styles.textContainer}>
                                 <h3 style={styles.cardTitle}>Web de la Boda</h3>
-                                <p style={styles.cardText}>Info oficial, mapa, confirmación.</p>
+                                <p style={styles.cardText}>Info oficial, mapa, confirma tu asistencia.</p>
                             </div>
                             <span style={styles.arrow}>➔</span>
                         </div>
