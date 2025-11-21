@@ -1,35 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-
-// *******************************************************************
-// ✅ TUS DATOS CONFIGURADOS
-// *******************************************************************
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdUwUkcF_RHlfHdraWI0Vdca6Or6HxE1M_ykj2mfci_cokyoA/formResponse"; 
-const ENTRY_SONG   = "entry.38062662"; 
-const ENTRY_ARTIST = "entry.1279581249"; 
-const ENTRY_ALBUM  = "entry.2026891459"; 
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZ9RxSCBQemScY8lZhfg2Bbi4T5xOoNhTcmENIJSZWFo8yVF0bxd7yXy5gx0HoKIb87-chczYEccKr/pub?output=csv";
-// *******************************************************************
-
-export default function DjPage() {
-    const router = useRouter();
-    
-    const [formData, setFormData] = useState({ song: '', artist: '', album: '' });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [playlist, setPlaylist] = useState([]);
-    const [showNotice, setShowNotice] = useState(false); // 🔔 Nuevo estado para el aviso
-
-    const fetchPlaylist = async () => {
+const fetchPlaylist = async () => {
         try {
+            // Añadimos un timestamp para evitar caché del navegador, pero Google Sheets
+            // a veces cachea en su servidor. Es normal.
             const response = await fetch(`${SHEET_CSV_URL}&uid=${Date.now()}`, {
                 cache: "no-store",
                 headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
             });
             
-            let remoteTracks = [];
             const text = await response.text();
+
+            // 🛡️ PROTECCIÓN ANTI-PARPADEO:
+            // Si Google nos devuelve un HTML de error o algo muy corto, ABORTAMOS.
+            // Así evitamos borrar la pizarra por error.
+            if (!text || text.trim().startsWith("<!DOCTYPE") || text.length < 50) {
+                console.warn("Google Sheets devolvió un error temporal, mantenemos la lista anterior.");
+                setIsLoading(false); // Quitamos cargando por si era la primera vez
+                return; // ⛔ SALIMOS sin tocar el estado 'playlist'
+            }
+
+            let remoteTracks = [];
 
             if (text && text.length > 10) {
                 const rows = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').slice(1);
@@ -37,12 +26,16 @@ export default function DjPage() {
 
                 remoteTracks = rows.map((row) => {
                     if (!row || row.trim() === "") return null;
+                    // Regex para separar por comas/puntos y coma respetando comillas
                     const regex = new RegExp(`${separator}(?=(?:(?:[^"]*"){2})*[^"]*$)`);
                     const columns = row.split(regex); 
                     const clean = (str) => str ? str.replace(/^"|"$/g, '').replace(/""/g, '"').trim() : '';
 
+                    // Ajusta estos índices [1], [2], [3] según el orden de tu CSV
                     const songName = clean(columns[1]);
                     const artistName = clean(columns[2]) || "Desconocido";
+                    
+                    // Generamos ID único
                     const uniqueId = `${songName}-${artistName}`.replace(/\s+/g, '-').toLowerCase();
 
                     return {
@@ -55,17 +48,24 @@ export default function DjPage() {
                 }).filter(t => t && t.song && t.song.length > 0 && t.song !== "Canción desconocida").reverse();
             }
 
+            // --- GESTIÓN DE LOCALES (Mantener lo que ya tenías) ---
             const localData = localStorage.getItem('dj_pending_tracks');
             let localTracks = localData ? JSON.parse(localData) : [];
 
             localTracks = localTracks.filter(local => {
+                // Si la canción local YA aparece en la remota, la borramos de local
+                // para que no salga duplicada.
                 const alreadyInRemote = remoteTracks.some(remote => remote.id === local.id);
                 return !alreadyInRemote; 
             });
 
+            // Guardamos la limpieza en localStorage
             localStorage.setItem('dj_pending_tracks', JSON.stringify(localTracks));
 
+            // Unimos: Locales primero (arriba), luego Remotas
             const finalPlaylist = [...localTracks.reverse(), ...remoteTracks];
+            
+            // Filtramos duplicados exactos de ID por seguridad
             const uniquePlaylist = finalPlaylist.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
 
             setPlaylist(uniquePlaylist);
@@ -73,212 +73,14 @@ export default function DjPage() {
 
         } catch (error) {
             console.error("Error cargando:", error);
-            setIsLoading(false);
+            // Si falla la red, NO ponemos isLoading(false) ni borramos la lista.
+            // Dejamos lo que había.
         }
     };
 
     useEffect(() => {
         fetchPlaylist();
-        const interval = setInterval(fetchPlaylist, 5000);
+        // ⏱️ CAMBIO: Subimos a 10000ms (10 segundos) para no saturar a Google
+        const interval = setInterval(fetchPlaylist, 10000);
         return () => clearInterval(interval);
     }, []);
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.song) return;
-        setIsSubmitting(true);
-
-        const songClean = formData.song.trim();
-        const artistClean = (formData.artist || 'Desconocido').trim();
-        const uniqueId = `${songClean}-${artistClean}`.replace(/\s+/g, '-').toLowerCase();
-
-        const formBody = new URLSearchParams();
-        formBody.append(ENTRY_SONG, formData.song);
-        formBody.append(ENTRY_ARTIST, formData.artist);
-        formBody.append(ENTRY_ALBUM, formData.album);
-
-        try {
-            fetch(FORM_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formBody
-            });
-            
-            const newTrack = {
-                id: uniqueId, 
-                song: songClean,
-                artist: artistClean,
-                album: formData.album || 'Single',
-                isLocal: true 
-            };
-
-            const currentLocals = JSON.parse(localStorage.getItem('dj_pending_tracks') || '[]');
-            currentLocals.push(newTrack);
-            localStorage.setItem('dj_pending_tracks', JSON.stringify(currentLocals));
-
-            fetchPlaylist();
-            
-            // 🔔 ACTIVAMOS EL AVISO
-            setShowNotice(true);
-            // Lo ocultamos automáticamente a los 10 segundos
-            setTimeout(() => setShowNotice(false), 10000);
-
-        } catch (error) {
-            console.error("Error enviando");
-        }
-
-        setFormData({ song: '', artist: '', album: '' });
-        setIsSubmitting(false);
-    };
-
-    return (
-        <div className="container">
-            <Head>
-                <title> Lista de canciones! 🎵</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-                <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
-            </Head>
-
-            <div className="form-section">
-                <div className="header">
-                    <div className="vinyl-container"><div className="vinyl-icon">💿</div></div>
-                    <h1 className="title">PLAYLIST DE INVITADOS</h1>
-                    <p className="subtitle">¡Hemos abierto la lista de peticiones para que añadas tu canción favorita!</p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="form-card">
-                    <div className="input-group full-width">
-                        <label>🎵 Canción</label>
-                        <input name="song" value={formData.song} onChange={handleChange} placeholder="Ej: Waka Waka" required autoComplete="off"/>
-                    </div>
-                    <div className="row-group">
-                        <div className="input-group half-width">
-                            <label>🎤 Artista</label>
-                            <input name="artist" value={formData.artist} onChange={handleChange} placeholder="Shakira" />
-                        </div>
-                        <div className="input-group half-width">
-                            <label>💿 Álbum</label>
-                            <input name="album" value={formData.album} onChange={handleChange} placeholder="Sale el Sol" />
-                        </div>
-                    </div>
-                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                        {isSubmitting ? 'ENVIANDO...' : 'AÑADIR A LA PIZARRA ✨'}
-                    </button>
-                </form>
-                <button onClick={() => router.push('/homepage')} className="back-btn">← Volver</button>
-            </div>
-
-            {/* 🔔 SECCIÓN DE AVISO (Solo aparece al enviar) */}
-            {showNotice && (
-                <div className="notice-box">
-                    <div className="notice-title">✅ ¡Anotada con éxito!</div>
-                    <div className="notice-text">
-                        Tú la ves al momento, pero puede tardar <strong>5 min</strong> en salir en los móviles de los demás (cosas de Google 🐢).
-                    </div>
-                </div>
-            )}
-
-            <div className="board-section">
-                <div className="chalkboard">
-                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
-                        <h2 className="chalk-title" style={{margin:0}}>PETICIONES</h2>
-                        <button onClick={fetchPlaylist} className="refresh-btn">↻</button>
-                    </div>
-                    <div className="chalk-divider"></div>
-                    
-                    {isLoading ? (
-                        <p style={{textAlign:'center', color:'rgba(255,255,255,0.5)'}}>Cargando...</p>
-                    ) : (
-                        <div className="requests-list">
-                            {playlist.length === 0 ? (
-                                <div style={{textAlign:'center', opacity:0.5, padding:'20px'}}>
-                                    <p>Aún no hay peticiones...</p>
-                                </div>
-                            ) : (
-                                playlist.map((track) => (
-                                    <div key={track.id} className="chalk-item">
-                                        <div className="chalk-song">"{track.song}"</div>
-                                        <div className="chalk-details">
-                                            <span className="artist">🎤 {track.artist}</span>
-                                            <span className="separator">|</span>
-                                            <span className="album">💿 {track.album}</span>
-                                            {/* Indicamos visualmente cuál es la local */}
-                                            {track.isLocal && <span style={{fontSize:'10px', color:'#68D391', marginLeft:'5px'}}> (Procesando...)</span>}
-                                        </div>
-                                        <div className="chalk-line"></div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    )}
-                    
-                    {/* Nota fija al pie de la pizarra */}
-                    <div style={{marginTop:'30px', textAlign:'center', opacity:0.4, fontSize:'10px', fontStyle:'italic', fontFamily:'Poppins'}}>
-                        * La lista se actualiza cada 5 min aprox.
-                    </div>
-                </div>
-            </div>
-
-            <style jsx global>{`
-                *, *::before, *::after { box-sizing: border-box; }
-                body { margin: 0; padding: 0; background: #1a202c; }
-            `}</style>
-
-            <style jsx>{`
-                .container { min-height: 100vh; display: flex; flex-direction: column; font-family: 'Poppins', sans-serif; background: #1a202c; overflow-x: hidden; padding-bottom: 50px; }
-                .form-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 20px 40px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; flex-shrink: 0; }
-                .header { text-align: center; color: white; margin-bottom: 25px; width: 100%; }
-                .vinyl-container { height: 50px; margin-bottom: 10px; }
-                .vinyl-icon { font-size: 45px; display: inline-block; animation: spin 4s linear infinite; }
-                .title { margin: 5px 0; font-size: 28px; font-weight: 800; letter-spacing: 1px; line-height: 1.2; }
-                .subtitle { margin: 0; opacity: 0.9; font-size: 14px; }
-                .form-card { background: rgba(255, 255, 255, 0.96); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin: 0 auto; }
-                .input-group { margin-bottom: 15px; width: 100%; }
-                .input-group label { display: block; font-size: 12px; font-weight: 800; color: #4a5568; margin-bottom: 6px; text-transform: uppercase; }
-                .input-group input { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; background-color: #f7fafc; font-family: 'Poppins', sans-serif; -webkit-appearance: none; }
-                .input-group input:focus { border-color: #667eea; background: #fff; }
-                .row-group { display: flex; gap: 12px; width: 100%; }
-                .half-width { flex: 1; width: 50%; }
-                .submit-btn { width: 100%; padding: 18px; margin-top: 10px; background: #2d3748; color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); touch-action: manipulation; }
-                .back-btn { background: none; border: none; color: rgba(255,255,255,0.8); margin-top: 20px; padding: 10px; font-size: 14px; font-weight: 600; }
-                
-                /* ESTILOS DEL AVISO (TOAST) */
-                .notice-box {
-                    background: #C6F6D5;
-                    border-left: 5px solid #48BB78;
-                    padding: 15px;
-                    margin: 20px 20px 0 20px; /* Márgenes para separarlo */
-                    border-radius: 8px;
-                    color: #22543D;
-                    animation: slideIn 0.5s ease-out;
-                    max-width: 500px;
-                    width: 90%;
-                    align-self: center; /* Centrarlo en el flex container padre */
-                }
-                .notice-title { font-weight: 800; margin-bottom: 5px; font-size: 14px; }
-                .notice-text { font-size: 12px; line-height: 1.4; }
-
-                .board-section { padding: 30px 20px; display: flex; justifyContent: center; width: 100%; flex-grow: 1; }
-                .chalkboard { width: 100%; max-width: 500px; background: #2b2b2b; border: 10px solid #5D4037; border-radius: 8px; padding: 20px; color: #fff; font-family: 'Permanent Marker', cursive; min-height: 300px; height: fit-content; background-image: url("https://www.transparenttextures.com/patterns/black-chalk.png"); }
-                .requests-list { display: flex; flexDirection: column; gap: 10px; }
-                .chalk-title { font-size: 22px; color: rgba(255,255,255,0.95); letter-spacing: 1px; }
-                .chalk-divider { height: 2px; background: rgba(255,255,255,0.2); margin-bottom: 15px; }
-                .chalk-item { margin-bottom: 5px; animation: slideIn 0.4s ease-out; width: 100%; }
-                .chalk-song { font-size: 20px; margin-bottom: 5px; color: white; line-height: 1.3; word-break: break-word; }
-                .chalk-details { font-size: 14px; opacity: 0.8; font-family: 'Poppins', sans-serif; }
-                .artist { color: #f6e05e; }
-                .album { color: #63b3ed; }
-                .chalk-line { margin-top: 12px; border-bottom: 1px dashed rgba(255,255,255,0.15); }
-                .refresh-btn { background: none; border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; cursor: pointer; padding: 5px 10px; }
-                @keyframes spin { 100% { transform: rotate(360deg); } }
-                @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @media (max-width: 380px) { .form-section { padding-top: 50px; padding-left: 15px; padding-right: 15px; } .title { font-size: 24px; } .form-card { padding: 20px 15px; } .row-group { flex-direction: column; gap: 0; } .input-group { margin-bottom: 12px; } }
-            `}</style>
-        </div>
-    );
-}
