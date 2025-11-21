@@ -40,7 +40,9 @@ export default function IntroPage() {
 
   const pageTitle = "Boda de Manel & Carla";
   const pageDescription = "Bienvenidos a nuestra boda.";
-  const pageImage = "https://bodamanelcarla.vercel.app/icono.png"; 
+  
+  // CAMBIO REALIZADO: Ahora apunta a boda_icon_4.png para la previsualización de WhatsApp
+  const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_4.png"; 
 
   // Función de redirección centralizada y registro en Local Storage
   const navigateToHome = () => {
