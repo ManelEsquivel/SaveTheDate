@@ -80,26 +80,26 @@ export default function Homepage() {
                     {/* MENÚ DE OPCIONES */}
                     <div style={styles.grid}>
                         
-                        {/* TARJETA 1: WEB DE LA BODA (NUEVO) */}
-                        <div style={styles.card} onClick={() => openExternalLink('https://www.bodas.net/web/manel-y-carla/bienvenidos-1')}>
-                            <div style={{...styles.iconBg, background: '#f3e5f5'}}> {/* Fondo lila pastel */}
-                                <span style={styles.emoji}>💒</span>
-                            </div>
-                            <div style={styles.textContainer}>
-                                <h3 style={styles.cardTitle}>Web de la Boda</h3>
-                                <p style={styles.cardText}>Info oficial, mapas y hoteles.</p>
-                            </div>
-                            <span style={styles.arrow}>➔</span>
-                        </div>
-
-                        {/* TARJETA 2: ASISTENTE */}
+                        {/* TARJETA 1: ASISTENTE */}
                         <div style={styles.card} onClick={() => navigateTo('/bot_boda_asistente')}>
                             <div style={{...styles.iconBg, background: '#e3f2fd'}}>
                                 <span style={styles.emoji}>🤖</span>
                             </div>
                             <div style={styles.textContainer}>
                                 <h3 style={styles.cardTitle}>Asistente Virtual</h3>
-                                <p style={styles.cardText}>Pregunta dudas, horarios y detalles.</p>
+                                <p style={styles.cardText}>Pregunta tus dudas, horarios y detalles.</p>
+                            </div>
+                            <span style={styles.arrow}>➔</span>
+                        </div>
+
+                        {/* TARJETA 2: WEB DE LA BODA (NUEVO) */}
+                        <div style={styles.card} onClick={() => openExternalLink('https://www.bodas.net/web/manel-y-carla/bienvenidos-1')}>
+                            <div style={{...styles.iconBg, background: '#f3e5f5'}}> {/* Fondo lila pastel */}
+                                <span style={styles.emoji}>💒</span>
+                            </div>
+                            <div style={styles.textContainer}>
+                                <h3 style={styles.cardTitle}>Web de la Boda</h3>
+                                <p style={styles.cardText}>Info oficial, mapa, confirmación.</p>
                             </div>
                             <span style={styles.arrow}>➔</span>
                         </div>
