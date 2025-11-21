@@ -155,7 +155,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         padding: '15px', 
-        paddingBottom: '20px', // 👈 AJUSTE FINAL: Reducido a 20px
+        paddingBottom: '20px',
         boxSizing: 'border-box',
     },
     content: {
@@ -172,7 +172,7 @@ const styles = {
         marginTop: '0px',
     },
     title: {
-        fontSize: '2.2rem',
+        fontSize: '2.0rem', // 👈 AJUSTE FINAL: Reducido de 2.2rem a 2.0rem
         color: '#2d3748',
         fontFamily: '"Times New Roman", serif',
         margin: '0 0 5px 0',
@@ -206,7 +206,7 @@ const styles = {
     card: {
         backgroundColor: 'white',
         borderRadius: '16px',
-        padding: '16px',
+        padding: '12px', // 👈 AJUSTE FINAL: Reducido de 16px a 12px
         display: 'flex',
         alignItems: 'center', 
         boxShadow: '0 5px 15px rgba(0,0,0,0.03)',
@@ -216,8 +216,8 @@ const styles = {
         overflow: 'hidden',
     },
     iconBg: {
-        width: '50px',
-        height: '50px',
+        width: '45px', // 👈 AJUSTE FINAL: Reducido de 50px a 45px
+        height: '45px', // 👈 AJUSTE FINAL: Reducido de 50px a 45px
         borderRadius: '12px',
         display: 'flex',
         justifyContent: 'center',
@@ -226,7 +226,7 @@ const styles = {
         flexShrink: 0, 
     },
     emoji: {
-        fontSize: '24px',
+        fontSize: '20px', // 👈 AJUSTE FINAL: Reducido de 24px a 20px
     },
     textContainer: {
         flex: 1, 
@@ -257,7 +257,7 @@ const styles = {
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '5px', // 👈 AJUSTE FINAL: Reducido a 5px
+        marginTop: '5px',
         color: '#a0aec0',
         fontSize: '0.75rem',
         textAlign: 'center',
