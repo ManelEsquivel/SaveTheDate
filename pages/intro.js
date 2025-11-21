@@ -30,7 +30,7 @@ export default function IntroPage() {
   const pageTitle = "Boda de Manel & Carla";
   const pageDescription = "Bienvenidos a nuestra boda.";
   
-  // URL de la imagen (asegúrate que en la carpeta public se llame exactamente así, minúsculas incluidas)
+  // URL de la imagen
   const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_5.jpg"; 
 
   const navigateToHome = () => {
@@ -110,20 +110,21 @@ export default function IntroPage() {
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
 
-        {/* --- OPEN GRAPH (WHATSAPP) --- */}
+        {/* --- OPEN GRAPH (Metadatos estándar) --- */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        
         <meta property="og:image" content={pageImage} />
         <meta property="og:image:secure_url" content={pageImage} />
-        
-        {/* CORRECCIÓN AQUÍ: Cambiado de png a jpeg porque la imagen es .jpg */}
         <meta property="og:image:type" content="image/jpeg" />
-        
-        {/* Dimensiones recomendadas para WhatsApp (Cuadrado) */}
         <meta property="og:image:width" content="300" />
         <meta property="og:image:height" content="300" />
+        
+        {/* --- TWITTER CARD (A veces WhatsApp usa esto como respaldo) --- */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={pageImage} />
         
         <meta name="theme-color" content="#000000" />
         
@@ -134,6 +135,13 @@ export default function IntroPage() {
           }
         `}</style>
       </Head>
+
+      {/* --- TRUCO: IMAGEN FANTASMA PARA FORZAR LA PREVISUALIZACIÓN --- */}
+      {/* Esto asegura que haya una imagen en el DOM que WhatsApp pueda encontrar si falla el Head */}
+      <div style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', opacity: 0, top: 0, left: 0, zIndex: -1 }}>
+          <img src={pageImage} alt="thumbnail boda" style={{ width: '300px', height: '300px' }} />
+      </div>
+      {/* -------------------------------------------------------------- */}
 
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'black', zIndex: 9999, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: isFadingOut ? 0 : 1, transition: 'opacity 1.5s ease-in-out' }}>
