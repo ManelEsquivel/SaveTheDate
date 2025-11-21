@@ -65,7 +65,7 @@ export default function Homepage() {
                     transform: isVisible ? 'translateY(0)' : 'translateY(20px)'
                 }}>
                     
-                    {/* ENCABEZADO (Márgenes reducidos) */}
+                    {/* ENCABEZADO */}
                     <header style={styles.header}>
                         <h1 style={styles.title}>Manel & Carla</h1>
                         <p style={styles.date}>31 de Octubre de 2026</p>
@@ -100,7 +100,7 @@ export default function Homepage() {
                             <span style={styles.arrow}>➔</span>
                         </div>
                         
-                        {/* 🌟 TARJETA 3: DJ (NUEVA) 🌟 */}
+                        {/* TARJETA 3: DJ */}
                         <div style={styles.card} onClick={() => navigateTo('/dj')}>
                             <div style={{...styles.iconBg, background: '#ffe0b2'}}>
                                 <span style={styles.emoji}>🎵</span>
@@ -168,8 +168,8 @@ const styles = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '15px',
-        marginTop: '5px',
+        marginBottom: '10px', // 👈 AJUSTE FINAL: Reducido a 10px
+        marginTop: '0px',    // 👈 AJUSTE FINAL: Reducido a 0px
     },
     title: {
         fontSize: '2.2rem',
@@ -190,7 +190,7 @@ const styles = {
         width: '50px',
         height: '3px',
         backgroundColor: '#d6bcfa',
-        margin: '15px auto',
+        margin: '10px auto', // 👈 AJUSTE FINAL: Reducido a 10px
         borderRadius: '2px',
     },
     welcome: {
@@ -200,7 +200,7 @@ const styles = {
     grid: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
+        gap: '8px', // 👈 AJUSTE FINAL: Reducido a 8px
         width: '100%',
     },
     card: {
@@ -257,7 +257,7 @@ const styles = {
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '15px',
+        marginTop: '10px', // 👈 AJUSTE FINAL: Reducido a 10px
         color: '#a0aec0',
         fontSize: '0.75rem',
         textAlign: 'center',
