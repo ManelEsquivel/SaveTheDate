@@ -2,28 +2,21 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 
-// --- CONSTANTE PARA LA CLAVE DE LOCAL STORAGE ---
 const LAST_VISIT_KEY = 'lastIntroVideoWatched';
-// -----------------------------------------------
 
-// --- FUNCIÓN DE UTILIDAD PARA COMPROBAR LA FECHA ---
 const isDifferentDay = (storedDateString) => {
-  if (typeof window === 'undefined') return true; // Asumir true en SSR
-  if (!storedDateString) {
-    return true; // No existe la marca, así que es diferente día (primera visita)
-  }
+  if (typeof window === 'undefined') return true;
+  if (!storedDateString) return true;
   
   const storedDate = new Date(storedDateString);
   const today = new Date();
 
-  // Comparamos el día, mes y año.
   return (
     storedDate.getDate() !== today.getDate() ||
     storedDate.getMonth() !== today.getMonth() ||
     storedDate.getFullYear() !== today.getFullYear()
   );
 };
-// --------------------------------------------------
 
 export default function IntroPage() {
   const router = useRouter();
@@ -31,26 +24,19 @@ export default function IntroPage() {
   
   const [isStarted, setIsStarted] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  
-  // --- NUEVO ESTADO: true = Mostrar video, false = Omitir video/Redirigir ---
   const [showVideoExperience, setShowVideoExperience] = useState(false); 
-  // --- NUEVO ESTADO: Para asegurar que el componente se renderiza solo después de la comprobación ---
   const [isReady, setIsReady] = useState(false); 
-  // --------------------------------------------------------------------------------------------------
 
   const pageTitle = "Boda de Manel & Carla";
   const pageDescription = "Bienvenidos a nuestra boda.";
   
-  // CAMBIO REALIZADO: Ahora apunta a boda_icon_4.png para la previsualización de WhatsApp
+  // Asegúrate de que esta imagen pese MENOS de 300KB
   const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_4.png"; 
 
-  // Función de redirección centralizada y registro en Local Storage
   const navigateToHome = () => {
     if (typeof window !== 'undefined') {
-        // Guardar la marca de tiempo de la visita en el Local Storage
         localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
     }
-    // CAMBIO REALIZADO: Redirige a /homepage
     router.push('/homepage');
   }
 
@@ -63,7 +49,6 @@ export default function IntroPage() {
       setIsReady(true);
       
       if (isNewDay) {
-        // Solo pintamos de negro e inicializamos YT si vamos a mostrar el video
         document.documentElement.style.setProperty('background-color', '#000000', 'important');
         document.body.style.setProperty('background-color', '#000000', 'important');
 
@@ -87,7 +72,7 @@ export default function IntroPage() {
     return () => {
       window.onYouTubeIframeAPIReady = null;
     };
-  }, []); // El array vacío asegura que solo se ejecuta al montar
+  }, []);
 
   const onPlayerStateChange = (event) => {
     if (event.data === 0 && !isFadingOut) { 
@@ -97,7 +82,6 @@ export default function IntroPage() {
 
   const handleStart = () => {
     if (showVideoExperience) {
-      // Flujo: Reproducir Video
       if (playerRef.current && playerRef.current.playVideo) {
         setIsStarted(true);
         playerRef.current.unMute();
@@ -107,12 +91,10 @@ export default function IntroPage() {
         setTimeout(navigateToHome, 8500);
       }
     } else {
-      // Flujo: Redirección Inmediata si ya lo vieron hoy
       navigateToHome();
     }
   };
 
-  // Esperar a que se complete la comprobación del Local Storage
   if (!isReady) {
     return (
       <Head>
@@ -126,12 +108,19 @@ export default function IntroPage() {
     <>
       <Head>
         <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+
+        {/* --- OPEN GRAPH (WHATSAPP) --- */}
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:image" content={pageImage} />
+        <meta property="og:image:secure_url" content={pageImage} />
         <meta property="og:image:type" content="image/png" />
+        {/* Añadir dimensiones ayuda a WhatsApp a renderizarlo más rápido */}
+        <meta property="og:image:width" content="400" />
+        <meta property="og:image:height" content="400" />
         
-        {/* Barra de estado negra */}
         <meta name="theme-color" content="#000000" />
         
         <style>{`
@@ -143,23 +132,18 @@ export default function IntroPage() {
       </Head>
 
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'black', zIndex: 9999, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        {/* Este div controla la opacidad general, oculta el video al final */}
         <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: isFadingOut ? 0 : 1, transition: 'opacity 1.5s ease-in-out' }}>
             
-            {/* PANTALLA DEL BOTÓN DE ACCESO (Siempre visible si no ha empezado el video) */}
-            {/* Solo se oculta cuando el video ha empezado (isStarted = true) */}
             {!isStarted && (
               <div onClick={handleStart} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
                 <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
                 <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
-                  {/* CAMBIO REALIZADO: Texto cambiado a Bienvenidos */}
                   {showVideoExperience ? 'Bienvenidos' : 'Acceder (Bienvenido de nuevo 😉)'}
                 </div>
                 <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
               </div>
             )}
             
-            {/* REPRODUCTOR DE YOUTUBE (Solo visible si es la experiencia del video) */}
             {showVideoExperience && (
               <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
                 <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
