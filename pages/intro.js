@@ -30,7 +30,7 @@ export default function IntroPage() {
   const pageTitle = "Boda de Manel & Carla";
   const pageDescription = "Bienvenidos a nuestra boda.";
   
-  // Asegúrate de que esta imagen pese MENOS de 300KB
+  // URL de la imagen (asegúrate que en la carpeta public se llame exactamente así, minúsculas incluidas)
   const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_5.jpg"; 
 
   const navigateToHome = () => {
@@ -114,12 +114,16 @@ export default function IntroPage() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
+        
         <meta property="og:image" content={pageImage} />
         <meta property="og:image:secure_url" content={pageImage} />
-        <meta property="og:image:type" content="image/png" />
-        {/* Añadir dimensiones ayuda a WhatsApp a renderizarlo más rápido */}
-        <meta property="og:image:width" content="400" />
-        <meta property="og:image:height" content="400" />
+        
+        {/* CORRECCIÓN AQUÍ: Cambiado de png a jpeg porque la imagen es .jpg */}
+        <meta property="og:image:type" content="image/jpeg" />
+        
+        {/* Dimensiones recomendadas para WhatsApp (Cuadrado) */}
+        <meta property="og:image:width" content="300" />
+        <meta property="og:image:height" content="300" />
         
         <meta name="theme-color" content="#000000" />
         
