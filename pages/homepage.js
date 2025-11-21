@@ -155,7 +155,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         padding: '15px', 
-        paddingBottom: '40px', 
+        paddingBottom: '20px', // 👈 AJUSTE FINAL: Reducido a 20px
         boxSizing: 'border-box',
     },
     content: {
@@ -168,8 +168,8 @@ const styles = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '10px', // 👈 AJUSTE FINAL: Reducido a 10px
-        marginTop: '0px',    // 👈 AJUSTE FINAL: Reducido a 0px
+        marginBottom: '10px',
+        marginTop: '0px',
     },
     title: {
         fontSize: '2.2rem',
@@ -190,7 +190,7 @@ const styles = {
         width: '50px',
         height: '3px',
         backgroundColor: '#d6bcfa',
-        margin: '10px auto', // 👈 AJUSTE FINAL: Reducido a 10px
+        margin: '10px auto',
         borderRadius: '2px',
     },
     welcome: {
@@ -200,7 +200,7 @@ const styles = {
     grid: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px', // 👈 AJUSTE FINAL: Reducido a 8px
+        gap: '8px',
         width: '100%',
     },
     card: {
@@ -257,7 +257,7 @@ const styles = {
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '10px', // 👈 AJUSTE FINAL: Reducido a 10px
+        marginTop: '5px', // 👈 AJUSTE FINAL: Reducido a 5px
         color: '#a0aec0',
         fontSize: '0.75rem',
         textAlign: 'center',
