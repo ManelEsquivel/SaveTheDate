@@ -31,7 +31,7 @@ export default function IntroPage() {
   const pageDescription = "Bienvenidos a nuestra boda.";
   
   // Asegúrate de que esta imagen pese MENOS de 300KB
-  const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_4.png"; 
+  const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_5.jpg"; 
 
   const navigateToHome = () => {
     if (typeof window !== 'undefined') {
