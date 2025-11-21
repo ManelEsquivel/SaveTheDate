@@ -95,9 +95,6 @@ export default function IntroPage() {
     }
   };
 
-  // --- CORRECCIÓN CLAVE ---
-  // Hemos quitado el "if (!isReady) return..." que bloqueaba los metadatos.
-  // Ahora el componente SIEMPRE renderiza el <Head> primero.
   
   return (
     <>
@@ -105,17 +102,13 @@ export default function IntroPage() {
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
 
-        {/* --- METADATOS (Se cargan siempre, incluso cargando) --- */}
+        {/* --- METADATOS --- */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:image" content={pageImage} />
         <meta property="og:image:secure_url" content={pageImage} />
-        
-        {/* Tipo correcto para tu archivo JPG */}
         <meta property="og:image:type" content="image/jpeg" />
-        
-        {/* Medidas para ayudar a WhatsApp */}
         <meta property="og:image:width" content="300" />
         <meta property="og:image:height" content="300" />
         
@@ -126,10 +119,18 @@ export default function IntroPage() {
             background-color: ${showVideoExperience || !isReady ? '#000000' : 'white'} !important;
             margin: 0; padding: 0; height: 100%; overflow: hidden;
           }
+          /* 🥂 NUEVA ANIMACIÓN PARA LAS COPAS */
+          @keyframes cheers {
+              0% { transform: scale(1) rotate(0deg); }
+              25% { transform: scale(1.1) rotate(-5deg); }
+              50% { transform: scale(1.1) rotate(5deg); }
+              75% { transform: scale(1.1) rotate(-5deg); }
+              100% { transform: scale(1) rotate(0deg); }
+          }
         `}</style>
       </Head>
 
-      {/* IMAGEN FANTASMA (Respaldo extra para el robot) */}
+      {/* IMAGEN FANTASMA */}
       <div style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', opacity: 0, top: 0, left: 0, zIndex: -1 }}>
           <img src={pageImage} alt="thumbnail boda" style={{ width: '300px', height: '300px' }} />
       </div>
@@ -137,7 +138,7 @@ export default function IntroPage() {
       {/* CONTENIDO VISUAL */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'black', zIndex: 9999, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         
-        {/* Si no está listo (cargando), mostramos pantalla negra vacía pero con los METADATOS ya cargados arriba */}
+        {/* Si no está listo (cargando) */}
         {!isReady ? (
             <div style={{width: '100%', height: '100%', backgroundColor: 'black'}}></div>
         ) : (
@@ -145,6 +146,18 @@ export default function IntroPage() {
                 
                 {!isStarted && (
                 <div onClick={handleStart} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
+                    
+                    {/* 🥂 ICONO DE COPAS CON ANIMACIÓN DE "TINTINEO" */}
+                    <div style={{
+                        fontSize: '50px',
+                        marginBottom: '15px',
+                        display: 'inline-block',
+                        animation: 'cheers 1.5s ease-in-out infinite', // Aplica la nueva animación
+                        textShadow: '0 0 10px rgba(255, 255, 255, 0.5)'
+                    }}>
+                        🥂
+                    </div>
+                    
                     <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
                     <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
                     {showVideoExperience ? 'Bienvenidos' : 'Acceder (Bienvenido de nuevo 😉)'}
