@@ -102,7 +102,7 @@ export default function Homepage() {
                         
                         {/* 🌟 TARJETA 3: DJ (NUEVA) 🌟 */}
                         <div style={styles.card} onClick={() => navigateTo('/dj')}>
-                            <div style={{...styles.iconBg, background: '#ffe0b2'}}> {/* Naranja suave */}
+                            <div style={{...styles.iconBg, background: '#ffe0b2'}}>
                                 <span style={styles.emoji}>🎵</span>
                             </div>
                             <div style={styles.textContainer}>
@@ -168,8 +168,8 @@ const styles = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '15px', // 👈 AJUSTE: Reducido de 25px a 15px
-        marginTop: '5px',    // 👈 AJUSTE: Reducido de 10px a 5px
+        marginBottom: '15px',
+        marginTop: '5px',
     },
     title: {
         fontSize: '2.2rem',
@@ -257,12 +257,10 @@ const styles = {
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '15px', // 👈 AJUSTE: Reducido de 30px a 15px
+        marginTop: '15px',
         color: '#a0aec0',
         fontSize: '0.75rem',
         textAlign: 'center',
         paddingBottom: '10px',
     }
 };
-
-}
