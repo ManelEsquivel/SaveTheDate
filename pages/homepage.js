@@ -13,21 +13,21 @@ export default function Homepage() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // 1. Limpieza y configuración de color base (para quitar bordes negros en móvil)
+        // 1. Limpieza y configuración de color base
         document.documentElement.removeAttribute('style');
         document.body.removeAttribute('style');
         
-        // Forzamos el color de fondo del body para que coincida con el degradado
+        // Forzamos el color de fondo
         document.documentElement.style.backgroundColor = "#fdfbfb";
         document.body.style.backgroundColor = "#fdfbfb";
 
-        // 2. SECUENCIA "CINE" (Telón negro a transparente)
+        // 2. SECUENCIA "CINE"
         setTimeout(() => {
-            setOpacity(0); // Empieza a desvanecerse la lona negra
-            setIsVisible(true); // Activa la animación del contenido subiendo
+            setOpacity(0); 
+            setIsVisible(true); 
         }, 500);
 
-        // 3. Quitamos la lona del DOM cuando termine la animación
+        // 3. Quitamos la lona
         setTimeout(() => {
             setShowCurtain(false);
         }, 2000);
@@ -38,12 +38,16 @@ export default function Homepage() {
         router.push(path);
     };
 
+    // Función para abrir enlaces externos
+    const openExternalLink = (url) => {
+        window.open(url, '_blank');
+    };
+
     return (
         <>
             <Head>
                 <title>Boda Manel & Carla</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                {/* Esto define el color de la barra del navegador en móviles (Adiós negro) */}
                 <meta name="theme-color" content="#fdfbfb" />
             </Head>
 
@@ -76,12 +80,23 @@ export default function Homepage() {
                     {/* MENÚ DE OPCIONES */}
                     <div style={styles.grid}>
                         
-                        {/* TARJETA 1: ASISTENTE */}
+                        {/* TARJETA 1: WEB DE LA BODA (NUEVO) */}
+                        <div style={styles.card} onClick={() => openExternalLink('https://www.bodas.net/web/manel-y-carla/bienvenidos-1')}>
+                            <div style={{...styles.iconBg, background: '#f3e5f5'}}> {/* Fondo lila pastel */}
+                                <span style={styles.emoji}>💒</span>
+                            </div>
+                            <div style={styles.textContainer}>
+                                <h3 style={styles.cardTitle}>Web de la Boda</h3>
+                                <p style={styles.cardText}>Info oficial, mapas y hoteles.</p>
+                            </div>
+                            <span style={styles.arrow}>➔</span>
+                        </div>
+
+                        {/* TARJETA 2: ASISTENTE */}
                         <div style={styles.card} onClick={() => navigateTo('/bot_boda_asistente')}>
                             <div style={{...styles.iconBg, background: '#e3f2fd'}}>
                                 <span style={styles.emoji}>🤖</span>
                             </div>
-                            {/* CORRECCIÓN: Agrupamos texto en un div para que no se rompa el layout */}
                             <div style={styles.textContainer}>
                                 <h3 style={styles.cardTitle}>Asistente Virtual</h3>
                                 <p style={styles.cardText}>Pregunta dudas, horarios y detalles.</p>
@@ -89,7 +104,7 @@ export default function Homepage() {
                             <span style={styles.arrow}>➔</span>
                         </div>
 
-                        {/* TARJETA 2: FOTOS */}
+                        {/* TARJETA 3: FOTOS */}
                         <div style={styles.card} onClick={() => navigateTo('/imagenes_boda')}>
                             <div style={{...styles.iconBg, background: '#fce4ec'}}>
                                 <span style={styles.emoji}>📸</span>
@@ -101,7 +116,7 @@ export default function Homepage() {
                             <span style={styles.arrow}>➔</span>
                         </div>
 
-                        {/* TARJETA 3: JUEGO */}
+                        {/* TARJETA 4: JUEGO */}
                         <div style={styles.card} onClick={() => navigateTo('/game')}>
                             <div style={{...styles.iconBg, background: '#fff3e0'}}>
                                 <span style={styles.emoji}>🎮</span>
@@ -131,8 +146,8 @@ const styles = {
         fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
         display: 'flex',
         justifyContent: 'center',
-        padding: '20px',
-        paddingBottom: '60px', // Aumentado para que el footer no se corte en móviles
+        padding: '15px', // Reducido de 20 a 15
+        paddingBottom: '40px', 
         boxSizing: 'border-box',
     },
     content: {
@@ -145,79 +160,77 @@ const styles = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '40px',
-        marginTop: '20px',
+        marginBottom: '25px', // Reducido drásticamente de 40 a 25 para ganar espacio
+        marginTop: '10px',    // Reducido de 20 a 10
     },
     title: {
-        fontSize: '2.5rem',
+        fontSize: '2.2rem', // Ligeramente más pequeño (era 2.5) para evitar saltos de línea innecesarios
         color: '#2d3748',
         fontFamily: '"Times New Roman", serif',
-        margin: '0 0 10px 0',
+        margin: '0 0 5px 0',
         letterSpacing: '1px',
-        lineHeight: '1.2', // Mejor espaciado si el título salta de línea
+        lineHeight: '1.2',
     },
     date: {
-        fontSize: '1.1rem',
+        fontSize: '1rem', // Ajustado
         color: '#718096',
         textTransform: 'uppercase',
         letterSpacing: '2px',
         margin: 0,
     },
     divider: {
-        width: '60px',
+        width: '50px',
         height: '3px',
         backgroundColor: '#d6bcfa',
-        margin: '20px auto',
+        margin: '15px auto', // Reducido margen
         borderRadius: '2px',
     },
     welcome: {
         color: '#4a5568',
-        fontSize: '1rem',
+        fontSize: '0.95rem',
     },
     grid: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
+        gap: '12px', // Reducido de 20 a 12 para pegar más las tarjetas
         width: '100%',
     },
     card: {
         backgroundColor: 'white',
-        borderRadius: '20px',
-        padding: '20px',
+        borderRadius: '16px', // Un poco menos redondeado para ahorrar espacio visual
+        padding: '16px',      // Reducido de 20 a 16 (clave para que quepan más)
         display: 'flex',
-        alignItems: 'center', // Alinea verticalmente al centro
-        boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+        alignItems: 'center', 
+        boxShadow: '0 5px 15px rgba(0,0,0,0.03)',
         cursor: 'pointer',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         position: 'relative',
         overflow: 'hidden',
     },
-    // Estilos del icono
     iconBg: {
-        width: '60px',
-        height: '60px',
-        borderRadius: '15px',
+        width: '50px',  // Iconos un poco más compactos (era 60)
+        height: '50px', // Era 60
+        borderRadius: '12px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: '15px', // Reducido un poco para dar espacio al texto
-        flexShrink: 0, // Evita que el icono se aplaste
+        marginRight: '15px', 
+        flexShrink: 0, 
     },
     emoji: {
-        fontSize: '30px',
+        fontSize: '24px', // Ajustado al nuevo tamaño del icono
     },
-    // NUEVO CONTENEDOR PARA EL TEXTO
     textContainer: {
-        flex: 1, // Ocupa todo el espacio disponible en el medio
+        flex: 1, 
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        minWidth: 0, // Truco de flexbox para evitar desbordamientos de texto
+        minWidth: 0, 
         paddingRight: '10px',
     },
     cardTitle: {
-        margin: '0 0 4px 0',
-        fontSize: '1.1rem', // Ligeramente ajustado para móviles
+        margin: '0 0 2px 0',
+        fontSize: '1.1rem', 
         color: '#2d3748',
         fontWeight: 'bold',
         lineHeight: '1.2',
@@ -231,15 +244,15 @@ const styles = {
     arrow: {
         marginLeft: 'auto', 
         color: '#cbd5e0',
-        fontSize: '1.5rem',
+        fontSize: '1.2rem',
         fontWeight: 'bold',
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '40px',
+        marginTop: '30px', // Reducido de 40
         color: '#a0aec0',
-        fontSize: '0.8rem',
+        fontSize: '0.75rem',
         textAlign: 'center',
-        paddingBottom: '20px', // Margen extra de seguridad
+        paddingBottom: '10px',
     }
 };
