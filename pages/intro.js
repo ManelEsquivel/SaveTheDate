@@ -30,7 +30,7 @@ export default function IntroPage() {
   const pageTitle = "Boda de Manel & Carla";
   const pageDescription = "Bienvenidos a nuestra boda.";
   
-  // URL de la imagen
+  // IMPORTANTE: La URL exacta de tu imagen JPG
   const pageImage = "https://bodamanelcarla.vercel.app/boda_icon_5.jpg"; 
 
   const navigateToHome = () => {
@@ -46,7 +46,7 @@ export default function IntroPage() {
       const isNewDay = isDifferentDay(lastVisit);
       
       setShowVideoExperience(isNewDay);
-      setIsReady(true);
+      setIsReady(true); // Aquí ya sabemos qué mostrar
       
       if (isNewDay) {
         document.documentElement.style.setProperty('background-color', '#000000', 'important');
@@ -95,73 +95,71 @@ export default function IntroPage() {
     }
   };
 
-  if (!isReady) {
-    return (
-      <Head>
-        <title>{pageTitle}</title>
-        <meta name="theme-color" content="#000000" />
-      </Head>
-    );
-  }
-
+  // --- CORRECCIÓN CLAVE ---
+  // Hemos quitado el "if (!isReady) return..." que bloqueaba los metadatos.
+  // Ahora el componente SIEMPRE renderiza el <Head> primero.
+  
   return (
     <>
       <Head>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
 
-        {/* --- OPEN GRAPH (Metadatos estándar) --- */}
+        {/* --- METADATOS (Se cargan siempre, incluso cargando) --- */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:image" content={pageImage} />
         <meta property="og:image:secure_url" content={pageImage} />
+        
+        {/* Tipo correcto para tu archivo JPG */}
         <meta property="og:image:type" content="image/jpeg" />
+        
+        {/* Medidas para ayudar a WhatsApp */}
         <meta property="og:image:width" content="300" />
         <meta property="og:image:height" content="300" />
-        
-        {/* --- TWITTER CARD (A veces WhatsApp usa esto como respaldo) --- */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={pageImage} />
         
         <meta name="theme-color" content="#000000" />
         
         <style>{`
           html, body, #__next {
-            background-color: ${showVideoExperience ? '#000000' : 'white'} !important;
+            background-color: ${showVideoExperience || !isReady ? '#000000' : 'white'} !important;
             margin: 0; padding: 0; height: 100%; overflow: hidden;
           }
         `}</style>
       </Head>
 
-      {/* --- TRUCO: IMAGEN FANTASMA PARA FORZAR LA PREVISUALIZACIÓN --- */}
-      {/* Esto asegura que haya una imagen en el DOM que WhatsApp pueda encontrar si falla el Head */}
+      {/* IMAGEN FANTASMA (Respaldo extra para el robot) */}
       <div style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', opacity: 0, top: 0, left: 0, zIndex: -1 }}>
           <img src={pageImage} alt="thumbnail boda" style={{ width: '300px', height: '300px' }} />
       </div>
-      {/* -------------------------------------------------------------- */}
 
+      {/* CONTENIDO VISUAL */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'black', zIndex: 9999, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: isFadingOut ? 0 : 1, transition: 'opacity 1.5s ease-in-out' }}>
-            
-            {!isStarted && (
-              <div onClick={handleStart} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
-                <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
-                <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
-                  {showVideoExperience ? 'Bienvenidos' : 'Acceder (Bienvenido de nuevo 😉)'}
+        
+        {/* Si no está listo (cargando), mostramos pantalla negra vacía pero con los METADATOS ya cargados arriba */}
+        {!isReady ? (
+            <div style={{width: '100%', height: '100%', backgroundColor: 'black'}}></div>
+        ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: isFadingOut ? 0 : 1, transition: 'opacity 1.5s ease-in-out' }}>
+                
+                {!isStarted && (
+                <div onClick={handleStart} style={{ position: 'absolute', zIndex: 100, top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer' }}>
+                    <h1 style={{ fontFamily: 'serif', fontSize: '2rem', marginBottom: '20px', textAlign: 'center' }}>Manel & Carla</h1>
+                    <div style={{ padding: '12px 24px', border: '1px solid white', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', textAlign: 'center' }}>
+                    {showVideoExperience ? 'Bienvenidos' : 'Acceder (Bienvenido de nuevo 😉)'}
+                    </div>
+                    <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
                 </div>
-                <p style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>(Toca para comenzar)</p>
-              </div>
-            )}
-            
-            {showVideoExperience && (
-              <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
-                <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
-              </div>
-            )}
-        </div>
+                )}
+                
+                {showVideoExperience && (
+                <div style={{ width: '100%', height: '100%', pointerEvents: 'none', transform: 'scale(1.4)', opacity: isStarted ? 1 : 0, transition: 'opacity 1s' }}>
+                    <div id="youtube-player" style={{ width: '100%', height: '100%' }}></div>
+                </div>
+                )}
+            </div>
+        )}
       </div>
     </>
   );
