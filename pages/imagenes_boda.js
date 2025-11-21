@@ -9,17 +9,14 @@ export default function ImagenesBoda() {
     const [isDragging, setIsDragging] = useState(false);
     const [isGlobalUploading, setIsGlobalUploading] = useState(false);
     
-    // Estado para el Zoom (Modal de imagen)
-    const [selectedImage, setSelectedImage] = useState(null);
-
+    const [selectedMedia, setSelectedMedia] = useState(null);
     const fileInputRef = useRef(null);
 
     // 🛑 CONFIGURACIÓN: Límite de 50 MB para vídeos
     const MAX_VIDEO_SIZE_MB = 50;
     const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
-    // --- 1. FUNCIÓN DE COMPRESIÓN DE IMÁGENES ---
-    // Reduce el tamaño de las fotos antes de subir para ahorrar datos y dinero
+    // --- 1. FUNCIÓN DE COMPRESIÓN (SOLO IMÁGENES) ---
     const compressImage = async (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -29,7 +26,6 @@ export default function ImagenesBoda() {
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    // Resolución máxima HD (suficiente para móviles)
                     const MAX_WIDTH = 1280; 
                     const MAX_HEIGHT = 1280;
                     let width = img.width;
@@ -45,7 +41,6 @@ export default function ImagenesBoda() {
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Exportar a JPG con 70% de calidad
                     canvas.toBlob((blob) => {
                         if (!blob) return reject(new Error('Error al comprimir'));
                         const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
@@ -81,14 +76,13 @@ export default function ImagenesBoda() {
         }
     };
 
-    // Cargar galería al iniciar
     useEffect(() => { fetchGallery(); }, []);
     
     const handleLoadMore = () => { 
         if (nextPageToken) fetchGallery(nextPageToken, false); 
     };
 
-    // --- 3. SELECCIÓN Y VALIDACIÓN DE ARCHIVOS ---
+    // --- 3. SELECCIÓN Y VALIDACIÓN ---
     const processNewFiles = (incomingFiles) => {
         const validFiles = Array.from(incomingFiles).filter(file => {
             const isImage = file.type.startsWith('image/');
@@ -98,8 +92,6 @@ export default function ImagenesBoda() {
                 alert(`⚠️ El archivo "${file.name}" no es válido. Solo fotos y vídeos.`);
                 return false;
             }
-
-            // Validar tamaño de vídeo
             if (isVideo && file.size > MAX_VIDEO_SIZE_BYTES) {
                 alert(`⚠️ El vídeo "${file.name}" es demasiado grande.\nLímite: ${MAX_VIDEO_SIZE_MB}MB.`);
                 return false;
@@ -114,12 +106,11 @@ export default function ImagenesBoda() {
             file: file,
             previewUrl: URL.createObjectURL(file),
             isVideo: file.type.startsWith('video/'),
-            status: 'idle' // idle, uploading, success, error
+            status: 'idle'
         }));
         setFileItems(prev => [...prev, ...newItems]);
     };
 
-    // Limpieza de memoria de las previsualizaciones
     useEffect(() => {
         return () => { fileItems.forEach(item => URL.revokeObjectURL(item.previewUrl)); };
     }, [fileItems]);
@@ -141,7 +132,7 @@ export default function ImagenesBoda() {
         });
     };
 
-    // --- 4. SUBIDA INDIVIDUAL ---
+    // --- 4. SUBIDA ---
     const updateItemStatus = (id, newStatus, errorMessage = null) => {
         setFileItems(prev => prev.map(item => 
             item.id === id ? { ...item, status: newStatus, error: errorMessage } : item
@@ -154,8 +145,7 @@ export default function ImagenesBoda() {
 
         try {
             let fileToUpload = item.file;
-
-            // Si es FOTO, comprimimos. Si es VIDEO, subimos original.
+            // ⚠️ IMPORTANTE: Solo comprimimos fotos. El vídeo va directo.
             if (item.file.type.startsWith('image/')) {
                 try {
                     fileToUpload = await compressImage(item.file);
@@ -164,31 +154,25 @@ export default function ImagenesBoda() {
                 }
             }
 
-            const typeToSend = fileToUpload.type; // El tipo real final
+            const typeToSend = fileToUpload.type; 
 
-            // A. Pedir URL Firmada al servidor
             const urlRes = await fetch('/api/get-signed-url', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fileName: fileToUpload.name, fileType: typeToSend }), 
             });
             
-            if (!urlRes.ok) {
-                const err = await urlRes.json();
-                throw new Error(err.message || 'Error permiso');
-            }
+            if (!urlRes.ok) throw new Error('Error permiso');
             const { url } = await urlRes.json();
             
-            // B. Subir a Google (PUT directo)
             const uploadRes = await fetch(url, {
                 method: 'PUT', 
-                headers: { 'Content-Type': typeToSend }, // Coincide con la firma
+                headers: { 'Content-Type': typeToSend },
                 body: fileToUpload,
             });
             
             if (!uploadRes.ok) throw new Error('Error subida');
 
-            // C. Éxito y refresco
             updateItemStatus(item.id, 'success');
             fetchGallery(null, true); 
 
@@ -206,37 +190,27 @@ export default function ImagenesBoda() {
         await Promise.all(itemsToUpload.map(item => uploadSingleItem(item)));
         setIsGlobalUploading(false);
 
-        // Limpiar los exitosos después de un momento
         setTimeout(() => {
             setFileItems(prev => prev.filter(i => i.status !== 'success'));
         }, 2000);
     };
 
-    // Abrir modal (foto) o nueva pestaña (vídeo)
-    const openMedia = (url) => {
-        if (url.match(/\.(mp4|mov|avi|webm)$/i)) {
-            window.open(url, '_blank');
-        } else {
-            setSelectedImage(url);
-        }
+    // --- ABRIR MEDIOS ---
+    const openMediaInModal = (url) => {
+        const isVideo = url.match(/\.(mp4|mov|avi|webm|m4v|hevc)$/i);
+        setSelectedMedia({
+            url: url,
+            type: isVideo ? 'video' : 'image'
+        });
     };
 
     // --- RENDERIZADO ---
     return (
         <div style={styles.pageContainer}>
-            
-            {/* Etiquetas para WhatsApp / Redes Sociales */}
             <Head>
                 <title>Sube tus Fotos de la Boda 📸</title>
                 <meta name="description" content="Comparte tus mejores momentos con nosotros." />
-                <meta property="og:title" content="📸 Fotos Boda: ¡Sube las tuyas!" />
-                <meta property="og:description" content="Entra aquí para compartir las fotos y vídeos que vas hacer en la boda. ¡Queremos verlas todas!" />
-                {/* Asegúrate de que boda_icon_3.png esté en la carpeta /public */}
-                <meta property="og:image" content="https://bodamanelcarla.vercel.app/boda_icon_3.png" />
-                <meta property="og:image:width" content="800" />
-                <meta property="og:image:height" content="800" />
-                <meta property="og:url" content="https://bodamanelcarla.vercel.app/imagenes_boda" />
-                <meta property="og:type" content="website" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
             </Head>
 
             <div style={styles.card}>
@@ -255,13 +229,14 @@ export default function ImagenesBoda() {
                     <input type="file" ref={fileInputRef} onChange={handleFileSelect} style={{display:'none'}} multiple accept="image/*,video/*" />
                 </div>
                 
-                {/* Lista de previsualización */}
                 {fileItems.length > 0 && (
                     <ul style={styles.previewList}>
                         {fileItems.map((item) => (
                             <li key={item.id} style={styles.previewItem}>
                                 {item.isVideo ? (
-                                    <div style={styles.videoPlaceholder}>🎥</div>
+                                    <div style={styles.videoPreviewBox}>
+                                         <span style={{fontSize:'20px'}}>🎬</span>
+                                    </div>
                                 ) : (
                                     <img src={item.previewUrl} alt="Preview" style={styles.thumbnail} />
                                 )}
@@ -296,17 +271,24 @@ export default function ImagenesBoda() {
                 <h2 style={styles.galleryTitle}>📸 Galería en Vivo</h2>
                 <div style={styles.grid}>
                     {galleryPhotos.map((media, index) => {
-                        // Detectar si es video por extensión
-                        const isVid = media.name.match(/\.(mp4|mov|avi|webm)$/i);
+                        // Detectar vídeo
+                        const isVid = media.name.match(/\.(mp4|mov|avi|webm|m4v|hevc)$/i);
                         return (
-                            <div key={index} style={styles.gridItem} onClick={() => openMedia(media.url)}>
+                            <div key={index} style={styles.gridItem} onClick={() => openMediaInModal(media.url)}>
                                 {isVid ? (
-                                    <div style={styles.videoThumb}>
-                                        <span style={{fontSize: '24px'}}>▶️</span>
-                                        <br/>VIDEO
+                                    <div style={styles.videoContainer}>
+                                        {/* OPTIMIZACIÓN: Usamos preload="metadata" para intentar coger el primer frame sin descargar todo */}
+                                        <video 
+                                            src={`${media.url}#t=0.1`} 
+                                            preload="metadata"
+                                            style={styles.videoThumbImg}
+                                            playsInline
+                                            muted
+                                        />
+                                        <div style={styles.playIconOverlay}>▶️</div>
                                     </div>
                                 ) : (
-                                    <img src={media.url} alt="Boda" style={styles.image} loading="lazy" onContextMenu={(e) => e.preventDefault()} />
+                                    <img src={media.url} alt="Boda" style={styles.image} loading="lazy" />
                                 )}
                             </div>
                         );
@@ -319,12 +301,28 @@ export default function ImagenesBoda() {
                 )}
             </div>
 
-            {/* Modal Zoom (Lightbox) */}
-            {selectedImage && (
-                <div style={styles.modalOverlay} onClick={() => setSelectedImage(null)}>
-                    <div style={styles.modalContent}>
-                        <img src={selectedImage} alt="Zoom" style={styles.modalImage} onContextMenu={(e) => e.preventDefault()} />
-                        <button style={styles.closeButton} onClick={() => setSelectedImage(null)}>✕</button>
+            {/* Modal Zoom (OPTIMIZADO PARA VELOCIDAD) */}
+            {selectedMedia && (
+                <div style={styles.modalOverlay} onClick={() => setSelectedMedia(null)}>
+                    <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        
+                        {selectedMedia.type === 'video' ? (
+                            // AQUÍ ESTÁ LA MAGIA DEL VIDEO
+                            <video 
+                                src={selectedMedia.url} 
+                                controls 
+                                autoPlay 
+                                playsInline // CLAVE PARA IPHONE
+                                preload="auto" // INTENTA DESCARGAR TODO AGRESIVAMENTE
+                                style={styles.modalMedia}
+                            >
+                                Tu navegador no soporta este video.
+                            </video>
+                        ) : (
+                            <img src={selectedMedia.url} alt="Zoom" style={styles.modalMedia} />
+                        )}
+
+                        <button style={styles.closeButton} onClick={() => setSelectedMedia(null)}>✕</button>
                     </div>
                 </div>
             )}
@@ -345,7 +343,7 @@ const styles = {
     previewList: { listStyle: 'none', padding: 0, margin: '0 0 20px 0', textAlign: 'left', maxHeight: '350px', overflowY: 'auto' },
     previewItem: { display: 'flex', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #edf2f7' },
     thumbnail: { width: '80px', height: '80px', borderRadius: '8px', objectFit: 'cover', marginRight: '15px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
-    videoPlaceholder: { width: '80px', height: '80px', borderRadius: '8px', background: '#333', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '15px', fontSize: '24px' },
+    videoPreviewBox: { width: '80px', height: '80px', borderRadius: '8px', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '15px' },
     fileInfo: { flex: 1, overflow: 'hidden', fontSize: '14px' },
     fileName: { display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 'bold', color: '#2d3748', marginBottom: '4px' },
     removeBtn: { background: '#fff5f5', border: '1px solid #feb2b2', color: '#c53030', cursor: 'pointer', fontSize: '20px', width: '44px', height: '44px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '10px' },
@@ -353,12 +351,18 @@ const styles = {
     galleryContainer: { width: '100%', maxWidth: '800px', textAlign: 'center', paddingBottom: '40px' },
     galleryTitle: { color: '#2d3748', marginBottom: '20px', fontSize: '20px', fontWeight: 'bold' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px', width: '100%' },
-    gridItem: { backgroundColor: '#fff', borderRadius: '4px', overflow: 'hidden', aspectRatio: '1 / 1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' },
+    gridItem: { backgroundColor: '#fff', borderRadius: '4px', overflow: 'hidden', aspectRatio: '1 / 1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee', position: 'relative' },
     image: { width: '100%', height: '100%', objectFit: 'cover' },
-    videoThumb: { fontSize: '12px', color: '#333', fontWeight: 'bold', textAlign: 'center' },
+    
+    videoContainer: { width: '100%', height: '100%', position: 'relative', backgroundColor: '#000' },
+    videoThumbImg: { width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 },
+    playIconOverlay: { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '24px', color: 'white', textShadow: '0 2px 4px rgba(0,0,0,0.5)' },
+
     loadMoreBtn: { marginTop: '25px', padding: '12px 25px', backgroundColor: 'white', border: '2px solid #5a67d8', color: '#5a67d8', borderRadius: '30px', fontWeight: 'bold', fontSize: '14px' },
-    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, cursor: 'zoom-out' },
-    modalContent: { position: 'relative', maxWidth: '95%', maxHeight: '95%' },
-    modalImage: { maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '4px', boxShadow: '0 0 20px rgba(0,0,0,0.5)' },
-    closeButton: { position: 'absolute', top: '-40px', right: '0', background: 'none', border: 'none', color: 'white', fontSize: '30px', cursor: 'pointer' }
+    
+    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.95)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 },
+    modalContent: { position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    // Ajuste para que el vídeo no se salga de pantalla
+    modalMedia: { width: '100%', maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '4px' },
+    closeButton: { position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 };
