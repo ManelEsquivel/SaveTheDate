@@ -19,32 +19,25 @@ export default function DjPage({ initialTracks }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showNotice, setShowNotice] = useState(false); 
 
-    // 1️⃣ ESTADO INICIAL: Usamos lo que nos manda el servidor (Excel)
+    // 1️⃣ ESTADO INICIAL
     const [playlist, setPlaylist] = useState(initialTracks || []);
 
-    // 2️⃣ AL CARGAR LA PÁGINA (Solo una vez):
-    // Comprobamos si hay canciones "pendientes" en el móvil que Google aún no haya procesado.
-    // Esto evita que se "borren" si recargas muy rápido.
+    // 2️⃣ AL CARGAR LA PÁGINA
     useEffect(() => {
         const localData = localStorage.getItem('dj_pending_tracks');
         if (localData) {
             let localTracks = JSON.parse(localData);
-            
-            // Filtramos: Solo nos quedamos con las locales que NO estén ya en la lista oficial
             const pendingTracks = localTracks.filter(local => {
                 const yaEstaEnExcel = initialTracks.some(remote => remote.id === local.id);
-                return !yaEstaEnExcel; // Si ya está, la ignoramos (ya la tenemos oficial)
+                return !yaEstaEnExcel;
             });
-
-            // Actualizamos el LocalStorage limpio (sin las que ya salieron)
             localStorage.setItem('dj_pending_tracks', JSON.stringify(pendingTracks));
 
-            // Si hay pendientes, las ponemos ARRIBA del todo
             if (pendingTracks.length > 0) {
                 setPlaylist([...pendingTracks.reverse(), ...initialTracks]);
             }
         }
-    }, []); // Array vacío = Solo se ejecuta al montar (recargar)
+    }, []); 
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,34 +51,30 @@ export default function DjPage({ initialTracks }) {
         const artistClean = (formData.artist || 'Desconocido').trim();
         const uniqueId = `${songClean}-${artistClean}`.replace(/\s+/g, '-').toLowerCase();
 
+        // Permitimos que el álbum esté vacío
         const newTrack = {
             id: uniqueId, 
             song: songClean, 
             artist: artistClean, 
-            album: formData.album || 'Single', 
+            album: formData.album.trim(), 
             isLocal: true,
             timestamp: Date.now() 
         };
 
-        // 🚀 1. ACTUALIZACIÓN VISUAL INSTANTÁNEA (Optimistic UI)
-        // Añadimos la canción AL PRINCIPIO de la lista actual
         setPlaylist(prev => [newTrack, ...prev]);
         
-        // 💾 2. GUARDAMOS EN LOCALSTORAGE (Seguridad por si recarga)
         const currentLocals = JSON.parse(localStorage.getItem('dj_pending_tracks') || '[]');
         currentLocals.push(newTrack);
         localStorage.setItem('dj_pending_tracks', JSON.stringify(currentLocals));
 
-        // ✨ 3. UI FEEDBACK
         setFormData({ song: '', artist: '', album: '' });
         setShowNotice(true);
         setTimeout(() => setShowNotice(false), 8000);
 
-        // ☁️ 4. ENVIAMOS A GOOGLE EN SEGUNDO PLANO (Sin bloquear)
         const formBody = new URLSearchParams();
         formBody.append(ENTRY_SONG, songClean);
         formBody.append(ENTRY_ARTIST, artistClean);
-        formBody.append(ENTRY_ALBUM, formData.album || 'Single');
+        formBody.append(ENTRY_ALBUM, formData.album.trim());
 
         try {
             await fetch(FORM_URL, {
@@ -93,7 +82,6 @@ export default function DjPage({ initialTracks }) {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formBody
             });
-            // No hacemos nada más. Ya está pintada y enviada.
         } catch (error) { console.error("Error envio"); }
     };
 
@@ -124,6 +112,7 @@ export default function DjPage({ initialTracks }) {
                         </div>
                         <div className="input-group half-width">
                             <label>💿 Álbum</label>
+                            {/* Placeholder visual, pero valor inicial vacío */}
                             <input name="album" value={formData.album} onChange={handleChange} placeholder="Single" />
                         </div>
                     </div>
@@ -162,8 +151,11 @@ export default function DjPage({ initialTracks }) {
                                         <div className="chalk-song">"{track.song}"</div>
                                         <div className="chalk-details">
                                             <span className="artist">🎤 {track.artist}</span>
+                                            
+                                            {/* CAMBIO AQUÍ: Eliminamos la condición if. Siempre muestra el separador y el icono. */}
                                             <span className="separator"> | </span>
                                             <span className="album">💿 {track.album}</span>
+                                            
                                         </div>
                                     </div>
                                     <div className="chalk-line-separator"></div>
@@ -236,7 +228,7 @@ export default function DjPage({ initialTracks }) {
     );
 }
 
-// SERVER SIDE: ESTO SOLO SE EJECUTA AL RECARGAR LA PÁGINA
+// SERVER SIDE
 export async function getServerSideProps({ res }) {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     
@@ -257,7 +249,8 @@ export async function getServerSideProps({ res }) {
                 const songName = clean(columns[1]);
                 const artistName = clean(columns[2]) || "Desconocido";
                 const uniqueId = `${songName}-${artistName}`.replace(/\s+/g, '-').toLowerCase();
-                return { id: uniqueId, song: songName, artist: artistName, album: clean(columns[3]) || "Single", isLocal: false };
+                // Permitimos strings vacíos, no forzamos "Single"
+                return { id: uniqueId, song: songName, artist: artistName, album: clean(columns[3]) || "", isLocal: false };
             }).filter(t => t && t.song).reverse();
         }
         return { props: { initialTracks } };
