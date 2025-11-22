@@ -6,7 +6,7 @@ export default function InvitationEnvelope() {
     // 0: Cerrado
     // 1: Abriendo Solapa
     // 2: Extrayendo Carta
-    // 3: Lectura (El sobre baja para centrar la carta)
+    // 3: Lectura (El sobre baja, la carta se centra)
     const [animationStep, setAnimationStep] = useState(0);
 
     const startAnimation = () => {
@@ -14,11 +14,11 @@ export default function InvitationEnvelope() {
 
         setTimeout(() => {
             setAnimationStep(2);
-        }, 800);
+        }, 800); // Tiempo para abrir solapa
 
         setTimeout(() => {
             setAnimationStep(3);
-        }, 1600);
+        }, 1800); // Tiempo para sacar carta
     };
 
     const handleConfirm = () => {
@@ -38,20 +38,19 @@ export default function InvitationEnvelope() {
                 {/* CONTENEDOR PRINCIPAL */}
                 <div style={{
                     ...styles.wrapper,
-                    // CORRECCIÓN CLAVE: Bajamos el sobre (translateY 140px) cuando se lee
-                    // para que la carta (que sale hacia arriba) quede centrada en pantalla.
-                    transform: animationStep === 3 ? 'scale(1.05) translateY(140px)' : 'scale(1)',
+                    // Al final (paso 3), bajamos el sobre para dejar ver la carta entera arriba
+                    transform: animationStep === 3 ? 'translateY(180px)' : 'translateY(0)',
                     transition: 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)'
                 }}>
 
-                    {/* --- 1. LA CARTA --- */}
+                    {/* --- 1. LA CARTA (INVITACIÓN) --- */}
                     <div style={{
                         ...styles.card,
-                        // La carta sube 230px hacia arriba desde el fondo del sobre
-                        transform: animationStep >= 2 ? 'translateY(-230px)' : 'translateY(100px)',
+                        // La carta sube mucho más arriba (-350px) porque el sobre es más alto
+                        transform: animationStep >= 2 ? 'translateY(-350px)' : 'translateY(50px)',
                         opacity: animationStep >= 2 ? 1 : 0,
                         zIndex: animationStep >= 2 ? 20 : 1,
-                        transition: 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease-out'
+                        transition: 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease-out'
                     }}>
                         <div style={styles.cardBorder}>
                             <p style={styles.subHeader}>NOS CASAMOS</p>
@@ -72,7 +71,7 @@ export default function InvitationEnvelope() {
                                     ...styles.confirmButton,
                                     opacity: animationStep === 3 ? 1 : 0,
                                     pointerEvents: animationStep === 3 ? 'auto' : 'none',
-                                    transition: 'opacity 0.8s ease 0.5s'
+                                    transition: 'opacity 0.8s ease 0.8s'
                                 }}
                             >
                                 Confirmar Asistencia
@@ -80,7 +79,7 @@ export default function InvitationEnvelope() {
                         </div>
                     </div>
 
-                    {/* --- 2. EL SOBRE --- */}
+                    {/* --- 2. EL SOBRE (VERTICAL) --- */}
                     <div style={styles.envelope}>
                         <div style={styles.envelopeInner}></div>
                         <div style={styles.flapLeft}></div>
@@ -91,41 +90,32 @@ export default function InvitationEnvelope() {
                         <div style={{
                             ...styles.flapTop,
                             transform: animationStep >= 1 ? 'rotateX(180deg)' : 'rotateX(0deg)',
-                            zIndex: animationStep >= 1 ? 1 : 10, 
+                            zIndex: animationStep >= 1 ? 1 : 30, 
                             transition: 'transform 0.8s ease-in-out, z-index 0s linear 0.4s'
                         }}></div>
 
-                        {/* Sello */}
+                        {/* Sello Dorado "Abrir" */}
                         <div 
                             onClick={animationStep === 0 ? startAnimation : undefined}
                             style={{
                                 ...styles.waxSeal,
                                 opacity: animationStep === 0 ? 1 : 0,
-                                transform: animationStep === 0 ? 'scale(1)' : 'scale(1.5)',
+                                transform: animationStep === 0 ? 'scale(1)' : 'scale(1.2)',
                                 pointerEvents: animationStep === 0 ? 'auto' : 'none',
                             }}
                         >
-                            <span style={styles.sealText}>M&C</span>
+                            <span style={styles.sealText}>Abrir</span>
                         </div>
                     </div>
                     
-                    <div style={{
-                        ...styles.hintText,
-                        opacity: animationStep === 0 ? 1 : 0,
-                        transition: 'opacity 0.5s'
-                    }}>
-                        Toca el sello para abrir
-                    </div>
-
                 </div>
             </div>
             
             <style jsx global>{`
-                body { margin: 0; padding: 0; background-color: #f2f0eb; }
-                @keyframes pulse-shadow {
-                    0% { box-shadow: 0 0 0 0 rgba(180, 0, 0, 0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(180, 0, 0, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(180, 0, 0, 0); }
+                body { margin: 0; padding: 0; background-color: #e8e6e1; }
+                @keyframes shimmer {
+                    0% { background-position: -100% 0; }
+                    100% { background-position: 100% 0; }
                 }
             `}</style>
         </>
@@ -136,7 +126,7 @@ const styles = {
     container: {
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#f2f0eb',
+        backgroundColor: '#e8e6e1', // Fondo beige suave tipo papel
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -145,54 +135,54 @@ const styles = {
     },
     wrapper: {
         position: 'relative',
-        width: '340px', 
-        height: '230px', 
+        width: '350px', 
+        height: '500px', // MÁS ALTO: Formato Vertical
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-end', // Alineamos abajo
+        alignItems: 'flex-end', 
         perspective: '1500px',
     },
     
     // --- CARTA ---
     card: {
         position: 'absolute',
-        bottom: '0',
-        width: '310px',
-        height: '420px', // Ajustado ligeramente para móvil
+        bottom: '10px',
+        width: '320px',
+        height: '480px', // Casi tan alta como el sobre
         backgroundColor: '#fffcf5',
         backgroundImage: `url("https://www.transparenttextures.com/patterns/cream-paper.png")`,
-        borderRadius: '8px',
-        boxShadow: '0 5px 20px rgba(0,0,0,0.15)',
+        borderRadius: '4px',
+        boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
     cardBorder: {
-        width: '90%',
-        height: '92%',
+        width: '92%',
+        height: '94%',
         border: '1px solid #cfaa5e',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly', // Distribución uniforme
         textAlign: 'center',
-        padding: '25px 15px',
+        padding: '20px 15px',
         boxSizing: 'border-box',
     },
     subHeader: {
         fontFamily: '"Montserrat", sans-serif',
-        fontSize: '10px',
+        fontSize: '11px',
         letterSpacing: '4px',
         color: '#8a8a8a',
-        marginBottom: '5px',
         textTransform: 'uppercase',
+        margin: 0,
     },
     names: {
         fontFamily: '"Great Vibes", cursive',
-        fontSize: '40px', // Un poco más pequeño para asegurar fit
+        fontSize: '48px',
         color: '#2c2c2c',
-        margin: '0',
-        lineHeight: '1.2',
+        margin: '5px 0',
+        lineHeight: '1.1',
     },
     divider: {
         color: '#cfaa5e',
@@ -201,35 +191,35 @@ const styles = {
     },
     date: {
         fontFamily: '"Cinzel", serif',
-        fontSize: '15px',
+        fontSize: '18px',
         fontWeight: '600',
         color: '#1a1a1a',
-        letterSpacing: '1px',
-        marginBottom: '2px',
+        letterSpacing: '2px',
+        margin: 0,
     },
     place: {
         fontFamily: '"Montserrat", sans-serif',
-        fontSize: '10px',
+        fontSize: '11px',
         color: '#666',
         textTransform: 'uppercase',
         letterSpacing: '1px',
-        marginBottom: '10px',
+        marginTop: '5px',
     },
     verse: {
         fontFamily: '"Montserrat", sans-serif',
-        fontSize: '11px',
+        fontSize: '12px',
         color: '#777',
         fontStyle: 'italic',
-        lineHeight: '1.4',
+        lineHeight: '1.5',
         maxWidth: '85%',
-        margin: '0 auto',
+        margin: '10px auto',
     },
     confirmButton: {
         backgroundColor: '#8b0000',
         color: '#fff',
         border: 'none',
-        padding: '12px 24px',
-        fontSize: '11px',
+        padding: '14px 30px',
+        fontSize: '12px',
         fontFamily: '"Montserrat", sans-serif',
         textTransform: 'uppercase',
         letterSpacing: '2px',
@@ -237,15 +227,15 @@ const styles = {
         cursor: 'pointer',
         borderRadius: '50px',
         boxShadow: '0 4px 15px rgba(139, 0, 0, 0.3)',
-        marginTop: '10px',
     },
 
-    // --- SOBRE ---
+    // --- SOBRE VERTICAL ---
     envelope: {
         position: 'relative',
-        width: '340px',
-        height: '230px',
+        width: '350px',
+        height: '500px', // Alto vertical
         zIndex: 5,
+        filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))', // Sombra general del sobre
     },
     envelopeInner: {
         position: 'absolute',
@@ -254,21 +244,19 @@ const styles = {
         width: '100%',
         height: '100%',
         backgroundColor: '#3e3a38',
-        borderRadius: '6px',
-        boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+        borderRadius: '2px',
     },
+    // Triángulos ajustados para formato vertical
     flapLeft: {
         position: 'absolute',
         top: 0,
         left: 0,
         width: 0,
         height: 0,
-        borderTop: '115px solid transparent',
-        borderBottom: '115px solid transparent',
-        borderLeft: '180px solid #ece6d8',
+        borderTop: '250px solid transparent', // Mitad de altura
+        borderBottom: '250px solid transparent',
+        borderLeft: '185px solid #f2f0eb', // Textura papel claro
         zIndex: 6,
-        borderTopLeftRadius: '6px',
-        borderBottomLeftRadius: '6px',
     },
     flapRight: {
         position: 'absolute',
@@ -276,12 +264,10 @@ const styles = {
         right: 0,
         width: 0,
         height: 0,
-        borderTop: '115px solid transparent',
-        borderBottom: '115px solid transparent',
-        borderRight: '180px solid #ece6d8',
+        borderTop: '250px solid transparent',
+        borderBottom: '250px solid transparent',
+        borderRight: '185px solid #f2f0eb',
         zIndex: 6,
-        borderTopRightRadius: '6px',
-        borderBottomRightRadius: '6px',
     },
     flapBottom: {
         position: 'absolute',
@@ -289,13 +275,10 @@ const styles = {
         left: 0,
         width: 0,
         height: 0,
-        borderLeft: '170px solid transparent',
-        borderRight: '170px solid transparent',
-        borderBottom: '130px solid #e3decb',
+        borderLeft: '175px solid transparent',
+        borderRight: '175px solid transparent',
+        borderBottom: '280px solid #e6e4df', // Un poco más alto para cubrir bien
         zIndex: 7,
-        borderBottomLeftRadius: '6px',
-        borderBottomRightRadius: '6px',
-        filter: 'drop-shadow(0 -2px 5px rgba(0,0,0,0.1))',
     },
     flapTop: {
         position: 'absolute',
@@ -303,52 +286,40 @@ const styles = {
         left: 0,
         width: 0,
         height: 0,
-        borderLeft: '170px solid transparent',
-        borderRight: '170px solid transparent',
-        borderTop: '140px solid #ece6d8',
+        borderLeft: '175px solid transparent',
+        borderRight: '175px solid transparent',
+        borderTop: '260px solid #f2f0eb', // Solapa grande
         transformOrigin: 'top',
-        borderTopLeftRadius: '6px',
-        borderTopRightRadius: '6px',
-        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+        zIndex: 30,
     },
 
-    // --- SELLO ---
+    // --- SELLO DORADO "ABRIR" ---
     waxSeal: {
         position: 'absolute',
-        top: '120px',
+        top: '230px', // Centrado verticalmente (aprox mitad de 500 - mitad sello)
         left: '50%',
         marginLeft: '-35px',
-        marginTop: '-35px',
         width: '70px',
         height: '70px',
-        background: 'radial-gradient(circle at 30% 30%, #d32f2f, #8b0000)',
+        // Gradiente Dorado realista
+        background: 'radial-gradient(ellipse at center, #f3e2c7 0%, #c19e67 60%, #b68d4c 100%)',
         borderRadius: '50%',
-        boxShadow: '0 5px 15px rgba(0,0,0,0.3), inset 2px 2px 5px rgba(255,255,255,0.3), inset -2px -2px 5px rgba(0,0,0,0.5)',
-        border: '4px solid #720e0e',
+        // Sombras para dar volumen 3D
+        boxShadow: '0 4px 10px rgba(0,0,0,0.3), inset 0 0 15px rgba(100, 70, 0, 0.3)',
+        border: '2px solid #a88038',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 15,
+        zIndex: 40,
         cursor: 'pointer',
-        transition: 'all 0.4s ease',
-        animation: 'pulse-shadow 2s infinite',
+        transition: 'transform 0.3s ease, opacity 0.3s ease',
     },
     sealText: {
-        color: '#520808',
-        fontFamily: '"Cinzel", serif',
-        fontSize: '22px',
-        fontWeight: 'bold',
-        textShadow: '0 1px 1px rgba(255,255,255,0.2)',
-    },
-    hintText: {
-        position: 'absolute',
-        bottom: '-50px',
-        width: '100%',
-        textAlign: 'center',
-        color: '#8b8b8b',
-        fontFamily: '"Montserrat", sans-serif',
-        fontSize: '11px',
-        letterSpacing: '2px',
-        textTransform: 'uppercase',
+        color: '#5e4618', // Marrón dorado oscuro
+        fontFamily: '"Great Vibes", cursive',
+        fontSize: '24px',
+        fontWeight: '400',
+        textShadow: '0 1px 0px rgba(255,255,255,0.4)', // Efecto grabado
+        transform: 'rotate(-5deg)', // Ligeramente inclinado como un sello real
     }
 };
