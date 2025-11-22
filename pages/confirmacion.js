@@ -2,23 +2,25 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 
 export default function InvitationEnvelope() {
-    // ESTADOS DE LA SECUENCIA:
+    // ESTADOS DE LA SECUENCIA DE ANIMACIÓN
     // 0: Cerrado
     // 1: Abriendo Solapa
     // 2: Extrayendo Carta
-    // 3: Lectura (El sobre baja, la carta se centra)
+    // 3: Lectura (El sobre baja para centrar la carta)
     const [animationStep, setAnimationStep] = useState(0);
 
     const startAnimation = () => {
         setAnimationStep(1);
 
+        // Tiempo apertura solapa
         setTimeout(() => {
             setAnimationStep(2);
-        }, 800); // Tiempo para abrir solapa
+        }, 800);
 
+        // Tiempo sacar carta + bajar sobre
         setTimeout(() => {
             setAnimationStep(3);
-        }, 1800); // Tiempo para sacar carta
+        }, 1800); 
     };
 
     const handleConfirm = () => {
@@ -30,48 +32,49 @@ export default function InvitationEnvelope() {
             <Head>
                 <title>Invitación Manel & Carla</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-                <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
+                {/* Fuentes Premium */}
+                <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@200;400&family=Pinyon+Script&display=swap" rel="stylesheet" />
             </Head>
 
             <div style={styles.container}>
                 
-                {/* CONTENEDOR PRINCIPAL */}
+                {/* --- CONTENEDOR ANIMADO --- */}
                 <div style={{
                     ...styles.wrapper,
-                    // Al final (paso 3), bajamos el sobre para dejar ver la carta entera arriba
-                    transform: animationStep === 3 ? 'translateY(180px)' : 'translateY(0)',
-                    transition: 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)'
+                    // Al final, bajamos todo el sobre para que la carta (que sale hacia arriba) quede centrada
+                    transform: animationStep === 3 ? 'translateY(150px)' : 'translateY(0)',
+                    transition: 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1)'
                 }}>
 
-                    {/* --- 1. LA CARTA (INVITACIÓN) --- */}
+                    {/* --- 1. LA CARTA (INTERIOR) --- */}
                     <div style={{
                         ...styles.card,
-                        // La carta sube mucho más arriba (-350px) porque el sobre es más alto
-                        transform: animationStep >= 2 ? 'translateY(-350px)' : 'translateY(50px)',
+                        // Sale hacia arriba. Ajustado para verse completa en el móvil
+                        transform: animationStep >= 2 ? 'translateY(-320px)' : 'translateY(0)',
                         opacity: animationStep >= 2 ? 1 : 0,
                         zIndex: animationStep >= 2 ? 20 : 1,
-                        transition: 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease-out'
+                        transition: 'transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease'
                     }}>
-                        <div style={styles.cardBorder}>
-                            <p style={styles.subHeader}>NOS CASAMOS</p>
+                        <div style={styles.cardContent}>
+                            <p style={styles.saveTheDate}>SAVE THE DATE</p>
                             <h1 style={styles.names}>Manel & Carla</h1>
-                            <div style={styles.divider}>
-                                <span style={{fontSize:'18px'}}>❦</span>
-                            </div>
-                            <p style={styles.date}>21 · 10 · 2026</p>
-                            <p style={styles.place}>Masia Mas Llombart, BCN</p>
                             
-                            <p style={styles.verse}>
-                                "El amor es lo que hace que el viaje valga la pena."
+                            <div style={styles.divider}></div>
+                            
+                            <p style={styles.date}>21 · OCTUBRE · 2026</p>
+                            <p style={styles.location}>MASIA MAS LLOMBART</p>
+                            
+                            <p style={styles.quote}>
+                                "Te esperamos para celebrar<br/>el inicio de nuestra nueva aventura."
                             </p>
 
                             <button 
                                 onClick={handleConfirm} 
                                 style={{
-                                    ...styles.confirmButton,
+                                    ...styles.button,
                                     opacity: animationStep === 3 ? 1 : 0,
                                     pointerEvents: animationStep === 3 ? 'auto' : 'none',
-                                    transition: 'opacity 0.8s ease 0.8s'
+                                    transition: 'opacity 1s ease 1s'
                                 }}
                             >
                                 Confirmar Asistencia
@@ -79,22 +82,28 @@ export default function InvitationEnvelope() {
                         </div>
                     </div>
 
-                    {/* --- 2. EL SOBRE (VERTICAL) --- */}
+                    {/* --- 2. EL SOBRE (CÁSCARA) --- */}
                     <div style={styles.envelope}>
+                        
+                        {/* Interior (Gris oscuro para contraste) */}
                         <div style={styles.envelopeInner}></div>
+                        
+                        {/* Solapas Laterales (Izquierda/Derecha) */}
                         <div style={styles.flapLeft}></div>
                         <div style={styles.flapRight}></div>
+                        
+                        {/* Solapa Inferior (Bolsillo) */}
                         <div style={styles.flapBottom}></div>
 
-                        {/* Solapa Superior */}
+                        {/* Solapa Superior (Móvil) */}
                         <div style={{
                             ...styles.flapTop,
                             transform: animationStep >= 1 ? 'rotateX(180deg)' : 'rotateX(0deg)',
-                            zIndex: animationStep >= 1 ? 1 : 30, 
+                            zIndex: animationStep >= 1 ? 1 : 50, 
                             transition: 'transform 0.8s ease-in-out, z-index 0s linear 0.4s'
                         }}></div>
 
-                        {/* Sello Dorado "Abrir" */}
+                        {/* --- 3. SELLO DE LACRE DORADO --- */}
                         <div 
                             onClick={animationStep === 0 ? startAnimation : undefined}
                             style={{
@@ -104,29 +113,30 @@ export default function InvitationEnvelope() {
                                 pointerEvents: animationStep === 0 ? 'auto' : 'none',
                             }}
                         >
-                            <span style={styles.sealText}>Abrir</span>
+                            <div style={styles.sealInner}>
+                                <span style={styles.sealText}>Abrir</span>
+                            </div>
                         </div>
+
                     </div>
                     
                 </div>
             </div>
-            
+
             <style jsx global>{`
                 body { margin: 0; padding: 0; background-color: #e8e6e1; }
-                @keyframes shimmer {
-                    0% { background-position: -100% 0; }
-                    100% { background-position: 100% 0; }
-                }
             `}</style>
         </>
     );
 }
 
+// --- ESTILOS PREMIUM ---
 const styles = {
     container: {
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#e8e6e1', // Fondo beige suave tipo papel
+        backgroundColor: '#dcd9d4', // Fondo de la página (mesa)
+        backgroundImage: 'linear-gradient(to bottom, #eef2f3, #8e9eab)', // Degradado sutil fondo
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -135,107 +145,106 @@ const styles = {
     },
     wrapper: {
         position: 'relative',
-        width: '350px', 
-        height: '500px', // MÁS ALTO: Formato Vertical
+        width: '320px', 
+        height: '450px', // Formato vertical estándar
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-end', 
         perspective: '1500px',
     },
     
-    // --- CARTA ---
+    // --- CARTA INTERIOR ---
     card: {
         position: 'absolute',
         bottom: '10px',
-        width: '320px',
-        height: '480px', // Casi tan alta como el sobre
-        backgroundColor: '#fffcf5',
+        width: '290px',
+        height: '420px',
+        backgroundColor: '#fff',
+        // Textura de papel sutil
         backgroundImage: `url("https://www.transparenttextures.com/patterns/cream-paper.png")`,
-        borderRadius: '4px',
-        boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
+        boxShadow: '0 0 5px rgba(0,0,0,0.1)',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
+        padding: '15px',
+        boxSizing: 'border-box',
     },
-    cardBorder: {
-        width: '92%',
-        height: '94%',
-        border: '1px solid #cfaa5e',
+    cardContent: {
+        width: '100%',
+        height: '100%',
+        border: '1px solid #b3a285', // Borde fino dorado mate
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'space-evenly', // Distribución uniforme
+        justifyContent: 'space-evenly',
         textAlign: 'center',
-        padding: '20px 15px',
-        boxSizing: 'border-box',
+        padding: '10px',
     },
-    subHeader: {
+    saveTheDate: {
         fontFamily: '"Montserrat", sans-serif',
-        fontSize: '11px',
-        letterSpacing: '4px',
-        color: '#8a8a8a',
+        fontSize: '10px',
+        letterSpacing: '3px',
+        color: '#666',
         textTransform: 'uppercase',
         margin: 0,
     },
     names: {
-        fontFamily: '"Great Vibes", cursive',
-        fontSize: '48px',
-        color: '#2c2c2c',
-        margin: '5px 0',
-        lineHeight: '1.1',
+        fontFamily: '"Pinyon Script", cursive', // Fuente muy elegante
+        fontSize: '42px',
+        color: '#222',
+        margin: '10px 0',
+        lineHeight: 1,
     },
     divider: {
-        color: '#cfaa5e',
+        width: '30px',
+        height: '1px',
+        backgroundColor: '#b3a285',
         margin: '5px 0',
-        opacity: 0.8,
     },
     date: {
-        fontFamily: '"Cinzel", serif',
-        fontSize: '18px',
+        fontFamily: '"Cormorant Garamond", serif',
+        fontSize: '16px',
         fontWeight: '600',
-        color: '#1a1a1a',
-        letterSpacing: '2px',
-        margin: 0,
-    },
-    place: {
-        fontFamily: '"Montserrat", sans-serif',
-        fontSize: '11px',
-        color: '#666',
-        textTransform: 'uppercase',
+        color: '#222',
         letterSpacing: '1px',
         marginTop: '5px',
     },
-    verse: {
+    location: {
         fontFamily: '"Montserrat", sans-serif',
-        fontSize: '12px',
-        color: '#777',
-        fontStyle: 'italic',
-        lineHeight: '1.5',
-        maxWidth: '85%',
-        margin: '10px auto',
+        fontSize: '9px',
+        color: '#888',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        marginBottom: '15px',
     },
-    confirmButton: {
-        backgroundColor: '#8b0000',
+    quote: {
+        fontFamily: '"Cormorant Garamond", serif',
+        fontSize: '14px',
+        fontStyle: 'italic',
+        color: '#555',
+        lineHeight: '1.4',
+        marginBottom: '10px',
+    },
+    button: {
+        backgroundColor: '#222',
         color: '#fff',
         border: 'none',
-        padding: '14px 30px',
-        fontSize: '12px',
+        padding: '12px 25px',
+        fontSize: '10px',
         fontFamily: '"Montserrat", sans-serif',
         textTransform: 'uppercase',
         letterSpacing: '2px',
-        fontWeight: '600',
         cursor: 'pointer',
-        borderRadius: '50px',
-        boxShadow: '0 4px 15px rgba(139, 0, 0, 0.3)',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
     },
 
-    // --- SOBRE VERTICAL ---
+    // --- SOBRE (BLANCO/GRISÁCEO) ---
     envelope: {
         position: 'relative',
-        width: '350px',
-        height: '500px', // Alto vertical
-        zIndex: 5,
-        filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))', // Sombra general del sobre
+        width: '320px',
+        height: '220px', // Altura del "bolsillo" visible
+        zIndex: 10,
+        filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.15))', // Sombra realista
     },
     envelopeInner: {
         position: 'absolute',
@@ -243,20 +252,20 @@ const styles = {
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundColor: '#3e3a38',
+        backgroundColor: '#d9d9d9', // Interior gris oscuro
         borderRadius: '2px',
     },
-    // Triángulos ajustados para formato vertical
+    // Solapas laterales
     flapLeft: {
         position: 'absolute',
         top: 0,
         left: 0,
         width: 0,
         height: 0,
-        borderTop: '250px solid transparent', // Mitad de altura
-        borderBottom: '250px solid transparent',
-        borderLeft: '185px solid #f2f0eb', // Textura papel claro
-        zIndex: 6,
+        borderTop: '110px solid transparent',
+        borderBottom: '110px solid transparent',
+        borderLeft: '170px solid #f4f4f4', // Blanco grisáceo
+        zIndex: 11,
     },
     flapRight: {
         position: 'absolute',
@@ -264,62 +273,73 @@ const styles = {
         right: 0,
         width: 0,
         height: 0,
-        borderTop: '250px solid transparent',
-        borderBottom: '250px solid transparent',
-        borderRight: '185px solid #f2f0eb',
-        zIndex: 6,
+        borderTop: '110px solid transparent',
+        borderBottom: '110px solid transparent',
+        borderRight: '170px solid #f4f4f4',
+        zIndex: 11,
     },
+    // Solapa inferior (Bolsillo)
     flapBottom: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         width: 0,
         height: 0,
-        borderLeft: '175px solid transparent',
-        borderRight: '175px solid transparent',
-        borderBottom: '280px solid #e6e4df', // Un poco más alto para cubrir bien
-        zIndex: 7,
+        borderLeft: '160px solid transparent',
+        borderRight: '160px solid transparent',
+        borderBottom: '130px solid #ebebeb', // Un poco más oscuro para diferenciar
+        zIndex: 12,
     },
+    // Solapa Superior (La que se abre)
     flapTop: {
         position: 'absolute',
         top: 0,
         left: 0,
         width: 0,
         height: 0,
-        borderLeft: '175px solid transparent',
-        borderRight: '175px solid transparent',
-        borderTop: '260px solid #f2f0eb', // Solapa grande
+        borderLeft: '160px solid transparent',
+        borderRight: '160px solid transparent',
+        borderTop: '140px solid #f4f4f4', // Color principal sobre
         transformOrigin: 'top',
-        zIndex: 30,
+        zIndex: 50, // Por encima de todo al principio
+        filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.05))',
     },
 
-    // --- SELLO DORADO "ABRIR" ---
+    // --- SELLO DORADO ---
     waxSeal: {
         position: 'absolute',
-        top: '230px', // Centrado verticalmente (aprox mitad de 500 - mitad sello)
+        top: '110px', // Justo en la punta de la solapa superior
         left: '50%',
-        marginLeft: '-35px',
+        marginLeft: '-35px', // Centrado (70px / 2)
         width: '70px',
         height: '70px',
-        // Gradiente Dorado realista
-        background: 'radial-gradient(ellipse at center, #f3e2c7 0%, #c19e67 60%, #b68d4c 100%)',
         borderRadius: '50%',
-        // Sombras para dar volumen 3D
-        boxShadow: '0 4px 10px rgba(0,0,0,0.3), inset 0 0 15px rgba(100, 70, 0, 0.3)',
-        border: '2px solid #a88038',
+        // Dorado realista
+        background: 'radial-gradient(ellipse at 30% 30%, #ffd700, #d4af37, #8b6914)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 40,
+        alignItems: 'center',
+        zIndex: 60,
         cursor: 'pointer',
-        transition: 'transform 0.3s ease, opacity 0.3s ease',
+        transition: 'transform 0.3s ease',
+    },
+    sealInner: {
+        width: '55px',
+        height: '55px',
+        borderRadius: '50%',
+        border: '1px solid rgba(139, 105, 20, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        boxShadow: 'inset 0 0 5px rgba(0,0,0,0.2)',
     },
     sealText: {
-        color: '#5e4618', // Marrón dorado oscuro
-        fontFamily: '"Great Vibes", cursive',
-        fontSize: '24px',
-        fontWeight: '400',
-        textShadow: '0 1px 0px rgba(255,255,255,0.4)', // Efecto grabado
-        transform: 'rotate(-5deg)', // Ligeramente inclinado como un sello real
+        fontFamily: '"Cormorant Garamond", serif',
+        fontSize: '16px',
+        fontStyle: 'italic',
+        color: '#5c4008', // Marrón dorado oscuro
+        fontWeight: '600',
+        textShadow: '0 1px 0 rgba(255,255,255,0.3)',
     }
 };
