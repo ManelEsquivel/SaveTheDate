@@ -142,8 +142,10 @@ const styles = {
         fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
         display: 'flex',
         justifyContent: 'center',
-        padding: '20px', 
-        paddingBottom: '30px',
+        padding: '15px', 
+        // Aumentado el padding inferior para asegurar que el texto 
+        // se vea por encima de la barra del navegador móvil
+        paddingBottom: '80px', 
         boxSizing: 'border-box',
     },
     content: {
@@ -156,65 +158,65 @@ const styles = {
     },
     header: {
         textAlign: 'center',
-        marginBottom: '25px', // Aumentado margen inferior
+        marginBottom: '15px', // Reducido de 25px a 15px para ganar espacio
         marginTop: '10px',
     },
     title: {
-        fontSize: '2.2rem', // Restaurado tamaño grande
+        fontSize: '2.0rem', // Reducido muy ligeramente (de 2.2 a 2.0) para que no ocupe tanto
         color: '#2d3748',
         fontFamily: '"Times New Roman", serif',
-        margin: '0 0 5px 0',
+        margin: '0 0 2px 0',
         letterSpacing: '1px',
         lineHeight: '1.2',
     },
     date: {
-        fontSize: '1rem',
+        fontSize: '0.9rem', // Ligeramente más pequeño
         color: '#718096',
         textTransform: 'uppercase',
         letterSpacing: '2px',
         margin: 0,
     },
     divider: {
-        width: '60px',
+        width: '50px',
         height: '3px',
         backgroundColor: '#d6bcfa',
-        margin: '15px auto',
+        margin: '10px auto', // Menos margen vertical en el divisor
         borderRadius: '2px',
     },
     welcome: {
         color: '#4a5568',
-        fontSize: '1rem',
+        fontSize: '0.9rem',
     },
     grid: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px', // Aumentado de 8px a 20px para separar más los botones
+        gap: '12px', // Reducido de 20px a 12px para juntar más los botones
         width: '100%',
     },
     card: {
         backgroundColor: 'white',
-        borderRadius: '20px', // Bordes más redondeados
-        padding: '25px 20px', // Aumentado padding interno considerablemente
+        borderRadius: '18px',
+        padding: '18px 15px', // Reducido padding vertical de 25 a 18 para ganar altura
         display: 'flex',
         alignItems: 'center', 
-        boxShadow: '0 8px 20px rgba(0,0,0,0.06)', // Sombra un poco más pronunciada
+        boxShadow: '0 6px 15px rgba(0,0,0,0.05)',
         cursor: 'pointer',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         position: 'relative',
         overflow: 'hidden',
     },
     iconBg: {
-        width: '60px', // Aumentado de 45px a 60px
-        height: '60px', // Aumentado de 45px a 60px
-        borderRadius: '15px',
+        width: '55px', // Reducido de 60 a 55px
+        height: '55px', // Reducido de 60 a 55px
+        borderRadius: '14px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: '20px', 
+        marginRight: '15px', 
         flexShrink: 0, 
     },
     emoji: {
-        fontSize: '30px', // Aumentado de 20px a 30px
+        fontSize: '26px', // Ajustado proporcionalmente
     },
     textContainer: {
         flex: 1, 
@@ -222,33 +224,33 @@ const styles = {
         flexDirection: 'column',
         justifyContent: 'center',
         minWidth: 0, 
-        paddingRight: '10px',
+        paddingRight: '5px',
     },
     cardTitle: {
-        margin: '0 0 5px 0',
-        fontSize: '1.3rem', // Aumentado tamaño de letra título
+        margin: '0 0 3px 0',
+        fontSize: '1.2rem', 
         color: '#2d3748',
         fontWeight: 'bold',
         lineHeight: '1.2',
     },
     cardText: {
         margin: 0,
-        fontSize: '0.95rem', // Aumentado tamaño de letra descripción
+        fontSize: '0.85rem',
         color: '#718096',
-        lineHeight: '1.4',
+        lineHeight: '1.3',
     },
     arrow: {
         marginLeft: 'auto', 
         color: '#cbd5e0',
-        fontSize: '1.5rem', // Flecha más grande
+        fontSize: '1.3rem',
         fontWeight: 'bold',
         flexShrink: 0, 
     },
     footer: {
-        marginTop: '30px',
+        marginTop: '25px', // Un poco de aire antes del footer
         color: '#a0aec0',
         fontSize: '0.8rem',
         textAlign: 'center',
-        paddingBottom: '10px',
+        // Importante: padding bottom 0 aquí, porque ya lo tiene el container general
     }
 };
